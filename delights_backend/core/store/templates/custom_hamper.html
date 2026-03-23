@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+{% block title %}Custom Hamper Builder — Wrapp Delights{% endblock %}
+
+{% block extra_css %}
+<style>
+  .builder-shell {
+    padding: 28px 0 50px;
+  }
+
+  .builder-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .builder-card {
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .builder-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #111827;
+  }
+
+  .builder-sub {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+
+  .product-pool {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    max-height: 540px;
+    overflow: auto;
+    padding-right: 4px;
+  }
+
+  .product-chip {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+    padding: 10px;
+    cursor: grab;
+    transition: box-shadow .2s, border-color .2s;
+  }
+
+  .product-chip:hover {
+    border-color: #80011F;
+    box-shadow: 0 8px 16px rgba(17, 24, 39, 0.08);
+  }
+
+  .product-chip h4 {
+    font-size: 0.83rem;
+    line-height: 1.3;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 4px;
+  }
+
+  .product-chip p {
+    font-size: 0.72rem;
+    color: #6b7280;
+  }
+
+  .drop-zone {
+    margin-top: 10px;
+    min-height: 180px;
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    background: #f8fafc;
+    padding: 10px;
+    transition: border-color .2s, background .2s;
+  }
+
+  .drop-zone.active {
+    border-color: #80011F;
+    background: #fff6f8;
+  }
+
+  .drop-empty {
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.85rem;
+    padding: 38px 10px;
+  }
+
+  .drop-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fff;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+  }
+
+  .drop-item .name {
+    font-size: 0.83rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .drop-item button {
+    border: 0;
+    background: transparent;
+    color: #80011F;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .builder-form .form-field {
+    margin-bottom: 10px;
+  }
+
+  .builder-form label {
+    display: block;
+    font-size: 0.74rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #4b5563;
+    margin-bottom: 5px;
+  }
+
+  .builder-form input,
+  .builder-form textarea {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    padding: 9px 10px;
+    font-size: 0.85rem;
+  }
+
+  .builder-form textarea {
+    resize: vertical;
+    min-height: 82px;
+  }
+
+  .builder-form button {
+    width: 100%;
+    margin-top: 6px;
+    background: #80011F;
+    color: #fff;
+    border: 0;
+    border-radius: 10px;
+    padding: 11px 12px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  @media (max-width: 1024px) {
+    .product-pool {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 860px) {
+    .builder-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .product-pool {
+      grid-template-columns: 1fr;
+      max-height: 380px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="builder-shell">
+  <div class="container">
+    <div class="builder-grid">
+      <div class="builder-card">
+        <h1 class="builder-title">Custom Hamper Builder</h1>
+        <p class="builder-sub">Drag products into your hamper box. The same product can only be added once.</p>
+
+        <div id="dropZone" class="drop-zone">
+          <div id="dropEmpty" class="drop-empty">Drag and drop products here to build your hamper.</div>
+          <div id="dropList"></div>
+        </div>
+
+        <div class="product-pool" id="productPool">
+          {% for product in products %}
+          <div class="product-chip" draggable="true" data-id="{{ product.id }}" data-name="{{ product.name|escape }}">
+            <h4>{{ product.name }}</h4>
+            <p>{{ product.category.name|default:"General" }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="builder-card">
+        <h2 class="text-lg font-extrabold text-gray-900">Submit Your Custom Hamper</h2>
+        <p class="text-xs text-gray-500 mt-1 mb-3">We will contact you with pricing and delivery timeline.</p>
+
+        <form method="post" class="builder-form" id="builderForm">
+          {% csrf_token %}
+          <input type="hidden" name="selected_items" id="selectedItems">
+
+          <div class="form-field">
+            <label for="contact_person">Name</label>
+            <input id="contact_person" name="contact_person" required>
+          </div>
+
+          <div class="form-field">
+            <label for="company_name">Company</label>
+            <input id="company_name" name="company_name" required>
+          </div>
+
+          <div class="form-field">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" required>
+          </div>
+
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email">
+          </div>
+
+          <div class="form-field">
+            <label for="quantity">Quantity</label>
+            <input id="quantity" name="quantity" type="number" min="1" value="25" required>
+          </div>
+
+          <div class="form-field">
+            <label for="delivery_address">Delivery Address</label>
+            <textarea id="delivery_address" name="delivery_address"></textarea>
+          </div>
+
+          <div class="form-field">
+            <label for="message">Notes</label>
+            <textarea id="message" name="message" placeholder="Budget, branding, occasion, date, etc."></textarea>
+          </div>
+
+          <button type="submit">Submit Custom Inquiry</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const selectedIds = new Set();
+    const dropZone = document.getElementById('dropZone');
+    const dropList = document.getElementById('dropList');
+    const dropEmpty = document.getElementById('dropEmpty');
+    const selectedInput = document.getElementById('selectedItems');
+    const builderForm = document.getElementById('builderForm');
+
+    function syncInput() {
+      selectedInput.value = Array.from(selectedIds).join(',');
+      dropEmpty.style.display = selectedIds.size ? 'none' : 'block';
+    }
+
+    function removeItem(id) {
+      selectedIds.delete(id);
+      const node = dropList.querySelector(`[data-drop-id="${id}"]`);
+      if (node) node.remove();
+      syncInput();
+    }
+
+    function addItem(id, name) {
+      if (selectedIds.has(id)) return;
+      selectedIds.add(id);
+
+      const row = document.createElement('div');
+      row.className = 'drop-item';
+      row.dataset.dropId = id;
+      row.innerHTML = `<span class="name"></span><button type="button">Remove</button>`;
+      row.querySelector('.name').textContent = name;
+      row.querySelector('button').addEventListener('click', function () {
+        removeItem(id);
+      });
+      dropList.appendChild(row);
+      syncInput();
+    }
+
+    document.querySelectorAll('.product-chip').forEach(function (chip) {
+      chip.addEventListener('dragstart', function (e) {
+        const payload = JSON.stringify({
+          id: chip.dataset.id,
+          name: chip.dataset.name,
+        });
+        e.dataTransfer.setData('text/plain', payload);
+      });
+
+      chip.addEventListener('dblclick', function () {
+        addItem(chip.dataset.id, chip.dataset.name);
+      });
+    });
+
+    dropZone.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      dropZone.classList.add('active');
+    });
+
+    dropZone.addEventListener('dragleave', function () {
+      dropZone.classList.remove('active');
+    });
+
+    dropZone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      dropZone.classList.remove('active');
+
+      const raw = e.dataTransfer.getData('text/plain');
+      if (!raw) return;
+
+      try {
+        const data = JSON.parse(raw);
+        if (data && data.id && data.name) {
+          addItem(String(data.id), String(data.name));
+        }
+      } catch (err) {
+        // ignore invalid payload
+      }
+    });
+
+    builderForm.addEventListener('submit', function (e) {
+      if (!selectedIds.size) {
+        e.preventDefault();
+        window.alert('Please add at least one product to your custom hamper.');
+      }
+    });
+
+    syncInput();
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+# Python cache/build artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local databases and backups
+*.sqlite3
+db.sqlite3
+db.backup_*.sqlite3
+
+# Django collected static
+staticfiles/
+delights_backend/core/staticfiles/
+
+# User-uploaded media (keep committed brand logo)
+media/*
+delights_backend/core/media/*
+!delights_backend/core/media/
+!delights_backend/core/media/logo.svg
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Editor/OS files
+.vscode/
+.DS_Store
+Thumbs.db

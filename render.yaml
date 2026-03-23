@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: wrapp-delights
+    env: python
+    plan: free
+    buildCommand: bash build.sh
+    startCommand: gunicorn core.wsgi:application --chdir delights_backend/core
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: DJANGO_SETTINGS_MODULE
+        value: core.settings
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: wrapp-delights-db
+          property: connectionString
+
+databases:
+  - name: wrapp-delights-db
+    plan: free

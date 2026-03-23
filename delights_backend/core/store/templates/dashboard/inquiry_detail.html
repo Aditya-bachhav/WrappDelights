@@ -58,6 +58,19 @@
       <div style="padding:16px 18px;font-size:.84rem;line-height:1.6;white-space:pre-wrap">{{ inquiry.customization_details }}</div>
     </div>
     {% endif %}
+
+    {% if selected_products %}
+    <div class="detail-card" style="margin-top:14px">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ash)">Selected Products (Custom Hamper)</div>
+      <div style="padding:14px 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">
+        {% for item in selected_products %}
+          <div style="border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:.8rem;font-weight:600;color:var(--ink);background:#fff">
+            {{ item }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
   </div>
 
   <!-- Sidebar: quick actions -->

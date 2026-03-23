@@ -17,6 +17,52 @@ CATALOG_NAV_CATEGORIES = [
     "Packaging Solutions",
 ]
 
+SUCCESS_WHATSAPP_RAW = "918347136985"
+
+
+def _selected_products_from_inquiry(inquiry):
+    combined = "\n".join(
+        [
+            (inquiry.customization_details or "").strip(),
+            (inquiry.message or "").strip(),
+        ]
+    )
+
+    items = []
+    for raw_line in combined.splitlines():
+        line = raw_line.strip()
+        if line.startswith("- "):
+            item_name = line[2:].strip()
+            if item_name and item_name.lower() != "no items selected":
+                items.append(item_name)
+
+    # Keep order while removing duplicates.
+    return list(dict.fromkeys(items))
+
+
+def _build_whatsapp_message_from_inquiry(inquiry):
+    selected_items = _selected_products_from_inquiry(inquiry)
+
+    lines = [
+        "Hi Wrapp Delights, I just submitted an inquiry on your website.",
+        f"Inquiry Ref: WD-{inquiry.id}",
+        f"Inquiry Type: {inquiry.get_inquiry_type_display()}",
+    ]
+
+    if inquiry.hamper:
+        lines.append(f"Product: {inquiry.hamper.name}")
+    if inquiry.quantity:
+        lines.append(f"Quantity: {inquiry.quantity}")
+    if selected_items:
+        lines.append(f"Selected Items: {', '.join(selected_items)}")
+    if inquiry.company_name:
+        lines.append(f"Company: {inquiry.company_name}")
+    if inquiry.contact_person:
+        lines.append(f"Name: {inquiry.contact_person}")
+
+    lines.append("Please confirm receipt and share next steps.")
+    return "\n".join(lines)
+
 
 def home(request):
     active_hampers = Hamper.objects.filter(is_active=True).select_related("category")
@@ -143,7 +189,7 @@ def corporate_page(request):
         hamper_id = request.POST.get("hamper_id")
         hamper = Hamper.objects.filter(id=hamper_id, is_active=True).first() if hamper_id else None
 
-        CorporateInquiry.objects.create(
+        inquiry = CorporateInquiry.objects.create(
             inquiry_type=request.POST.get("inquiry_type", "quote"),
             hamper=hamper,
             company_name=(request.POST.get("company_name") or request.POST.get("company") or "").strip(),
@@ -155,7 +201,7 @@ def corporate_page(request):
             customization_details=(request.POST.get("customization_details") or request.POST.get("requirement") or "").strip(),
             message=(request.POST.get("message") or request.POST.get("requirement") or "").strip(),
         )
-        return redirect("corporate_success")
+        return redirect(f"{reverse('corporate_success')}?inquiry={inquiry.id}")
 
     inquiry_type = request.GET.get("type", "quote")
     hamper_id = request.GET.get("hamper")
@@ -175,7 +221,90 @@ def corporate_page(request):
 
 
 def corporate_success(request):
-    return render(request, "corporate_success.html")
+    inquiry_id = (request.GET.get("inquiry") or "").strip()
+    inquiry = None
+
+    if inquiry_id.isdigit():
+        inquiry = CorporateInquiry.objects.filter(id=int(inquiry_id)).select_related("hamper").first()
+
+    if inquiry:
+        whatsapp_text = _build_whatsapp_message_from_inquiry(inquiry)
+    else:
+        whatsapp_text = "Hi Wrapp Delights, I just submitted an inquiry on your website. Please confirm receipt."
+
+    return render(
+        request,
+        "corporate_success.html",
+        {
+            "inquiry": inquiry,
+            "success_whatsapp_raw": SUCCESS_WHATSAPP_RAW,
+            "success_whatsapp_text": whatsapp_text,
+        },
+    )
+
+
+def custom_hamper_builder(request):
+    products_qs = (
+        Hamper.objects.filter(
+            is_active=True,
+            category__is_active=True,
+        ).filter(
+            Q(category__slug="individual-products") | Q(category__name__iexact="Individual Products")
+        )
+        .select_related("category")
+        .order_by("name")
+    )
+
+    if request.method == "POST":
+        contact_person = (request.POST.get("contact_person") or "").strip()
+        company_name = (request.POST.get("company_name") or "").strip()
+        email = (request.POST.get("email") or "").strip()
+        phone = (request.POST.get("phone") or "").strip()
+        quantity_raw = (request.POST.get("quantity") or "").strip()
+        delivery_address = (request.POST.get("delivery_address") or "").strip()
+        selected_ids = [x for x in (request.POST.get("selected_items") or "").split(",") if x]
+        note = (request.POST.get("message") or "").strip()
+
+        try:
+            quantity = max(1, int(quantity_raw))
+        except ValueError:
+            quantity = 25
+
+        unique_ids = list(dict.fromkeys(selected_ids))
+        selected_products = list(
+            Hamper.objects.filter(id__in=unique_ids, is_active=True).values_list("name", flat=True)
+        )
+        item_lines = "\n".join(f"- {name}" for name in selected_products) if selected_products else "- No items selected"
+
+        message = (
+            "Custom hamper request from builder.\n"
+            f"Selected items:\n{item_lines}\n\n"
+            f"Additional notes: {note or 'N/A'}"
+        )
+
+        inquiry = CorporateInquiry.objects.create(
+            inquiry_type="customize",
+            company_name=company_name or "Individual Customer",
+            contact_person=contact_person or "Website Visitor",
+            email=email,
+            phone=phone,
+            quantity=quantity,
+            delivery_address=delivery_address,
+            message=message,
+            customization_details=message,
+        )
+
+        messages.success(request, "Custom hamper inquiry submitted successfully.")
+        return redirect(f"{reverse('corporate_success')}?inquiry={inquiry.id}")
+
+    return render(
+        request,
+        "custom_hamper.html",
+        {
+            "products": products_qs,
+            "categories": Category.objects.filter(is_active=True),
+        },
+    )
 
 
 def search_view(request):
@@ -489,6 +618,13 @@ def dashboard_corporate(request):
     type_filter = request.GET.get("type", "")
     if type_filter:
         inquiries = inquiries.filter(inquiry_type=type_filter)
+
+    inquiries = list(inquiries)
+    for inquiry in inquiries:
+        selected_products = _selected_products_from_inquiry(inquiry)
+        inquiry.selected_products = selected_products
+        inquiry.selected_products_count = len(selected_products)
+
     return render(
         request,
         "dashboard/corporate_requests.html",
@@ -504,7 +640,15 @@ def dashboard_corporate(request):
 @user_passes_test(admin_check)
 def dashboard_inquiry_detail(request, inquiry_id):
     inquiry = get_object_or_404(CorporateInquiry, id=inquiry_id)
-    return render(request, "dashboard/inquiry_detail.html", {"inquiry": inquiry})
+    selected_products = _selected_products_from_inquiry(inquiry)
+    return render(
+        request,
+        "dashboard/inquiry_detail.html",
+        {
+            "inquiry": inquiry,
+            "selected_products": selected_products,
+        },
+    )
 
 
 @login_required

@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +23,39 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-nyj^=#gg%luey36f1xtrr-!hpj!z!$)=08u==nmu1y4j1p0va)'
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-nyj^=#gg%luey36f1xtrr-!hpj!z!$)=08u==nmu1y4j1p0va)",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME", "")
+RUNNING_ON_RENDER = bool(RENDER_EXTERNAL_HOSTNAME)
+DEBUG = os.getenv("DEBUG", "False" if RUNNING_ON_RENDER else "True").lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    if host.strip()
+]
+
+if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+if RENDER_EXTERNAL_HOSTNAME:
+    render_origin = f"https://{RENDER_EXTERNAL_HOSTNAME}"
+    if render_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_origin)
 
 
 # Application definition
@@ -42,6 +72,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -74,16 +105,28 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
- 'default': {
-  'ENGINE': 'django.db.backends.postgresql',
-  'NAME': 'ecommerce_db',
-  'USER': 'postgres',
-  'PASSWORD': 'D^L!G#t$0@dm/7404',
-  'HOST': 'localhost',
-  'PORT': '5432',
- }
+DATABASE_URL = os.getenv("DATABASE_URL", "")
+DB_SSL_REQUIRE = os.getenv("DB_SSL_REQUIRE", "True" if RUNNING_ON_RENDER else "False").lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
 }
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=DB_SSL_REQUIRE,
+        )
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
@@ -120,7 +163,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -132,7 +177,13 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Contact info for catalog CTA buttons
-WHATSAPP_NUMBER = "919876543210"  # country code + number, no plus sign
-WHATSAPP_MESSAGE = "Hi, I'm interested in a product from Wrapp Delights!"
-PHONE_NUMBER = "+91 98765 43210"  # display-friendly format
-PHONE_NUMBER_RAW = "+919876543210"  # tel: link format
+WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "918347136985")  # country code + number, no plus sign
+WHATSAPP_MESSAGE = os.getenv("WHATSAPP_MESSAGE", "Hi, I'm interested in a product from Wrapp Delights!")
+PHONE_NUMBER = os.getenv("PHONE_NUMBER", "+91 83471 36985")  # display-friendly format
+PHONE_NUMBER_RAW = os.getenv("PHONE_NUMBER_RAW", "+918347136985")  # tel: link format
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True

@@ -69,7 +69,7 @@
           <!-- CTA Actions -->
           <div class="flex flex-col sm:flex-row gap-3 mt-auto pt-6 border-t border-gray-200">
             <a
-              href="https://wa.me/{{ phone_number_raw|default:whatsapp_number|default:'919999999999' }}?text={{ whatsapp_text|urlencode }}"
+              href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text={{ whatsapp_text|urlencode }}"
               target="_blank"
               rel="noopener"
               class="flex-1 bg-brand-red hover:bg-brand-dark text-white text-center py-3 px-6 font-bold uppercase tracking-wider text-sm transition-colors flex items-center justify-center gap-2"
@@ -80,7 +80,7 @@
               Request Quote
             </a>
             <a
-              href="tel:{{ phone_number_raw|default:whatsapp_number|default:'919999999999' }}"
+              href="tel:{{ phone_number_raw|default:'+918347136985' }}"
               class="flex-1 border-2 border-gray-300 hover:border-brand-red hover:text-brand-red text-gray-700 text-center py-3 px-6 font-bold uppercase tracking-wider text-sm transition-colors flex items-center justify-center gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -118,7 +118,7 @@
                 <div class="font-bold text-green-800 text-sm">Inquiry Submitted!</div>
                 <div class="text-green-700 text-xs mt-1">Our sales team will reach out via WhatsApp or phone within 2 business hours to confirm pricing and delivery details.</div>
                 <div class="flex gap-3 mt-3">
-                  <a href="https://wa.me/919999999999?text={{ whatsapp_text|urlencode }}" target="_blank" class="text-xs font-bold text-green-700 underline">Also message us on WhatsApp →</a>
+                  <a href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text={{ whatsapp_text|urlencode }}" target="_blank" class="text-xs font-bold text-green-700 underline">Also message us on WhatsApp →</a>
                 </div>
               </div>
             </div>
@@ -169,7 +169,7 @@
                 Submit Bulk Inquiry
               </button>
               <a
-                href="https://wa.me/{{ phone_number_raw|default:whatsapp_number|default:'919999999999' }}?text={{ whatsapp_text|urlencode }}"
+                href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text={{ whatsapp_text|urlencode }}"
                 target="_blank"
                 rel="noopener"
                 class="border-2 border-gray-300 hover:border-brand-red hover:text-brand-red text-gray-700 text-center py-3 px-6 font-bold uppercase tracking-wider text-sm transition-colors"

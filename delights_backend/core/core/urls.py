@@ -7,6 +7,7 @@ from django.contrib.auth import views as auth_views
 from store.views import (
     corporate_page,
     corporate_success,
+    custom_hamper_builder,
     dashboard,
     dashboard_categories,
     dashboard_corporate,
@@ -39,6 +40,7 @@ urlpatterns = [
     path("products/", product_list, name="products"),
     path("products/<int:product_id>/", product_detail, name="product_detail"),
     path("corporate/", corporate_page, name="corporate"),
+    path("custom-hamper/", custom_hamper_builder, name="custom_hamper"),
     path("corporate-success/", corporate_success, name="corporate_success"),
     path("search/", search_view, name="search"),
 

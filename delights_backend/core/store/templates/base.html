@@ -12,8 +12,8 @@
       extend: {
         colors: {
           brand: {
-            red: '#C8102E',
-            dark: '#8E1024',
+            red: '#80011F',
+            dark: '#650018',
             blush: '#FFF3F4'
           }
         }
@@ -23,22 +23,22 @@
 </script>
 <style>
 :root {
-  --gold: #C8102E;
-  --gold-light: #E03B49;
-  --gold-dim: rgba(200,16,46,0.15);
-  --gold-border: rgba(200,16,46,0.3);
+  --gold: #80011F;
+  --gold-light: #9a1a38;
+  --gold-dim: rgba(128,1,31,0.12);
+  --gold-border: rgba(128,1,31,0.24);
   --obsidian: #0F172A;
   --charcoal: #1F2937;
-  --surface: #F5F6F8;
+  --surface: #F9FAFB;
   --surface-raised: #FFFFFF;
   --surface-high: #FFFFFF;
-  --fog: #ffffff;
+  --fog: #FFFBEF;
   --fog-deep: #EEF2F7;
-  --ash: #667085;
+  --ash: #555555;
   --mist: #98A2B3;
-  --ink: #101828;
+  --ink: #111111;
   --white: #fff;
-  --max-w: 1280px;
+  --max-w: 1240px;
   --radius: 14px;
   --radius-sm: 10px;
   --transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -48,10 +48,7 @@
 
 body {
   font-family: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:
-    radial-gradient(circle at 8% -10%, #fff4f5 0%, rgba(255, 244, 245, 0) 36%),
-    radial-gradient(circle at 92% 0%, #eef4ff 0%, rgba(238, 244, 255, 0) 30%),
-    var(--fog);
+  background: var(--fog);
   color: var(--ink);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -66,6 +63,159 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
   margin: 0 auto;
   padding: 0 24px;
 }
+
+.site-top-strip {
+  background: #fff;
+  border-bottom: 1px solid #E4E7EC;
+  color: #667085;
+  font-size: .72rem;
+}
+
+.site-top-strip .container {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.site-header-main {
+  background: #fff;
+  border-bottom: 1px solid #E4E7EC;
+}
+
+.site-header-main .container {
+  min-height: 82px;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-link img {
+  height: 42px;
+  width: auto;
+}
+
+.brand-copy strong {
+  display: block;
+  font-size: .92rem;
+  line-height: 1.1;
+}
+
+.brand-copy span {
+  font-size: .62rem;
+  color: #667085;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+
+.site-search {
+  position: relative;
+}
+
+.site-search input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #D0D5DD;
+  border-radius: 999px;
+  padding: 0 40px 0 14px;
+  font-size: .82rem;
+  background: #fff;
+}
+
+.site-search input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(128,1,31,.1);
+}
+
+.site-search button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #667085;
+}
+
+.site-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.site-actions a {
+  font-size: .76rem;
+  font-weight: 700;
+  color: #475467;
+}
+
+.site-actions a:hover {
+  color: var(--gold);
+}
+
+.site-primary-nav {
+  background: #fff;
+  border-bottom: 1px solid #E4E7EC;
+}
+
+.site-primary-nav .container {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.mobile-nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #D0D5DD;
+  border-radius: 8px;
+  background: #fff;
+  color: #475467;
+  flex-shrink: 0;
+}
+
+.mobile-nav-toggle:hover {
+  border-color: var(--gold-border);
+  color: var(--gold);
+}
+
+.site-primary-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.site-primary-nav a {
+  font-size: .75rem;
+  font-weight: 700;
+  color: #475467;
+  padding: 7px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.site-primary-nav a:hover,
+.site-primary-nav a.active {
+  color: var(--gold);
+  background: #FFF3F4;
+}
+
+main { padding-top: 16px; }
 
 /* ─── TOPBAR ─── */
 .topbar {
@@ -194,15 +344,15 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
   white-space: nowrap;
 }
 .btn-primary {
-  background: linear-gradient(135deg, #c8102e 0%, #a90f27 100%);
+  background: linear-gradient(135deg, #80011F 0%, #680018 100%);
   color: #fff;
-  border-color: #a90f27;
+  border-color: #680018;
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, #d01333 0%, #b2112b 100%);
-  border-color: #b2112b;
+  background: linear-gradient(135deg, #8e1430 0%, #72041f 100%);
+  border-color: #72041f;
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(200, 16, 46, 0.22);
+  box-shadow: 0 8px 18px rgba(128, 1, 31, 0.22);
 }
 .btn-outline {
   background: transparent;
@@ -227,7 +377,7 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
 
 /* ─── PRODUCT CARD ─── */
 .product-card {
-  background: linear-gradient(180deg, #fff 0%, #fcfdff 100%);
+  background: #fff;
   border: 1px solid #e4e7ec;
   border-radius: var(--radius);
   overflow: hidden;
@@ -299,6 +449,7 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
   font-size: .73rem;
   color: var(--ash);
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -481,6 +632,22 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
   .nav-links { display: none; }
   .nav-right .search { width: 160px; }
   .footer-inner { grid-template-columns: 1fr 1fr; }
+  .site-header-main .container {
+    grid-template-columns: 1fr;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .site-actions { justify-content: flex-start; }
+  .site-top-strip .container {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+  .site-top-strip .container > div:last-child {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 @media (max-width: 640px) {
   .container { padding: 0 16px; }
@@ -489,13 +656,58 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
   .carousel-row .product-card { flex-basis: 220px; }
   .footer-inner { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; gap: 6px; text-align: center; }
+  .site-top-strip .container { min-height: 30px; }
+  .site-primary-nav .container { min-height: 40px; }
+  .site-actions {
+    width: 100%;
+    gap: 6px;
+  }
+  .site-actions a,
+  .site-actions form {
+    flex: 1 1 auto;
+  }
+  .site-actions a,
+  .site-actions button {
+    display: inline-flex;
+    justify-content: center;
+    padding: 8px 10px;
+    border: 1px solid #E4E7EC;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .mobile-nav-toggle {
+    display: inline-flex;
+  }
+  .site-primary-nav .container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    overflow: visible;
+  }
+  .site-primary-nav-links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    overflow: visible;
+  }
+  .site-primary-nav.is-open .site-primary-nav-links {
+    display: flex;
+  }
+  .site-primary-nav a {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 .catalog-panel {
-  background: rgba(255,255,255,0.82);
-  border: 1px solid #eaecf0;
+  background: #fff;
+  border: 1px solid #E4E7EC;
   border-radius: 14px;
-  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.05);
+  box-shadow: 0 8px 18px rgba(16, 24, 40, 0.04);
 }
 
 .catalog-kicker {
@@ -507,8 +719,8 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
 }
 
 /* ─── Shared Utilities ─── */
-.clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-.clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp-1 { display: -webkit-box; line-clamp: 1; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp-2 { display: -webkit-box; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* ─── Mega Menu (Catalog Navbar) ─── */
 .mega-menu {
@@ -587,248 +799,69 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
 </head>
 <body>
 
-<header class="site-header sticky top-0 z-[99999] bg-white">
-  <!-- 1. THIN TOP BAR -->
-  <div class="bg-gray-100 border-b border-gray-200 text-xs py-1.5 text-gray-600">
-    <div class="container mx-auto px-4 flex justify-between items-center">
-      <div class="flex gap-6">
-        <span><span class="font-bold text-gray-800">Call Us:</span> 1-800-WRAPP-DL</span>
-        <span><span class="font-bold text-gray-800">Email:</span> sales@wrappdelights.com</span>
-        <span class="hidden sm:inline"><span class="font-bold text-gray-800">Location:</span> Mumbai, India</span>
+<header class="site-header sticky top-0 z-[99999]">
+  <div class="site-top-strip">
+    <div class="container">
+      <div>Premium corporate gifting catalog</div>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <a href="tel:{{ phone_number_raw|default:whatsapp_number|default:'+918347136985' }}">{{ phone_number|default:'+91 83471 36985' }}</a>
+        <a href="mailto:sales@wrappdelights.com">sales@wrappdelights.com</a>
       </div>
-      <div class="flex gap-4">
-        <a href="/corporate/" class="hover:text-brand-red">Get a Quote</a>
-        <a href="tel:+919999999999" class="hover:text-brand-red">Call: +91 99999 99999</a>
+    </div>
+  </div>
+
+  <div class="site-header-main">
+    <div class="container">
+      <a href="/" class="brand-link">
+        <img src="/media/logo.svg" alt="Wrapp Delights logo" loading="eager">
+        <div class="brand-copy">
+          <strong>Wrapp Delights</strong>
+          <span>Corporate Catalog</span>
+        </div>
+      </a>
+
+      <form action="{% url 'search' %}" method="get" class="site-search">
+        <input type="text" name="q" placeholder="Search by product, category, SKU" value="{{ request.GET.q }}">
+        <button type="submit" aria-label="Search">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+      </form>
+
+      <div class="site-actions">
+        <a href="{% url 'corporate' %}">Request Quote</a>
+        <a href="{% url 'custom_hamper' %}">Custom Hamper</a>
         {% if user.is_authenticated %}
-          <a href="{% url 'dashboard' %}" class="font-bold text-brand-red">Admin Dashboard</a>
-          <a href="{% url 'logout' %}" class="hover:text-brand-red font-semibold">Log Out</a>
+          <a href="{% url 'dashboard' %}">Admin</a>
+          <form method="post" action="{% url 'logout' %}" class="inline" style="margin:0">
+            {% csrf_token %}
+            <button type="submit" style="font-size:.76rem;font-weight:700;color:#475467;background:none;border:none;cursor:pointer">Logout</button>
+          </form>
         {% endif %}
       </div>
     </div>
   </div>
 
-  <!-- 2. MAIN HEADER -->
-  <header class="bg-white py-5 border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-    <div class="container mx-auto px-4 flex items-center justify-between gap-8">
-      <!-- LOGO -->
-      <a href="/" class="flex-shrink-0">
-        <div class="text-2xl font-extrabold tracking-tighter text-brand-red">
-          WRAPP<span class="text-gray-900">DELIGHTS</span>
-        </div>
-        <div class="text-[0.6rem] font-bold text-gray-500 tracking-widest uppercase -mt-1">Corporate Catalog</div>
-      </a>
-
-      <!-- SEARCH BAR (DOMINANT) -->
-      <div class="flex-grow max-w-3xl relative">
-        <form action="{% url 'search' %}" method="get" class="flex w-full">
-          <div class="relative w-full">
-            <input type="text" name="q" placeholder="Search by keyword, SKU, or category..." 
-              class="w-full h-10 pl-4 pr-10 border border-gray-400 bg-gray-50 text-sm focus:bg-white focus:border-brand-red transition-colors placeholder-gray-500"
-              value="{{ request.GET.q }}">
-            <button type="submit" class="absolute right-0 top-0 h-10 w-10 flex items-center justify-center text-gray-600 hover:text-brand-red">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- RIGHT ACTIONS -->
-      <div class="flex items-center gap-6 flex-shrink-0">
-        <div class="flex flex-col items-end">
-          <span class="text-xs text-gray-500">Need a quote?</span>
-          <a href="https://wa.me/{{ phone_number_raw|default:whatsapp_number|default:'919999999999' }}?text={{ 'Hi, I want a quote from your catalog. Please share available SKUs and delivery timeline.'|urlencode }}" 
-             target="_blank" 
-             class="text-sm font-bold text-brand-red hover:underline flex items-center gap-1">
-            Request Quote
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </a>
-        </div>
-        <div class="border-l border-gray-300 h-8"></div>
-        <a href="{% url 'corporate' %}" class="flex flex-col items-center group">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 group-hover:text-brand-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          <span class="text-[10px] uppercase font-bold text-gray-600 mt-1">Enquire</span>
-        </a>
+  <nav class="site-primary-nav" id="primaryNav">
+    <div class="container">
+      <button type="button" class="mobile-nav-toggle" id="mobileNavToggle" aria-controls="primaryNavLinks" aria-expanded="false" aria-label="Toggle navigation menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <div class="site-primary-nav-links" id="primaryNavLinks">
+        <a href="/" {% block nav_home %}{% endblock %}>Home</a>
+        <a href="{% url 'products' %}" {% block nav_products %}{% endblock %}>Catalog</a>
+        <a href="{% url 'custom_hamper' %}">Custom Hamper</a>
+        <a href="{% url 'corporate' %}" {% block nav_corporate %}{% endblock %}>Corporate Inquiry</a>
+        <a href="tel:{{ phone_number_raw|default:whatsapp_number|default:'+918347136985' }}">Contact</a>
       </div>
     </div>
-  </header>
-
+  </nav>
 </header>
-  <!-- 3. NAVBAR (CATEGORIES) -->
-  <nav class="bg-brand-red text-white text-sm font-medium border-b border-brand-dark shadow-sm">
-    <div class="container mx-auto px-4">
-      <div class="flex items-center">
-        <a href="{% url 'products' %}" class="px-5 py-3 bg-brand-dark hover:bg-black transition-colors flex items-center gap-2 uppercase font-bold text-xs tracking-wide">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-          All Categories
-        </a>
-        <div class="flex overflow-x-auto no-scrollbar">
-          {% for cat in categories|slice:":8" %}
-            <a href="{% url 'products' %}?category={{ cat.slug }}" class="px-5 py-3 hover:bg-brand-dark transition-colors whitespace-nowrap border-r border-brand-dark border-opacity-30">
-              {{ cat.name }}
-            </a>
-          {% endfor %}
-          <a href="{% url 'products' %}" class="px-5 py-3 hover:bg-brand-dark transition-colors whitespace-nowrap italic">
-            View All...
-          </a>
-        </div>
-      </div>
-    </div>
-  </nav>
-  <div style="display:none;">
-  <nav class="category-navbar border-y border-gray-200 bg-white">
-    <div class="container" style="padding-top:0; padding-bottom:0;">
-      <div class="category-nav-scroll">
-        <ul class="flex items-stretch gap-0">
-        <li class="nav-item relative">
-          <a href="/products/?category=individual-products" class="block px-5 py-3 text-sm font-extrabold text-gray-800 hover:text-brand-red border-r border-gray-200 rounded-none whitespace-nowrap">
-            Office Supplies
-          </a>
-          <div class="mega-menu">
-            <div class="mega-col">
-              <h4>Featured</h4>
-              <a href="/products/?category=individual-products">Desk Organizer</a>
-              <a href="/products/?category=individual-products">Wooden Decor</a>
-              <a href="/products/?category=individual-products">Keychains &amp; Accessories</a>
-            </div>
-            <div class="mega-col">
-              <h4>Fast Reorder</h4>
-              <a href="/products/?category=individual-products">Candles</a>
-              <a href="/products/?category=individual-products">Religious Items</a>
-              <a href="/products/?category=individual-products">Dry Fruit Containers</a>
-            </div>
-            <div class="mega-col">
-              <h4>Inquiries</h4>
-              <a href="/products/?category=individual-products">Bulk pricing on request</a>
-              <a href="https://wa.me/{{ phone_number_raw|default:whatsapp_number|default:'919999999999' }}?text={{ 'Hi, I want a quote for Office Supplies. Please share SKU pricing and delivery options.'|urlencode }}" target="_blank" rel="noopener">Request Quote</a>
-            </div>
-          </div>
-        </li>
-
-        <li class="nav-item relative">
-          <a href="/products/?category=individual-products" class="block px-5 py-3 text-sm font-extrabold text-gray-800 hover:text-brand-red border-r border-gray-200 rounded-none whitespace-nowrap">
-            Drinkware
-          </a>
-          <div class="mega-menu">
-            <div class="mega-col">
-              <h4>Top Sellers</h4>
-              <a href="/products/?category=individual-products">Mugs &amp; Tumblers</a>
-              <a href="/products/?category=individual-products">Bottles (Bamboo, Steel, Borosil)</a>
-            </div>
-            <div class="mega-col">
-              <h4>Match Your Kit</h4>
-              <a href="/products/?category=individual-products">Desk Accessories</a>
-              <a href="/products/?category=individual-products">Gift Sets</a>
-            </div>
-            <div class="mega-col">
-              <h4>Need Specs?</h4>
-              <a href="https://wa.me/{{ phone_number_raw|default:whatsapp_number|default:'919999999999' }}?text={{ 'Hi, I want a quote for Drinkware. Please share SKU pricing and delivery options.'|urlencode }}" target="_blank" rel="noopener">Request Quote</a>
-            </div>
-          </div>
-        </li>
-
-        <li class="nav-item relative">
-          <a href="/products/?category=corporate-gifting" class="block px-5 py-3 text-sm font-extrabold text-gray-800 hover:text-brand-red border-r border-gray-200 rounded-none whitespace-nowrap">
-            Corporate Gifts
-          </a>
-          <div class="mega-menu">
-            <div class="mega-col">
-              <h4>Employee Kits</h4>
-              <a href="/products/?category=corporate-gifting">Employee Welcome Kits</a>
-              <a href="/products/?category=corporate-gifting">Onboarding Kits</a>
-            </div>
-            <div class="mega-col">
-              <h4>Executive</h4>
-              <a href="/products/?category=corporate-gifting">Corporate Gift Boxes</a>
-              <a href="/products/?category=corporate-gifting">Executive Hampers</a>
-            </div>
-            <div class="mega-col">
-              <h4>Bulk Quote</h4>
-              <a href="https://wa.me/{{ phone_number_raw|default:whatsapp_number|default:'919999999999' }}?text={{ 'Hi, I want a quote for Corporate Gifts. Please share SKU pricing and delivery options.'|urlencode }}" target="_blank" rel="noopener">Request Quote</a>
-            </div>
-          </div>
-        </li>
-
-        <li class="nav-item relative">
-          <a href="/products/?category=individual-products" class="block px-5 py-3 text-sm font-extrabold text-gray-800 hover:text-brand-red border-r border-gray-200 rounded-none whitespace-nowrap">
-            Bottles
-          </a>
-          <div class="mega-menu">
-            <div class="mega-col">
-              <h4>Materials</h4>
-              <a href="/products/?category=individual-products">Bamboo</a>
-              <a href="/products/?category=individual-products">Steel</a>
-              <a href="/products/?category=individual-products">Borosil</a>
-            </div>
-            <div class="mega-col">
-              <h4>Pair With</h4>
-              <a href="/products/?category=individual-products">Dry Fruit Containers</a>
-              <a href="/products/?category=individual-products">Mugs &amp; Tumblers</a>
-            </div>
-            <div class="mega-col">
-              <h4>Need Pricing?</h4>
-              <a href="https://wa.me/{{ phone_number_raw|default:whatsapp_number|default:'919999999999' }}?text={{ 'Hi, I want a quote for Bottles. Please share SKU pricing and delivery options.'|urlencode }}" target="_blank" rel="noopener">Request Quote</a>
-            </div>
-          </div>
-        </li>
-
-        <li class="nav-item relative">
-<a href="/products/?category=packaging-solutions" class="block px-5 py-3 text-sm font-extrabold text-gray-800 hover:text-brand-red border-r border-gray-200 rounded-none whitespace-nowrap">
-            Tech Accessories
-          </a>
-          <div class="mega-menu">
-            <div class="mega-col">
-              <h4>Packaging</h4>
-              <a href="/products/?category=packaging-solutions">Magnetic Boxes</a>
-              <a href="/products/?category=packaging-solutions">Collapsible Boxes</a>
-            </div>
-            <div class="mega-col">
-              <h4>Gift Ready</h4>
-              <a href="/products/?category=packaging-solutions">Jute Hampers</a>
-              <a href="/products/?category=packaging-solutions">Gift Baskets</a>
-            </div>
-            <div class="mega-col">
-              <h4>Get a Quote</h4>
-              <a href="https://wa.me/{{ phone_number_raw|default:whatsapp_number|default:'919999999999' }}?text={{ 'Hi, I want a quote for Tech Accessories. Please share SKU pricing and delivery options.'|urlencode }}" target="_blank" rel="noopener">Request Quote</a>
-            </div>
-          </div>
-        </li>
-
-        <li class="nav-item relative">
-          <a href="/corporate/?type=customize" class="block px-5 py-3 text-sm font-extrabold text-gray-800 hover:text-brand-red border-r border-gray-200 rounded-none whitespace-nowrap">
-            Customize Hamper
-          </a>
-          <div class="mega-menu">
-            <div class="mega-col">
-              <h4>Individual Products</h4>
-              <a href="/products/?category=individual-products">Pick items</a>
-              <a href="/products/?category=packaging-solutions">Pick packaging</a>
-            </div>
-            <div class="mega-col">
-              <h4>Ready-made Hampers</h4>
-              <a href="/products/?category=corporate-gifting">Corporate kits</a>
-              <a href="/products/?category=festive-hampers">Festive sets</a>
-              <a href="/products/?category=wedding-events">Event hampers</a>
-            </div>
-            <div class="mega-col">
-              <h4>Build Your Own</h4>
-              <a href="https://wa.me/{{ phone_number_raw|default:whatsapp_number|default:'919999999999' }}?text={{ 'Hi, I want to customize a hamper. Please suggest the best items and share a quote + delivery timeline.'|urlencode }}" target="_blank" rel="noopener">Customize via Enquiry</a>
-              <a href="https://wa.me/{{ phone_number_raw|default:whatsapp_number|default:'919999999999' }}?text={{ 'Hi, I want to customize a hamper. Please share options and delivery timeline.'|urlencode }}" target="_blank" rel="noopener">Request Quote</a>
-            </div>
-          </div>
-        </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-</div>
 <!-- End old header content -->
 
 <!-- Request Quote Modal (re-used across pages) -->
@@ -884,53 +917,55 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
 <main>{% block content %}{% endblock %}</main>
 
   <!-- FOOTER -->
-  <footer class="bg-gray-900 text-gray-400 text-sm mt-12 pt-12 pb-6 border-t border-brand-red">
-    <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-      <div>
-        <div class="text-xl font-extrabold text-white mb-4 tracking-tighter">WRAPP<span class="text-brand-red">DELIGHTS</span></div>
-        <p class="mb-4 text-xs leading-relaxed">
-          Premium corporate gifting solutions for businesses. 
-          Bulk orders, custom branding, and nationwide delivery.
-        </p>
+  <footer class="mt-12 pb-8">
+    <div class="container mx-auto px-4" style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:24px">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <img src="/media/logo.svg" alt="Wrapp Delights logo" style="height:34px;width:auto">
+            <div class="text-base font-extrabold tracking-tight" style="color:var(--ink)">WRAPP DELIGHTS</div>
+          </div>
+          <p class="mb-4 text-xs leading-relaxed" style="color:var(--ash)">
+            Clean, curated, and scalable gifting catalog for corporate orders.
+          </p>
+        </div>
+        <div>
+          <h3 class="font-bold uppercase tracking-wider text-xs mb-4" style="color:var(--ink)">Customer Service</h3>
+          <ul class="space-y-2 text-xs">
+            <li><a href="{% url 'corporate' %}" class="hover:text-brand-red">Contact Us</a></li>
+            <li><a href="{% url 'corporate' %}" class="hover:text-brand-red">Request a Quote</a></li>
+            <li><a href="{% url 'custom_hamper' %}" class="hover:text-brand-red">Custom Hamper</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-bold uppercase tracking-wider text-xs mb-4" style="color:var(--ink)">Product Categories</h3>
+          <ul class="space-y-2 text-xs">
+            {% for cat in categories|slice:":5" %}
+              <li><a href="{% url 'products' %}?category={{ cat.slug }}" class="hover:text-brand-red">{{ cat.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-bold uppercase tracking-wider text-xs mb-4" style="color:var(--ink)">Contact</h3>
+          <ul class="space-y-2 text-xs">
+            <li class="flex items-start gap-2">
+              <span class="text-brand-red font-bold">T:</span> {{ phone_number|default:'+91 83471 36985' }}
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-brand-red font-bold">E:</span> sales@wrappdelights.com
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-brand-red font-bold">A:</span> Mumbai, Maharashtra, India
+            </li>
+          </ul>
+        </div>
       </div>
-      <div>
-        <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-4">Customer Service</h3>
-        <ul class="space-y-2 text-xs">
-          <li><a href="#" class="hover:text-white">Contact Us</a></li>
-          <li><a href="#" class="hover:text-white">Request a Quote</a></li>
-          <li><a href="#" class="hover:text-white">Shipping Policy</a></li>
-          <li><a href="#" class="hover:text-white">Returns & Warranty</a></li>
-          <li><a href="#" class="hover:text-white">FAQs</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-4">Product Categories</h3>
-        <ul class="space-y-2 text-xs">
-          {% for cat in categories|slice:":5" %}
-            <li><a href="{% url 'products' %}?category={{ cat.slug }}" class="hover:text-white">{{ cat.name }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-      <div>
-        <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-4">Contact</h3>
-        <ul class="space-y-2 text-xs">
-          <li class="flex items-start gap-2">
-            <span class="text-brand-red font-bold">T:</span> 1-800-WRAPP-DL
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="text-brand-red font-bold">E:</span> sales@wrappdelights.com
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="text-brand-red font-bold">A:</span> Mumbai, Maharashtra, India
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="container mx-auto px-4 pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-xs">
-      <div>&copy; {% now "Y" %} Wrapp Delights. All rights reserved. B2B Catalog.</div>
-      <div class="flex gap-4 mt-2 md:mt-0">
-        <a href="#" class="hover:text-white">Privacy Policy</a>
-        <a href="#" class="hover:text-white">Terms of Use</a>
+      <div class="pt-4 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center text-xs" style="color:var(--ash)">
+        <div>&copy; {% now "Y" %} Wrapp Delights. All rights reserved. B2B Catalog.</div>
+        <div class="flex gap-4 mt-2 md:mt-0">
+          <a href="#" class="hover:text-brand-red">Privacy Policy</a>
+          <a href="#" class="hover:text-brand-red">Terms of Use</a>
+        </div>
       </div>
     </div>
   </footer>
@@ -980,52 +1015,26 @@ button, input, textarea, select { font-family: inherit; font-size: inherit; }
   })();
 
   (function () {
-    // Mobile-friendly mega-menu: tap to open (hover doesn't work on touch).
-    var mq = window.matchMedia('(max-width: 640px)');
-    var categoryNav = document.querySelector('.category-navbar');
-    if (!categoryNav) return;
+    var nav = document.getElementById('primaryNav');
+    var toggle = document.getElementById('mobileNavToggle');
+    if (!nav || !toggle) return;
 
-    function setMegaListeners() {
-      var items = categoryNav.querySelectorAll('.nav-item');
-      items.forEach(function (li) {
-        // Click on the top category link toggles the mega menu on mobile.
-        var trigger = li.querySelector(':scope > a');
-        if (!trigger) return;
+    toggle.addEventListener('click', function () {
+      var isOpen = nav.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
 
-        trigger.addEventListener('click', function (e) {
-          if (!mq.matches) return;
-          e.preventDefault();
-          li.classList.toggle('mega-open');
-        });
-      });
-
-      document.addEventListener('click', function (e) {
-        if (!mq.matches) return;
-        if (!e.target.closest('.category-navbar')) {
-          categoryNav.querySelectorAll('.nav-item.mega-open').forEach(function (x) {
-            x.classList.remove('mega-open');
-          });
-        }
-      });
-
-      mq.addEventListener('change', function () {
-        if (!mq.matches) {
-          categoryNav.querySelectorAll('.nav-item.mega-open').forEach(function (x) {
-            x.classList.remove('mega-open');
-          });
-        }
-      });
-    }
-
-    // Avoid duplicate listeners on hot reload.
-    if (!categoryNav.dataset.megaListenersBound) {
-      categoryNav.dataset.megaListenersBound = '1';
-      setMegaListeners();
-    }
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 640 && nav.classList.contains('is-open')) {
+        nav.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
   })();
+
 </script>
 
-<a class="wa-float" href="https://wa.me/{{ phone_number_raw|default:whatsapp_number|default:'919999999999' }}?text=Hi%2C%20I%20want%20to%20explore%20bulk%20gifting%20options." target="_blank" aria-label="WhatsApp">
+<a class="wa-float" href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text=Hi%2C%20I%20want%20to%20explore%20bulk%20gifting%20options." target="_blank" aria-label="WhatsApp">
   <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
   </svg>
