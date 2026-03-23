@@ -1,0 +1,82 @@
+{% extends "dashboard/_admin_base.html" %}
+{% block title %}Corporate Inquiries{% endblock %}
+{% block page_title %}Corporate Inquiries{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / Inquiries</div>
+    <h1>Corporate Inquiries <span style="font-size:.85rem;font-weight:500;color:var(--ash)">({{ requests|length }})</span></h1>
+  </div>
+</div>
+
+<!-- Filter -->
+<div class="card" style="margin-bottom:14px;padding:12px 16px">
+  <form method="get" class="filter-bar">
+    <select name="type" class="form-select">
+      <option value="">All Types</option>
+      {% for val, label in inquiry_choices %}<option value="{{ val }}" {% if type_filter == val %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <button type="submit" class="btn btn-outline">Filter</button>
+    {% if type_filter %}<a href="{% url 'dashboard_corporate' %}" class="btn btn-outline">Clear</a>{% endif %}
+  </form>
+</div>
+
+<div class="card">
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Company</th>
+          <th>Contact</th>
+          <th>Email / Phone</th>
+          <th>Hamper</th>
+          <th>Qty</th>
+          <th>Address</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in requests %}
+        <tr>
+          <td style="color:var(--ash);white-space:nowrap">{{ r.created_at|date:"d M Y" }}</td>
+          <td>
+            {% if r.inquiry_type == "quote" %}<span class="badge badge-blue">Quote</span>
+            {% elif r.inquiry_type == "bulk" %}<span class="badge badge-yellow">Bulk</span>
+            {% else %}<span class="badge badge-gray">Customize</span>{% endif %}
+          </td>
+          <td style="font-weight:700">{{ r.company_name }}</td>
+          <td>{{ r.contact_person }}</td>
+          <td>
+            {% if r.email %}<div style="font-size:.78rem"><a href="mailto:{{ r.email }}" style="color:var(--red)">{{ r.email }}</a></div>{% endif %}
+            {% if r.phone %}<div style="font-size:.75rem;color:var(--ash)">{{ r.phone }}</div>{% endif %}
+          </td>
+          <td style="font-size:.78rem">{% if r.hamper %}<a href="/products/{{ r.hamper.id }}/" target="_blank" style="color:var(--red)">{{ r.hamper.name|truncatechars:30 }}</a>{% else %}—{% endif %}</td>
+          <td style="font-weight:700">{{ r.quantity }}</td>
+          <td style="font-size:.75rem;color:var(--ash)">{{ r.delivery_address|default:"—"|truncatechars:45 }}</td>
+          <td>
+            <div style="display:flex;gap:5px">
+              <a href="{% url 'dashboard_inquiry_detail' r.id %}" class="btn btn-outline btn-sm btn-icon" title="View Details">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </a>
+              {% if r.email %}
+              <a href="mailto:{{ r.email }}?subject=Re: Your Inquiry — Wrapp Delights" class="btn btn-primary btn-sm btn-icon" title="Reply by email">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </a>
+              {% endif %}
+              <a href="{% url 'dashboard_delete_inquiry' r.id %}" class="btn btn-danger btn-sm btn-icon" title="Delete">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" class="tbl-empty">No inquiries received yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

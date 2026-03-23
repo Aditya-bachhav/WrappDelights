@@ -1,0 +1,94 @@
+{% extends "dashboard/_admin_base.html" %}
+{% block title %}Inquiry — {{ inquiry.company_name }}{% endblock %}
+{% block page_title %}Inquiry Detail{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / <a href="{% url 'dashboard_corporate' %}">Inquiries</a> / Detail</div>
+    <h1>{{ inquiry.company_name }}</h1>
+  </div>
+  <div style="display:flex;gap:8px">
+    {% if inquiry.email %}
+    <a href="mailto:{{ inquiry.email }}?subject=Re: Your Hamper Inquiry — Wrapp Delights&body=Dear {{ inquiry.contact_person }},%0A%0AThank you for your inquiry regarding our hampers.%0A%0A" class="btn btn-primary">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Reply via Email
+    </a>
+    {% endif %}
+    <a href="{% url 'dashboard_delete_inquiry' inquiry.id %}" class="btn btn-danger">Delete</a>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 320px;gap:16px">
+
+  <div>
+    <div class="detail-card" style="margin-bottom:14px">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ash)">Contact Info</div>
+      <div class="detail-row"><div class="detail-label">Company</div><div style="font-weight:700">{{ inquiry.company_name }}</div></div>
+      <div class="detail-row"><div class="detail-label">Contact Person</div><div>{{ inquiry.contact_person }}</div></div>
+      <div class="detail-row"><div class="detail-label">Email</div><div>{% if inquiry.email %}<a href="mailto:{{ inquiry.email }}" style="color:var(--red)">{{ inquiry.email }}</a>{% else %}—{% endif %}</div></div>
+      <div class="detail-row"><div class="detail-label">Phone</div><div>{% if inquiry.phone %}<a href="tel:{{ inquiry.phone }}" style="color:var(--red)">{{ inquiry.phone }}</a>{% else %}—{% endif %}</div></div>
+    </div>
+
+    <div class="detail-card" style="margin-bottom:14px">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ash)">Inquiry Details</div>
+      <div class="detail-row"><div class="detail-label">Type</div>
+        <div>
+          {% if inquiry.inquiry_type == "quote" %}<span class="badge badge-blue">Request Corporate Quote</span>
+          {% elif inquiry.inquiry_type == "bulk" %}<span class="badge badge-yellow">Bulk Order Inquiry</span>
+          {% else %}<span class="badge badge-gray">Customize for My Company</span>{% endif %}
+        </div>
+      </div>
+      <div class="detail-row"><div class="detail-label">Hamper</div><div>{% if inquiry.hamper %}<a href="/products/{{ inquiry.hamper.id }}/" target="_blank" style="color:var(--red);font-weight:700">{{ inquiry.hamper.name }}</a>{% else %}<span style="color:var(--mist)">Not specified</span>{% endif %}</div></div>
+      <div class="detail-row"><div class="detail-label">Quantity</div><div style="font-size:1rem;font-weight:800">{{ inquiry.quantity }} units</div></div>
+      <div class="detail-row"><div class="detail-label">Delivery Address</div><div>{% if inquiry.delivery_address %}<span style="white-space:pre-wrap">{{ inquiry.delivery_address }}</span>{% else %}—{% endif %}</div></div>
+      <div class="detail-row"><div class="detail-label">Submitted</div><div>{{ inquiry.created_at|date:"d M Y, g:i A" }}</div></div>
+    </div>
+
+    {% if inquiry.message %}
+    <div class="detail-card" style="margin-bottom:14px">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ash)">Message</div>
+      <div style="padding:16px 18px;font-size:.84rem;line-height:1.6;white-space:pre-wrap">{{ inquiry.message }}</div>
+    </div>
+    {% endif %}
+
+    {% if inquiry.customization_details %}
+    <div class="detail-card">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ash)">Customization Requirements</div>
+      <div style="padding:16px 18px;font-size:.84rem;line-height:1.6;white-space:pre-wrap">{{ inquiry.customization_details }}</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Sidebar: quick actions -->
+  <div>
+    <div class="card">
+      <div class="form-section">
+        <div class="form-section-title">Quick Actions</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          {% if inquiry.email %}
+          <a href="mailto:{{ inquiry.email }}?subject=Re: Your Hamper Inquiry — Wrapp Delights" class="btn btn-primary" style="justify-content:center">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Send Email Reply
+          </a>
+          {% endif %}
+          {% if inquiry.phone %}
+          <a href="tel:{{ inquiry.phone }}" class="btn btn-outline" style="justify-content:center">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.91-1.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Call {{ inquiry.phone }}
+          </a>
+          {% endif %}
+          {% if inquiry.hamper %}
+          <a href="/products/{{ inquiry.hamper.id }}/" target="_blank" class="btn btn-outline" style="justify-content:center">View Hamper ↗</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:14px">
+  <a href="{% url 'dashboard_corporate' %}" class="btn btn-outline">← Back to Inquiries</a>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Bundles — Dashboard{% endblock %}
+
+{% block extra_css %}
+.blist{padding:24px 0}
+.blist h1{font-size:1rem;font-weight:700;color:var(--white);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.b-table-img{width:48px;height:48px;border-radius:5px;overflow:hidden;background:var(--surface-2)}
+.b-table-img img{width:100%;height:100%;object-fit:cover}
+.active-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+{% endblock %}
+
+{% block content %}
+<div class="blist">
+  <div class="container">
+    <h1>
+      <span>Predefined Bundles ({{ bundles|length }})</span>
+      <a href="/dashboard/create-bundle/" class="btn btn-primary btn-sm">+ Create Bundle</a>
+    </h1>
+
+    {% if bundles %}
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Items</th>
+          <th>Price</th>
+          <th>Status</th>
+          <th>Featured</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in bundles %}
+        <tr>
+          <td>
+            <div class="b-table-img">
+              {% if b.image %}<img src="{{ b.image.url }}" alt="">{% endif %}
+            </div>
+          </td>
+          <td style="font-weight:600">{{ b.name }}</td>
+          <td>{{ b.item_count }}</td>
+          <td style="font-weight:600">&#8377;{{ b.display_price }}</td>
+          <td>
+            {% if b.is_active %}
+            <span class="active-dot" style="background:var(--green)"></span>Active
+            {% else %}
+            <span class="active-dot" style="background:var(--red)"></span>Inactive
+            {% endif %}
+          </td>
+          <td>{% if b.is_featured %}<span class="badge badge-accent">Featured</span>{% else %}—{% endif %}</td>
+          <td><a href="/dashboard/bundles/{{ b.id }}/edit/" style="color:var(--accent);font-size:.78rem">Edit</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">
+      <h3>No bundles yet</h3>
+      <p style="margin-bottom:14px">Create your first curated bundle.</p>
+      <a href="/dashboard/create-bundle/" class="btn btn-primary">Create Bundle</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

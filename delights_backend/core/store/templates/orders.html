@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}My Orders — Wrapp Delights{% endblock %}
+
+{% block extra_css %}
+.orders-page{padding:24px 0}
+.orders-page h1{font-size:1rem;font-weight:700;color:var(--white);margin-bottom:16px}
+.order-list{display:flex;flex-direction:column;gap:8px}
+.order-row{display:flex;align-items:center;justify-content:space-between;padding:14px;border:1px solid var(--border);border-radius:8px;gap:14px;background:var(--surface);transition:border-color .15s}
+.order-row:hover{border-color:var(--border-light)}
+.order-id{font-weight:700;font-size:.85rem;color:var(--white)}
+.order-date{font-size:.75rem;color:var(--text-muted)}
+.order-total{font-weight:700;font-size:.9rem;color:var(--white)}
+.order-status{font-size:.72rem;font-weight:600;padding:3px 8px;border-radius:3px;text-transform:capitalize}
+.status-pending{background:rgba(245,166,35,.15);color:var(--accent)}
+.status-confirmed{background:rgba(34,197,94,.15);color:var(--green)}
+.status-shipped{background:rgba(59,130,246,.15);color:#60a5fa}
+.status-delivered{background:rgba(34,197,94,.15);color:var(--green)}
+.status-cancelled{background:rgba(239,68,68,.15);color:var(--red)}
+{% endblock %}
+
+{% block content %}
+<div class="orders-page">
+  <div class="container">
+    <h1>My Orders</h1>
+
+    {% if orders %}
+    <div class="order-list">
+      {% for order in orders %}
+      <a href="/orders/{{ order.id }}/" class="order-row">
+        <div>
+          <div class="order-id">Order #{{ order.id }}</div>
+          <div class="order-date">{{ order.created_at|date:"d M Y, h:i A" }}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="order-status status-{{ order.status }}">{{ order.status }}</span>
+          <span class="order-total">&#8377;{{ order.total }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">
+      <h3>No orders yet</h3>
+      <p style="margin-bottom:14px">Start shopping to see your orders here.</p>
+      <a href="/products/" class="btn btn-primary">Browse products</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

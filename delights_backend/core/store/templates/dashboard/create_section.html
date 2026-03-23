@@ -1,0 +1,44 @@
+{% extends "dashboard/_admin_base.html" %}
+{% block title %}Add Section{% endblock %}
+{% block page_title %}Add Homepage Section{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / <a href="{% url 'dashboard_sections' %}">Sections</a> / Add</div>
+    <h1>Add Section</h1>
+  </div>
+</div>
+
+<form method="post" style="max-width:560px">
+  {% csrf_token %}
+  <div class="card">
+    <div class="form-section">
+      <div class="form-section-title">Section Info</div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Title *</label>
+        <input class="form-input" name="title" required placeholder="e.g. Corporate Welcome Kits">
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Section Type</label>
+        <select class="form-select" name="section_type">
+          {% for val, label in section_choices %}<option value="{{ val }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Subtitle</label>
+        <textarea class="form-textarea" name="subtitle" rows="2" placeholder="Optional tagline shown below section title"></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Position</label>
+        <input class="form-input" type="number" name="position" value="0" min="0">
+      </div>
+      <label class="form-check"><input type="checkbox" name="is_active" checked> Active</label>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Create Section</button>
+      <a href="{% url 'dashboard_sections' %}" class="btn btn-outline">Cancel</a>
+    </div>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{% if query %}Search: {{ query }}{% else %}Search{% endif %} - Wrapp Delights{% endblock %}
+
+{% block content %}
+<section class="bg-white py-6">
+  <div class="container mx-auto px-4">
+    
+    <!-- Search Bar -->
+    <div class="mb-6">
+      <form method="GET" action="{% url 'search' %}" class="flex gap-2">
+        <input 
+          type="text" 
+          name="q" 
+          value="{{ query }}" 
+          placeholder="Search products, SKU, category..." 
+          class="flex-1 px-4 py-2 border border-gray-300 bg-white text-sm focus:border-brand-red focus:outline-none"
+          autofocus
+        >
+        <button type="submit" class="bg-brand-red text-white px-6 py-2 font-bold uppercase text-sm hover:bg-brand-dark transition-colors">
+          Search
+        </button>
+      </form>
+    </div>
+
+    {% if query %}
+      <div class="mb-4">
+        <h1 class="text-xl font-bold text-gray-900">Results for "{{ query }}"</h1>
+        <p class="text-sm text-gray-600">{{ result_count }} product{{ result_count|pluralize }} found</p>
+      </div>
+
+      {% if products %}
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {% for product in products %}
+            {% include "partials/product_card.html" %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="border border-gray-200 bg-gray-50 p-12 text-center">
+          <h3 class="text-lg font-bold text-gray-900 mb-2">No products found</h3>
+          <p class="text-gray-600 mb-6">Try different keywords or browse our catalog.</p>
+          <a href="{% url 'products' %}" class="inline-block bg-brand-red text-white px-6 py-2 font-bold uppercase text-sm hover:bg-brand-dark">
+            Browse All Products
+          </a>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="border border-gray-200 bg-gray-50 p-12 text-center">
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Search our catalog</h3>
+        <p class="text-gray-600">Type a product name, SKU, category, or keyword above.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

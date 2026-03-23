@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{% if active_tag %}{{ active_tag }}{% else %}Event Specials{% endif %} — Wrapp Delights{% endblock %}
+
+{% block extra_css %}
+.events-page{padding:20px 0}
+.events-page h1{font-size:1.1rem;font-weight:700;color:var(--white);margin-bottom:12px}
+.tag-bar{display:flex;gap:6px;overflow-x:auto;margin-bottom:20px;padding-bottom:4px;scrollbar-width:none}
+.tag-bar::-webkit-scrollbar{display:none}
+.tag-chip{padding:6px 14px;border-radius:16px;font-size:.75rem;font-weight:500;color:var(--text-secondary);background:var(--surface-2);white-space:nowrap;border:1px solid var(--border);transition:all .15s}
+.tag-chip:hover{border-color:var(--border-light);color:var(--text-primary)}
+.tag-chip.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
+{% endblock %}
+
+{% block content %}
+<div class="events-page">
+  <div class="container">
+    <h1>{% if active_tag %}{{ active_tag }}{% else %}Event Specials{% endif %}</h1>
+
+    {% if event_tags %}
+    <div class="tag-bar">
+      <a href="/events/" class="tag-chip {% if not active_tag %}active{% endif %}">All Events</a>
+      {% for t in event_tags %}
+      <a href="/events/?tag={{ t }}" class="tag-chip {% if active_tag == t %}active{% endif %}">{{ t }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if active_tag and products %}
+    <div class="grid-auto">
+      {% for product in products %}
+      {% include "partials/product_card.html" %}
+      {% endfor %}
+    </div>
+    {% elif events %}
+    {% for event in events %}
+    <div class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2><span style="display:inline-block;padding:2px 8px;background:var(--accent-bg);color:var(--accent);font-size:.68rem;font-weight:700;border-radius:3px;text-transform:uppercase;letter-spacing:.5px">{{ event.tag }}</span></h2>
+          <a href="/events/?tag={{ event.tag }}" style="font-size:.78rem;color:var(--accent)">See all</a>
+        </div>
+        <div class="carousel-row">
+          {% for product in event.products %}{% include "partials/product_card.html" %}{% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty">
+      <h3>No event specials right now</h3>
+      <p style="margin-bottom:14px">Check back during festive seasons!</p>
+      <a href="/products/" class="btn btn-primary">Browse all products</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

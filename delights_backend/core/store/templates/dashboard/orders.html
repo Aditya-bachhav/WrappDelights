@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Orders — Dashboard{% endblock %}
+
+{% block extra_css %}
+.do{padding:24px 0}
+.do h1{font-size:1rem;font-weight:700;color:var(--white);margin-bottom:16px}
+.do-table{border:1px solid var(--border);border-radius:8px;overflow-x:auto;background:var(--surface)}
+.do-table table{min-width:600px}
+.status-select{padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-size:.78rem;background:var(--surface-2);color:var(--text-primary)}
+.status-update-btn{padding:4px 10px;border:none;border-radius:4px;font-size:.75rem;font-weight:600;background:var(--accent);color:#000;cursor:pointer}
+{% endblock %}
+
+{% block content %}
+<div class="do">
+  <div class="container">
+    <h1>Orders ({{ orders|length }})</h1>
+
+    {% if orders %}
+    <div class="do-table">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td><strong>#{{ order.id }}</strong></td>
+            <td>{{ order.user.username }}</td>
+            <td>&#8377;{{ order.total }}</td>
+            <td>{{ order.created_at|date:"d M Y" }}</td>
+            <td><span class="badge {% if order.status == 'pending' %}badge-accent{% elif order.status == 'delivered' %}badge-green{% endif %}" style="text-transform:capitalize">{{ order.status }}</span></td>
+            <td>
+              <form method="POST" style="display:flex;gap:4px">
+                {% csrf_token %}
+                <input type="hidden" name="order_id" value="{{ order.id }}">
+                <select name="status" class="status-select">
+                  <option value="pending" {% if order.status == "pending" %}selected{% endif %}>Pending</option>
+                  <option value="confirmed" {% if order.status == "confirmed" %}selected{% endif %}>Confirmed</option>
+                  <option value="shipped" {% if order.status == "shipped" %}selected{% endif %}>Shipped</option>
+                  <option value="delivered" {% if order.status == "delivered" %}selected{% endif %}>Delivered</option>
+                  <option value="cancelled" {% if order.status == "cancelled" %}selected{% endif %}>Cancelled</option>
+                </select>
+                <button type="submit" class="status-update-btn">Save</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty"><h3>No orders yet</h3></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

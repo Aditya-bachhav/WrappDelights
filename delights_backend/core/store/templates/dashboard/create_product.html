@@ -1,0 +1,124 @@
+{% extends "dashboard/_admin_base.html" %}
+{% block title %}Add Hamper{% endblock %}
+{% block page_title %}Add New Hamper{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / <a href="{% url 'dashboard_products' %}">Hampers</a> / Add</div>
+    <h1>Add New Hamper</h1>
+  </div>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start">
+
+    <!-- Left: Main fields -->
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="form-section">
+          <div class="form-section-title">Basic Info</div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Hamper Name *</label>
+            <input class="form-input" name="name" required placeholder="e.g. Premium Corporate Welcome Kit">
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-select" name="category">
+                <option value="">Select category</option>
+                {% for cat in categories %}<option value="{{ cat.id }}">{{ cat.name }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Price Label</label>
+              <input class="form-input" name="price_label" placeholder="Starts at INR 1,499">
+              <span class="form-hint">Display text only – not a real price</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Description</div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Short Description <span style="font-weight:400;color:var(--ash)">(max 220 chars)</span></label>
+            <input class="form-input" name="short_description" maxlength="220" placeholder="Brief one-liner for catalog cards">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Full Description</label>
+            <textarea class="form-textarea" name="description" rows="5" placeholder="Detailed product description…"></textarea>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Included Items</div>
+          <div class="form-group">
+            <label class="form-label">Items List <span style="font-weight:400;color:var(--ash)">(one per line)</span></label>
+            <textarea class="form-textarea" name="included_items" rows="5" placeholder="Premium Leather Notebook&#10;Stainless Steel Bottle&#10;Artisan Chocolate Box&#10;Custom Branded Pen"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="form-section">
+          <div class="form-section-title">Images</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Cover Image</label>
+              <input class="form-input" type="file" name="cover_image" accept="image/*">
+              <span class="form-hint">Primary image shown on catalog cards</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gallery Images</label>
+              <input class="form-input" type="file" name="gallery" multiple accept="image/*">
+              <span class="form-hint">Additional images for product detail</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Sidebar options -->
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="form-section">
+          <div class="form-section-title">Visibility & Flags</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label class="form-check"><input type="checkbox" name="is_active" checked> <span>Active (visible on site)</span></label>
+            <label class="form-check"><input type="checkbox" name="is_featured"> <span>Featured hamper</span></label>
+            <label class="form-check"><input type="checkbox" name="is_event_special"> <span>Event special</span></label>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Bulk Settings</div>
+          <div class="form-group">
+            <label class="form-label">Min Bulk Quantity</label>
+            <input class="form-input" type="number" min="1" name="min_bulk_quantity" value="25">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="form-section">
+          <div class="form-section-title">Homepage Sections</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            {% for section in homepage_sections %}
+            <label class="form-check">
+              <input type="checkbox" name="homepage_sections" value="{{ section.id }}">
+              <span style="font-size:.78rem">{{ section.title }}<br><span style="color:var(--ash);font-weight:400">{{ section.get_section_type_display }}</span></span>
+            </label>
+            {% empty %}
+            <span style="font-size:.78rem;color:var(--mist)">No active sections. <a href="{% url 'dashboard_create_section' %}" style="color:var(--red)">Create one →</a></span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:flex;gap:10px;margin-top:14px">
+    <button type="submit" class="btn btn-primary">Create Hamper</button>
+    <a href="{% url 'dashboard_products' %}" class="btn btn-outline">Cancel</a>
+  </div>
+</form>
+{% endblock %}

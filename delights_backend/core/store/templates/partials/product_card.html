@@ -1,0 +1,44 @@
+<div class="group product-card flex flex-col h-full relative">
+    <div class="relative h-48 bg-slate-50 border-b border-slate-100 overflow-hidden flex items-center justify-center p-4">
+        <a href="{% url 'product_detail' product.id %}" class="block h-full w-full flex items-center justify-center">
+            {% if product.cover_image %}
+                <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy" class="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105">
+            {% else %}
+                <div class="text-xs text-slate-400 font-bold uppercase tracking-wider">No Image</div>
+            {% endif %}
+        </a>
+        <div class="absolute top-2 left-2 bg-white/90 text-slate-500 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-slate-200 z-10">
+            SKU: {{ product.sku|default:product.id }}
+        </div>
+        {% if product.is_featured %}
+        <div class="absolute top-2 right-2 bg-brand-red text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10">Featured</div>
+        {% endif %}
+    </div>
+
+    <div class="p-4 flex flex-col flex-grow">
+        <div class="mb-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400 truncate">{{ product.category.name|default:"General" }}</div>
+        <h3 class="text-[15px] font-extrabold text-slate-900 leading-tight mb-1.5 group-hover:text-brand-red transition-colors line-clamp-2 min-h-[2.6em]">
+            <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+        </h3>
+        <div class="text-[12px] text-slate-500 mb-2 line-clamp-2 min-h-[2.7em] leading-relaxed">
+            {{ product.short_description|default:"Available for bulk corporate orders." }}
+        </div>
+        <div class="text-[11px] text-slate-400 mb-3">
+            Min. order: <span class="font-bold text-slate-600">{{ product.min_bulk_quantity }} units</span>
+            {% if product.price_label %} · <span class="text-brand-red font-bold">{{ product.price_label }}</span>{% endif %}
+        </div>
+
+        <div class="mt-auto pt-3 border-t border-slate-100 flex gap-2">
+            <a href="{% url 'product_detail' product.id %}" class="flex-1 text-center bg-white hover:bg-brand-red hover:text-white text-slate-700 text-xs font-bold py-2 border border-slate-200 rounded-lg transition-colors uppercase tracking-wider">
+                View Details
+            </a>
+            <a href="{% url 'corporate' %}?hamper={{ product.id }}&type=quote"
+               class="flex-1 text-center bg-brand-red hover:bg-brand-dark text-white text-xs font-bold py-2 rounded-lg transition-colors uppercase tracking-wider flex items-center justify-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+                Enquire
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — Wrapp Delights Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#C8102E;--red-dark:#8E1024;--ink:#101828;--ash:#667085;--border:#E4E7EC;--surface:#F9FAFB;--white:#fff;--red-glow:rgba(200,16,46,.12)}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--surface);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+  background-image:radial-gradient(circle at 20% 20%, rgba(200,16,46,.06) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(200,16,46,.04) 0%, transparent 50%)}
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:36px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.06)}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.logo-mark{width:40px;height:40px;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:1.1rem;flex-shrink:0}
+.brand-name{font-weight:800;font-size:.95rem}
+.brand-sub{font-size:.72rem;color:var(--ash)}
+h1{font-size:1.1rem;font-weight:800;margin-bottom:4px}
+.sub{font-size:.82rem;color:var(--ash);margin-bottom:22px}
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.form-label{font-size:.76rem;font-weight:700}
+.form-input{padding:9px 12px;border:1px solid var(--border);border-radius:7px;font-size:.84rem;font-family:inherit;outline:none;transition:.15s}
+.form-input:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--red-glow)}
+.btn{width:100%;padding:10px;border-radius:7px;background:var(--red);color:#fff;font-size:.86rem;font-weight:700;font-family:inherit;border:none;cursor:pointer;transition:.15s;margin-top:4px}
+.btn:hover{background:var(--red-dark)}
+.error-msg{background:#FEF3F2;color:#B42318;border:1px solid #FECDCA;border-radius:7px;padding:10px 13px;font-size:.8rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.footer-link{text-align:center;margin-top:18px;font-size:.78rem;color:var(--ash)}
+.footer-link a{color:var(--red);font-weight:700}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">
+    <div class="logo-mark">W</div>
+    <div><div class="brand-name">Wrapp Delights</div><div class="brand-sub">Admin CMS</div></div>
+  </div>
+  <h1>Welcome back</h1>
+  <p class="sub">Sign in to manage your catalog</p>
+
+  {% if form.errors %}
+  <div class="error-msg">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Invalid username or password. Please try again.
+  </div>
+  {% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input type="text" name="username" class="form-input" required autofocus autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" name="password" class="form-input" required autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn">Sign In</button>
+  </form>
+
+  <div class="footer-link"><a href="/">← Back to site</a></div>
+</div>
+</body>
+</html>

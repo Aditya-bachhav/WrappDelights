@@ -1,0 +1,151 @@
+{% extends "dashboard/_admin_base.html" %}
+{% block title %}Edit — {{ hamper.name }}{% endblock %}
+{% block page_title %}Edit Hamper{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / <a href="{% url 'dashboard_products' %}">Hampers</a> / Edit</div>
+    <h1>{{ hamper.name }}</h1>
+  </div>
+  <a href="{% url 'dashboard_delete_product' hamper.id %}" class="btn btn-danger">Delete Hamper</a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start">
+
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="form-section">
+          <div class="form-section-title">Basic Info</div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Hamper Name *</label>
+            <input class="form-input" name="name" required value="{{ hamper.name }}">
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-select" name="category">
+                <option value="">No category</option>
+                {% for cat in categories %}<option value="{{ cat.id }}" {% if hamper.category and hamper.category.id == cat.id %}selected{% endif %}>{{ cat.name }}</option>{% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Price Label</label>
+              <input class="form-input" name="price_label" value="{{ hamper.price_label }}" placeholder="Starts at INR 1,499">
+            </div>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Description</div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Short Description</label>
+            <input class="form-input" name="short_description" maxlength="220" value="{{ hamper.short_description }}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Full Description</label>
+            <textarea class="form-textarea" name="description" rows="5">{{ hamper.description }}</textarea>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Included Items</div>
+          <div class="form-group">
+            <label class="form-label">Items List <span style="font-weight:400;color:var(--ash)">(one per line)</span></label>
+            <textarea class="form-textarea" name="included_items" rows="5">{{ hamper.included_items }}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="form-section">
+          <div class="form-section-title">Cover Image</div>
+          <div class="form-grid">
+            <div class="form-group">
+              {% if hamper.cover_image %}
+                <div style="margin-bottom:8px">
+                  <img src="{{ hamper.cover_image.url }}" style="width:100px;height:100px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">
+                </div>
+                <span class="form-hint" style="margin-bottom:6px;display:block">Upload new to replace current cover</span>
+              {% endif %}
+              <input class="form-input" type="file" name="cover_image" accept="image/*">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Gallery Images</div>
+          {% if gallery_images %}
+          <div class="img-grid" style="margin-bottom:12px">
+            {% for img in gallery_images %}
+            <div class="img-thumb">
+              <img src="{{ img.image.url }}" alt="">
+              <div class="del-overlay">
+                <label style="cursor:pointer;color:#fff;font-size:.68rem;text-align:center">
+                  <input type="checkbox" name="delete_gallery" value="{{ img.id }}" style="display:none">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                  Delete
+                </label>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <span class="form-hint" style="display:block;margin-bottom:8px">Hover to mark for deletion</span>
+          {% endif %}
+          <input class="form-input" type="file" name="gallery" multiple accept="image/*">
+          <span class="form-hint">Add more gallery images</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="form-section">
+          <div class="form-section-title">Visibility & Flags</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label class="form-check"><input type="checkbox" name="is_active" {% if hamper.is_active %}checked{% endif %}> <span>Active (visible on site)</span></label>
+            <label class="form-check"><input type="checkbox" name="is_featured" {% if hamper.is_featured %}checked{% endif %}> <span>Featured hamper</span></label>
+            <label class="form-check"><input type="checkbox" name="is_event_special" {% if hamper.is_event_special %}checked{% endif %}> <span>Event special</span></label>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Bulk Settings</div>
+          <div class="form-group">
+            <label class="form-label">Min Bulk Quantity</label>
+            <input class="form-input" type="number" min="1" name="min_bulk_quantity" value="{{ hamper.min_bulk_quantity }}">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="form-section">
+          <div class="form-section-title">Homepage Sections</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            {% for section in homepage_sections %}
+            <label class="form-check">
+              <input type="checkbox" name="homepage_sections" value="{{ section.id }}" {% if section.id in assigned_section_ids %}checked{% endif %}>
+              <span style="font-size:.78rem">{{ section.title }}<br><span style="color:var(--ash);font-weight:400">{{ section.get_section_type_display }}</span></span>
+            </label>
+            {% empty %}
+            <span style="font-size:.78rem;color:var(--mist)">No active sections.</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:flex;gap:10px;margin-top:14px">
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a href="{% url 'dashboard_products' %}" class="btn btn-outline">Cancel</a>
+    <a href="/products/{{ hamper.id }}/" target="_blank" class="btn btn-outline" style="margin-left:auto">View on Site ↗</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.img-thumb input[type=checkbox]:checked ~ .del-overlay,.img-thumb:has(input:checked) .del-overlay{opacity:1;background:rgba(185,28,28,.7)}
+</style>
+{% endblock %}
