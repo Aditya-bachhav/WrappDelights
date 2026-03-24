@@ -4,12 +4,12 @@ services:
     env: python
     plan: free
     buildCommand: bash build.sh
-    startCommand: gunicorn core.wsgi:application --chdir delights_backend/core
+    startCommand: gunicorn delights_backend.core.core.wsgi:application --chdir delights_backend/core
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.10
       - key: DJANGO_SETTINGS_MODULE
-        value: core.settings
+        value: delights_backend.core.core.settings
       - key: DEBUG
         value: "False"
       - key: SECRET_KEY
