@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.http import HttpResponse
 import csv
-from delights_backend.core.store import models
 
 from .models import Category, Hamper, HamperImage, HomepageSection, CorporateInquiry
 

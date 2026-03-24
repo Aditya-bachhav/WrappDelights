@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q, Prefetch
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from delights_backend.core.store import models
 from .models import Category, CorporateInquiry, Hamper, HamperImage, HomepageSection
 
 
