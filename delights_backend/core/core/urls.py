@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 from delights_backend.core.store import models
-from . import views
+from delights_backend.core.store import views
 from django.contrib.auth import views as auth_views
 from store.views import (
     corporate_page,
