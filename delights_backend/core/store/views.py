@@ -7,7 +7,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from delights_backend.core.store import models
 from .models import Category, CorporateInquiry, Hamper, HamperImage, HomepageSection
-
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 
 CATALOG_NAV_CATEGORIES = [
     "Corporate Gifting",
@@ -19,6 +20,15 @@ CATALOG_NAV_CATEGORIES = [
 
 SUCCESS_WHATSAPP_RAW = "918347136985"
 
+def create_admin(request):
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser(
+            username="admin",
+            password="admin123",
+            email="admin@example.com"
+        )
+        return HttpResponse("Admin created")
+    return HttpResponse("Admin already exists")
 
 def _selected_products_from_inquiry(inquiry):
     combined = "\n".join(

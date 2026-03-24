@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
+from delights_backend.core.store import views
 from delights_backend.core.store.views import (
     corporate_page,
     corporate_success,
@@ -74,6 +75,7 @@ urlpatterns = [
     path("login/", auth_views.LoginView.as_view(template_name="login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(next_page="/"), name="logout"),
     path("account/", dashboard, name="account"),
+    path('create-admin/', views.create_admin),
 ]
 
 if settings.DEBUG:
