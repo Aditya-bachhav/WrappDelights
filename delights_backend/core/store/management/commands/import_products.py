@@ -2,8 +2,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 import csv
 import os
-
-from store.models import Category, Hamper
+from delights_backend.core.store.models import Category, Hamper
 
 
 class Command(BaseCommand):

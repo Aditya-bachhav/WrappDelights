@@ -31,11 +31,8 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME", "")
 RUNNING_ON_RENDER = bool(RENDER_EXTERNAL_HOSTNAME)
-DEBUG = os.getenv("DEBUG", "True" if RUNNING_ON_RENDER else "True").lower() in {
-    "1",
-    "true",
-    "yes",
-    "on",
+DEBUG = os.getenv("DEBUG", "False" if RUNNING_ON_RENDER else "True").lower() in {
+    "1", "true", "yes", "on"
 }
 
 ALLOWED_HOSTS = [
@@ -93,7 +90,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'store.context_processors.contact_context',
+                'delights_backend.core.store.context_processors.contact_context',
             ],
         },
     },

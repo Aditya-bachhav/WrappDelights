@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
-
-from store.models import Category, Hamper
+from delights_backend.core.store.models import Category, Hamper
 
 
 CATALOG_DATA = {
