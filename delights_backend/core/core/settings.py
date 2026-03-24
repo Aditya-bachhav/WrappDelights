@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME", "")
 RUNNING_ON_RENDER = bool(RENDER_EXTERNAL_HOSTNAME)
-DEBUG = os.getenv("DEBUG", "False" if RUNNING_ON_RENDER else "True").lower() in {
+DEBUG = os.getenv("DEBUG", "True" if RUNNING_ON_RENDER else "True").lower() in {
     "1",
     "true",
     "yes",
