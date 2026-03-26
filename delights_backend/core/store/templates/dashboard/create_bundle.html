@@ -1,129 +1,149 @@
-{% extends "base.html" %}
-{% block title %}Create Bundle — Dashboard{% endblock %}
+{% extends "dashboard/_admin_base.html" %}
+{% block title %}Create Bundle{% endblock %}
+{% block page_title %}Create Bundle{% endblock %}
 
 {% block extra_css %}
-.cb-page{padding:24px 0}
-.cb-page h1{font-size:1rem;font-weight:700;color:var(--white);margin-bottom:4px}
-.cb-page .sub{font-size:.78rem;color:var(--text-muted);margin-bottom:20px}
-.cb-form{max-width:700px}
-.cb-section{border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px;background:var(--surface)}
-.cb-section h3{font-size:.82rem;font-weight:700;color:var(--accent);margin-bottom:10px}
-.cat-group{margin-bottom:16px}
-.cat-group-head{font-size:.78rem;font-weight:700;color:var(--white);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px;cursor:pointer}
-.cat-group-head:hover{color:var(--accent)}
-.cat-group-head .arrow{transition:transform .2s;font-size:.6rem}
+<style>
+.cat-group{margin-bottom:16px;border:1px solid var(--border);border-radius:var(--radius)}
+.cat-group-head{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;background:var(--surface-low);border-radius:var(--radius);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--ash);user-select:none}
+.cat-group-head:hover{color:var(--primary)}
+.cat-group-head .arrow{font-size:12px;transition:transform .2s;color:var(--mist)}
 .cat-group-head .arrow.open{transform:rotate(90deg)}
-.cat-group-body{display:none}
+.cat-group-body{display:none;padding:0 0 4px}
 .cat-group-body.open{display:block}
-.prod-row{display:grid;grid-template-columns:auto 40px 1fr auto 60px;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)}
-.prod-row:last-child{border-bottom:none}
-.prod-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
-.prod-row .p-img{width:40px;height:40px;border-radius:4px;overflow:hidden;background:var(--surface-2)}
+
+.prod-row{display:grid;grid-template-columns:20px 42px 1fr auto 72px;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--border)}
+.prod-row:first-child{border-top:none}
+.prod-row input[type=checkbox]{width:15px;height:15px;accent-color:var(--primary);cursor:pointer}
+.prod-row .p-img{width:42px;height:42px;border-radius:var(--radius);overflow:hidden;background:var(--surface-container);border:1px solid var(--border)}
 .prod-row .p-img img{width:100%;height:100%;object-fit:cover}
-.prod-row .p-name{font-size:.8rem;color:var(--text-primary)}
-.prod-row .p-price{font-size:.78rem;font-weight:600;color:var(--text-secondary)}
-.prod-row .qty-input{width:60px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:.8rem;background:var(--surface-2);color:var(--text-primary);text-align:center}
-.selected-summary{margin-top:12px;padding:10px;border:1px solid var(--accent);border-radius:6px;background:var(--accent-bg)}
-.selected-summary .ss-head{font-size:.78rem;font-weight:700;color:var(--accent);margin-bottom:4px}
-.selected-summary .ss-list{font-size:.75rem;color:var(--text-secondary)}
-.selected-summary .ss-total{font-size:.85rem;font-weight:700;color:var(--white);margin-top:6px}
-.check-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.check-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent)}
-.check-row label{font-size:.82rem;color:var(--text-primary)}
+.prod-row .p-name{font-size:.79rem;font-weight:600;color:var(--ink)}
+.prod-row .p-price{font-size:.74rem;font-weight:800;color:var(--ash);white-space:nowrap}
+.qty-input{width:68px;padding:5px 8px;border:1px solid var(--border-solid);border-radius:var(--radius);font-size:.78rem;background:var(--white);color:var(--ink);text-align:center;outline:none}
+.qty-input:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-glow)}
+.qty-input:disabled{background:var(--surface-container);color:var(--mist)}
+
+.selection-summary{border:1px solid var(--primary);background:var(--red-bg);border-radius:var(--radius);padding:14px 16px;margin-top:12px}
+.selection-summary .ss-head{font-size:.67rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--primary);margin-bottom:8px}
+.selection-summary .ss-list{font-size:.74rem;color:var(--ash);line-height:1.75}
+.selection-summary .ss-total{font-size:.84rem;font-weight:900;color:var(--primary);margin-top:8px;padding-top:8px;border-top:1px solid var(--red-border)}
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="cb-page">
-  <div class="container">
-    <h1>Create Bundle</h1>
-    <div class="sub"><a href="/dashboard/" style="color:var(--text-muted)">Dashboard</a> / <a href="/dashboard/bundles/" style="color:var(--text-muted)">Bundles</a> / Create</div>
-
-    <div class="cb-form">
-      <form method="POST" enctype="multipart/form-data" id="bundleForm">
-        {% csrf_token %}
-
-        <div class="form-group">
-          <label>Bundle Name</label>
-          <input name="name" class="form-input" placeholder="e.g. Diwali Premium Hamper" required>
-        </div>
-
-        <div class="form-group">
-          <label>Description</label>
-          <textarea name="description" class="form-input" placeholder="Describe this bundle..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Bundle Image</label>
-          <input type="file" name="image" accept="image/*" class="form-input">
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Override Price (leave blank to auto-sum)</label>
-            <input name="price" type="number" step="0.01" class="form-input" placeholder="e.g. 1999">
-          </div>
-          <div class="form-group" style="display:flex;flex-direction:column;justify-content:end">
-            <div class="check-row">
-              <input type="checkbox" name="is_active" id="is_active" checked>
-              <label for="is_active">Active</label>
-            </div>
-            <div class="check-row">
-              <input type="checkbox" name="is_featured" id="is_featured">
-              <label for="is_featured">Featured on homepage</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product Selection by Category -->
-        <div class="cb-section">
-          <h3>Select Products for Bundle</h3>
-          <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:12px">Tick products and set quantities. Products are grouped by category.</p>
-
-          {% for group in category_groups %}
-          <div class="cat-group">
-            <div class="cat-group-head" onclick="toggleCatGroup(this)">
-              <span class="arrow">&#9654;</span>
-              {{ group.name }}
-              <span style="font-weight:400;color:var(--text-muted);font-size:.7rem">({{ group.products|length }} products)</span>
-            </div>
-            <div class="cat-group-body">
-              {% for p in group.products %}
-              <div class="prod-row">
-                <input type="checkbox" class="prod-check" data-pid="{{ p.id }}" data-pname="{{ p.name }}" data-pprice="{{ p.display_price }}" onchange="toggleProduct(this)">
-                <div class="p-img">
-                  {% if p.image %}<img src="{{ p.image.url }}" alt="">{% endif %}
-                </div>
-                <div class="p-name">{{ p.name }}</div>
-                <div class="p-price">&#8377;{{ p.display_price }}</div>
-                <input type="number" class="qty-input" data-pid="{{ p.id }}" value="1" min="1" disabled onchange="updateSummary()">
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-          {% endfor %}
-
-          <div class="selected-summary" id="selSummary" style="display:none">
-            <div class="ss-head">Selected Products</div>
-            <div class="ss-list" id="ssList"></div>
-            <div class="ss-total" id="ssTotal"></div>
-          </div>
-        </div>
-
-        <!-- Hidden inputs container for form submission -->
-        <div id="hiddenInputs"></div>
-
-        <button type="submit" class="btn btn-primary btn-block" onclick="prepareSubmit()">Create Bundle</button>
-      </form>
+<div class="page-header">
+  <div>
+    <div class="breadcrumb">
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <span class="material-symbols-outlined" style="font-size:12px">chevron_right</span>
+      <a href="/dashboard/bundles/">Bundles</a>
+      <span class="material-symbols-outlined" style="font-size:12px">chevron_right</span>
+      Create
     </div>
+    <h1>Create Bundle</h1>
   </div>
 </div>
+
+<form method="POST" enctype="multipart/form-data" id="bundleForm" style="max-width:740px">
+  {% csrf_token %}
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="form-section">
+      <div class="form-section-title">Bundle Info</div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Bundle Name *</label>
+        <input name="name" class="form-input" placeholder="e.g. Diwali Premium Hamper" required>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Description</label>
+        <textarea name="description" class="form-textarea" placeholder="Describe this bundle…"></textarea>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Bundle Image</label>
+          <input type="file" name="image" accept="image/*" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Override Price <span style="font-weight:500;color:var(--mist)">(blank = auto-sum)</span></label>
+          <input name="price" type="number" step="0.01" class="form-input" placeholder="e.g. 1999">
+        </div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">Flags</div>
+      <div style="display:flex;gap:20px;flex-wrap:wrap">
+        <label class="form-check"><input type="checkbox" name="is_active" id="is_active" checked> Active</label>
+        <label class="form-check"><input type="checkbox" name="is_featured" id="is_featured"> Featured on homepage</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Selection -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-header">
+      <div>
+        <p class="wd-kicker" style="margin-bottom:2px">Product Picker</p>
+        <h2>Select Products for Bundle</h2>
+      </div>
+    </div>
+    <div style="padding:14px 16px">
+      <p style="font-size:.74rem;color:var(--mist);margin-bottom:12px">Tick products and set quantities. Products are grouped by category.</p>
+
+      {% for group in category_groups %}
+      <div class="cat-group">
+        <div class="cat-group-head" onclick="toggleCatGroup(this)">
+          <span class="arrow material-symbols-outlined" style="font-size:14px;transition:transform .2s">chevron_right</span>
+          {{ group.name }}
+          <span style="font-weight:500;color:var(--mist);font-size:.7rem;margin-left:auto">{{ group.products|length }} products</span>
+        </div>
+        <div class="cat-group-body">
+          {% for p in group.products %}
+          <div class="prod-row">
+            <input type="checkbox" class="prod-check"
+                   data-pid="{{ p.id }}" data-pname="{{ p.name }}" data-pprice="{{ p.display_price }}"
+                   onchange="toggleProduct(this)">
+            <div class="p-img">
+              {% if p.image %}<img src="{{ p.image.url }}" alt="">{% endif %}
+            </div>
+            <div class="p-name">{{ p.name }}</div>
+            <div class="p-price">&#8377;{{ p.display_price }}</div>
+            <input type="number" class="qty-input" data-pid="{{ p.id }}" value="1" min="1" disabled onchange="updateSummary()">
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+
+      <div class="selection-summary" id="selSummary" style="display:none">
+        <div class="ss-head">Selected Products</div>
+        <div class="ss-list" id="ssList"></div>
+        <div class="ss-total" id="ssTotal"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden inputs injected by JS -->
+  <div id="hiddenInputs"></div>
+
+  <div style="display:flex;gap:8px">
+    <button type="submit" class="btn btn-primary" onclick="prepareSubmit()">
+      <span class="material-symbols-outlined" style="font-size:15px">save</span>
+      Create Bundle
+    </button>
+    <a href="/dashboard/bundles/" class="btn btn-outline">Cancel</a>
+  </div>
+</form>
 
 <script>
 function toggleCatGroup(head) {
   var body = head.nextElementSibling;
   var arrow = head.querySelector('.arrow');
   body.classList.toggle('open');
-  arrow.classList.toggle('open');
+  if (body.classList.contains('open')) {
+    arrow.style.transform = 'rotate(90deg)';
+  } else {
+    arrow.style.transform = 'rotate(0deg)';
+  }
 }
 
 function toggleProduct(cb) {
@@ -139,22 +159,17 @@ function updateSummary() {
   var summary = document.getElementById('selSummary');
   var list = document.getElementById('ssList');
   var totalEl = document.getElementById('ssTotal');
-
-  if (checks.length === 0) {
-    summary.style.display = 'none';
-    return;
-  }
+  if (checks.length === 0) { summary.style.display = 'none'; return; }
   summary.style.display = 'block';
-  var html = '';
-  var total = 0;
+  var html = '', total = 0;
   checks.forEach(function(cb) {
     var pid = cb.getAttribute('data-pid');
     var name = cb.getAttribute('data-pname');
-    var price = parseFloat(cb.getAttribute('data-pprice'));
+    var price = parseFloat(cb.getAttribute('data-pprice')) || 0;
     var qty = parseInt(document.querySelector('.qty-input[data-pid="'+pid+'"]').value) || 1;
     var line = price * qty;
     total += line;
-    html += name + ' x ' + qty + ' = &#8377;' + line.toFixed(0) + '<br>';
+    html += name + ' &times; ' + qty + ' &nbsp;=&nbsp; &#8377;' + line.toFixed(0) + '<br>';
   });
   list.innerHTML = html;
   totalEl.innerHTML = 'Estimated Total: &#8377;' + total.toFixed(0);
@@ -163,16 +178,12 @@ function updateSummary() {
 function prepareSubmit() {
   var container = document.getElementById('hiddenInputs');
   container.innerHTML = '';
-  var checks = document.querySelectorAll('.prod-check:checked');
-  checks.forEach(function(cb) {
+  document.querySelectorAll('.prod-check:checked').forEach(function(cb) {
     var pid = cb.getAttribute('data-pid');
     var qty = document.querySelector('.qty-input[data-pid="'+pid+'"]').value || '1';
-    var inp1 = document.createElement('input');
-    inp1.type = 'hidden'; inp1.name = 'product_ids'; inp1.value = pid;
-    var inp2 = document.createElement('input');
-    inp2.type = 'hidden'; inp2.name = 'product_qtys'; inp2.value = qty;
-    container.appendChild(inp1);
-    container.appendChild(inp2);
+    var i1 = document.createElement('input'); i1.type='hidden'; i1.name='product_ids'; i1.value=pid;
+    var i2 = document.createElement('input'); i2.type='hidden'; i2.name='product_qtys'; i2.value=qty;
+    container.appendChild(i1); container.appendChild(i2);
   });
 }
 </script>

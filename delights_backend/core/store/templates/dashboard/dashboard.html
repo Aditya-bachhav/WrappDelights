@@ -3,6 +3,8 @@
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
+
+<!-- Stats -->
 <div class="stat-grid">
   <div class="stat-card">
     <div class="s-val">{{ hamper_count }}</div>
@@ -24,24 +26,46 @@
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<!-- Two-col grid -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+
+  <!-- Recent Inquiries -->
   <div class="card">
     <div class="card-header">
-      <h2>Recent Inquiries</h2>
+      <div>
+        <p class="wd-kicker" style="margin-bottom:2px">Latest Activity</p>
+        <h2>Recent Inquiries</h2>
+      </div>
       <a href="{% url 'dashboard_corporate' %}" class="btn btn-outline btn-sm">View All</a>
     </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>Company</th><th>Type</th><th>Date</th><th></th></tr></thead>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody>
           {% for inq in recent_inquiries %}
           <tr>
-            <td><div style="font-weight:700">{{ inq.company_name }}</div><div style="font-size:.72rem;color:var(--ash)">{{ inq.contact_person }}</div></td>
-            <td>{% if inq.inquiry_type == "quote" %}<span class="badge badge-blue">Quote</span>{% elif inq.inquiry_type == "bulk" %}<span class="badge badge-yellow">Bulk</span>{% else %}<span class="badge badge-gray">Custom</span>{% endif %}</td>
-            <td style="color:var(--ash)">{{ inq.created_at|date:"d M" }}</td>
-            <td><a href="{% url 'dashboard_inquiry_detail' inq.id %}" class="btn btn-outline btn-sm btn-icon" title="View">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </a></td>
+            <td>
+              <div style="font-weight:800;font-size:.8rem">{{ inq.company_name }}</div>
+              <div style="font-size:.7rem;color:var(--mist)">{{ inq.contact_person }}</div>
+            </td>
+            <td>
+              {% if inq.inquiry_type == "quote" %}<span class="badge badge-blue">Quote</span>
+              {% elif inq.inquiry_type == "bulk" %}<span class="badge badge-yellow">Bulk</span>
+              {% else %}<span class="badge badge-gray">Custom</span>{% endif %}
+            </td>
+            <td style="color:var(--mist);font-size:.75rem">{{ inq.created_at|date:"d M" }}</td>
+            <td>
+              <a href="{% url 'dashboard_inquiry_detail' inq.id %}" class="btn btn-outline btn-sm btn-icon" title="View">
+                <span class="material-symbols-outlined">visibility</span>
+              </a>
+            </td>
           </tr>
           {% empty %}
           <tr><td colspan="4" class="tbl-empty">No inquiries yet.</td></tr>
@@ -51,28 +75,51 @@
     </div>
   </div>
 
+  <!-- Recently Added Hampers -->
   <div class="card">
     <div class="card-header">
-      <h2>Recently Added Hampers</h2>
+      <div>
+        <p class="wd-kicker" style="margin-bottom:2px">Catalog</p>
+        <h2>Recently Added</h2>
+      </div>
       <a href="{% url 'dashboard_products' %}" class="btn btn-outline btn-sm">View All</a>
     </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>Hamper</th><th>Status</th><th></th></tr></thead>
+        <thead>
+          <tr>
+            <th>Hamper</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody>
           {% for p in recent_products %}
           <tr>
             <td>
-              <div style="display:flex;align-items:center;gap:8px">
-                {% if p.cover_image %}<img src="{{ p.cover_image.url }}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;flex-shrink:0">
-                {% else %}<div style="width:32px;height:32px;border-radius:6px;background:var(--surface);flex-shrink:0"></div>{% endif %}
-                <div><div style="font-weight:700;font-size:.8rem">{{ p.name|truncatechars:28 }}</div><div style="font-size:.7rem;color:var(--ash)">{% if p.category %}{{ p.category.name }}{% else %}—{% endif %}</div></div>
+              <div style="display:flex;align-items:center;gap:9px">
+                {% if p.cover_image %}
+                  <img src="{{ p.cover_image.url }}" style="width:34px;height:34px;border-radius:var(--radius);object-fit:cover;flex-shrink:0;border:1px solid var(--border)">
+                {% else %}
+                  <div style="width:34px;height:34px;background:var(--surface-container);flex-shrink:0;border-radius:var(--radius);border:1px solid var(--border);display:flex;align-items:center;justify-content:center">
+                    <span class="material-symbols-outlined" style="font-size:15px;color:var(--mist)">redeem</span>
+                  </div>
+                {% endif %}
+                <div>
+                  <div style="font-weight:800;font-size:.78rem">{{ p.name|truncatechars:26 }}</div>
+                  <div style="font-size:.68rem;color:var(--mist)">{% if p.category %}{{ p.category.name }}{% else %}—{% endif %}</div>
+                </div>
               </div>
             </td>
-            <td>{% if p.is_active %}<span class="badge badge-green">Live</span>{% else %}<span class="badge badge-red">Hidden</span>{% endif %}</td>
-            <td><a href="{% url 'dashboard_edit_product' p.id %}" class="btn btn-outline btn-sm btn-icon">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </a></td>
+            <td>
+              {% if p.is_active %}<span class="badge badge-green">Live</span>
+              {% else %}<span class="badge badge-red">Hidden</span>{% endif %}
+            </td>
+            <td>
+              <a href="{% url 'dashboard_edit_product' p.id %}" class="btn btn-outline btn-sm btn-icon">
+                <span class="material-symbols-outlined">edit</span>
+              </a>
+            </td>
           </tr>
           {% empty %}
           <tr><td colspan="3" class="tbl-empty">No hampers yet.</td></tr>
@@ -81,11 +128,24 @@
       </table>
     </div>
   </div>
+
 </div>
 
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
-  <a href="{% url 'dashboard_create_product' %}" class="btn btn-primary">+ Add Hamper</a>
-  <a href="{% url 'dashboard_create_category' %}" class="btn btn-outline">+ Add Category</a>
-  <a href="{% url 'dashboard_create_section' %}" class="btn btn-outline">+ Add Section</a>
+<!-- Quick Actions -->
+<div style="display:flex;gap:8px;flex-wrap:wrap;padding:16px 20px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius)">
+  <span style="font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--mist);align-self:center;margin-right:4px">Quick Add</span>
+  <a href="{% url 'dashboard_create_product' %}" class="btn btn-primary btn-sm">
+    <span class="material-symbols-outlined" style="font-size:14px">add</span>
+    Hamper
+  </a>
+  <a href="{% url 'dashboard_create_category' %}" class="btn btn-outline btn-sm">
+    <span class="material-symbols-outlined" style="font-size:14px">add</span>
+    Category
+  </a>
+  <a href="{% url 'dashboard_create_section' %}" class="btn btn-outline btn-sm">
+    <span class="material-symbols-outlined" style="font-size:14px">add</span>
+    Section
+  </a>
 </div>
+
 {% endblock %}

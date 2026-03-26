@@ -3,62 +3,429 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign In — Wrapp Delights Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Sign In — WrappDelights Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--red:#C8102E;--red-dark:#8E1024;--ink:#101828;--ash:#667085;--border:#E4E7EC;--surface:#F9FAFB;--white:#fff;--red-glow:rgba(200,16,46,.12)}
-body{font-family:'Manrope',system-ui,sans-serif;background:var(--surface);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
-  background-image:radial-gradient(circle at 20% 20%, rgba(200,16,46,.06) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(200,16,46,.04) 0%, transparent 50%)}
-.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:36px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.06)}
-.brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
-.logo-mark{width:40px;height:40px;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:1.1rem;flex-shrink:0}
-.brand-name{font-weight:800;font-size:.95rem}
-.brand-sub{font-size:.72rem;color:var(--ash)}
-h1{font-size:1.1rem;font-weight:800;margin-bottom:4px}
-.sub{font-size:.82rem;color:var(--ash);margin-bottom:22px}
-.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
-.form-label{font-size:.76rem;font-weight:700}
-.form-input{padding:9px 12px;border:1px solid var(--border);border-radius:7px;font-size:.84rem;font-family:inherit;outline:none;transition:.15s}
-.form-input:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--red-glow)}
-.btn{width:100%;padding:10px;border-radius:7px;background:var(--red);color:#fff;font-size:.86rem;font-weight:700;font-family:inherit;border:none;cursor:pointer;transition:.15s;margin-top:4px}
-.btn:hover{background:var(--red-dark)}
-.error-msg{background:#FEF3F2;color:#B42318;border:1px solid #FECDCA;border-radius:7px;padding:10px 13px;font-size:.8rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.footer-link{text-align:center;margin-top:18px;font-size:.78rem;color:var(--ash)}
-.footer-link a{color:var(--red);font-weight:700}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary:        #570012;
+    --primary-dark:   #80011f;
+    --primary-light:  #ffdada;
+    --ink:            #1c1b1b;
+    --muted:          #584141;
+    --subtle:         #8c7070;
+    --border:         rgba(224,191,191,0.5);
+    --border-strong:  rgba(224,191,191,0.8);
+    --surface:        #fcf9f8;
+    --surface-low:    #f6f3f2;
+    --surface-med:    #f0eded;
+    --surface-high:   #eae7e7;
+    --white:          #ffffff;
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    display: inline-block; vertical-align: middle;
+    line-height: 1; text-transform: none;
+    letter-spacing: normal; word-wrap: normal;
+    white-space: nowrap; direction: ltr;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(87,0,18,0.03) 0px, rgba(87,0,18,0.03) 1px, transparent 1px, transparent 80px),
+      repeating-linear-gradient(0deg,  rgba(87,0,18,0.03) 0px, rgba(87,0,18,0.03) 1px, transparent 1px, transparent 80px);
+  }
+
+  ::selection { background: var(--primary); color: #fff; }
+
+  /* ── Layout ── */
+  .layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  /* Left panel — brand / decorative */
+  .brand-panel {
+    display: none;
+    flex: 1;
+    background: var(--primary);
+    padding: 48px;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  @media (min-width: 900px) { .brand-panel { display: flex; } }
+
+  .brand-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(-45deg,
+        rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px,
+        transparent 1px, transparent 24px);
+    pointer-events: none;
+  }
+
+  .panel-logo {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .panel-logo-mark {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 900; color: #fff;
+    letter-spacing: -0.02em;
+  }
+  .panel-logo-name {
+    font-size: 15px; font-weight: 900;
+    color: #fff; letter-spacing: -0.02em;
+  }
+
+  .panel-body {
+    position: relative; z-index: 1;
+  }
+  .panel-kicker {
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .panel-kicker::before {
+    content: ''; display: block;
+    width: 20px; height: 1px;
+    background: rgba(255,255,255,0.4);
+  }
+  .panel-headline {
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+    margin-bottom: 20px;
+  }
+  .panel-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.65;
+    max-width: 320px;
+  }
+
+  .panel-stats {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .panel-stat {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .panel-stat-num {
+    font-size: 1.4rem; font-weight: 900;
+    color: #fff; line-height: 1;
+    letter-spacing: -0.04em; white-space: nowrap;
+  }
+  .panel-stat-label {
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.5);
+    margin-top: 2px;
+  }
+
+  /* Right panel — form */
+  .form-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 0 0 460px;
+    padding: 48px 40px;
+    background: var(--white);
+    border-left: 1px solid var(--border);
+  }
+  @media (max-width: 900px) {
+    .form-panel { flex: 1; border-left: none; }
+  }
+  @media (max-width: 480px) {
+    .form-panel { padding: 36px 24px; }
+  }
+
+  .form-inner { width: 100%; max-width: 340px; }
+
+  /* Mobile logo */
+  .mobile-logo {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 36px;
+  }
+  @media (min-width: 900px) { .mobile-logo { display: none; } }
+  .mobile-logo-mark {
+    width: 32px; height: 32px;
+    background: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 900; color: #fff;
+  }
+  .mobile-logo-name {
+    font-size: 14px; font-weight: 900;
+    color: var(--ink); letter-spacing: -0.02em;
+  }
+
+  /* Form header */
+  .form-heading {
+    margin-bottom: 28px;
+  }
+  .form-kicker {
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.2em;
+    color: var(--primary); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .form-kicker::before {
+    content: ''; display: block;
+    width: 20px; height: 1px;
+    background: var(--primary);
+  }
+  .form-title {
+    font-size: 1.5rem; font-weight: 900;
+    letter-spacing: -0.025em; color: var(--ink);
+    line-height: 1.1; margin-bottom: 6px;
+  }
+  .form-sub {
+    font-size: 12px; color: var(--subtle); line-height: 1.6;
+  }
+
+  /* Divider */
+  .form-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  /* Error */
+  .error-banner {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px;
+    background: #fff5f5;
+    border: 1px solid rgba(186,26,26,0.25);
+    border-left: 3px solid #ba1a1a;
+    margin-bottom: 20px;
+  }
+  .error-banner .material-symbols-outlined { color: #ba1a1a; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .error-text {
+    font-size: 11px; font-weight: 600;
+    color: #ba1a1a; line-height: 1.5;
+  }
+
+  /* Field */
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .field-label {
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--muted);
+  }
+  .field-wrap { position: relative; }
+  .field-icon {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    color: var(--subtle); font-size: 16px; pointer-events: none;
+  }
+  .field-input {
+    width: 100%;
+    background: var(--surface-low);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    padding: 10px 12px 10px 36px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    border-radius: 2px;
+    appearance: none;
+  }
+  .field-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(87,0,18,0.1);
+    background: var(--white);
+  }
+  .field-input::placeholder { color: var(--subtle); }
+
+  /* Submit btn */
+  .submit-btn {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--primary);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    padding: 13px 24px;
+    border: none; cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    border-radius: 2px;
+    margin-top: 4px;
+  }
+  .submit-btn:hover { background: var(--primary-dark); }
+  .submit-btn:active { transform: scale(0.98); }
+
+  /* Back link */
+  .back-link {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin-top: 20px;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--subtle);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--primary); }
+  .back-link .material-symbols-outlined { font-size: 14px; }
+
+  /* Security note */
+  .security-note {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 10px; color: var(--subtle);
+  }
+  .security-note .material-symbols-outlined { font-size: 13px; color: var(--subtle); }
 </style>
 </head>
 <body>
-<div class="card">
-  <div class="brand">
-    <div class="logo-mark">W</div>
-    <div><div class="brand-name">Wrapp Delights</div><div class="brand-sub">Admin CMS</div></div>
-  </div>
-  <h1>Welcome back</h1>
-  <p class="sub">Sign in to manage your catalog</p>
 
-  {% if form.errors %}
-  <div class="error-msg">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    Invalid username or password. Please try again.
-  </div>
-  {% endif %}
+<div class="layout">
 
-  <form method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="next" value="{{ next }}">
-    <div class="form-group">
-      <label class="form-label">Username</label>
-      <input type="text" name="username" class="form-input" required autofocus autocomplete="username">
+  <!-- ── Brand Panel (desktop left) ── -->
+  <div class="brand-panel">
+    <div class="panel-logo">
+      <div class="panel-logo-mark">W</div>
+      <span class="panel-logo-name">WrappDelights</span>
     </div>
-    <div class="form-group">
-      <label class="form-label">Password</label>
-      <input type="password" name="password" class="form-input" required autocomplete="current-password">
-    </div>
-    <button type="submit" class="btn">Sign In</button>
-  </form>
 
-  <div class="footer-link"><a href="/">← Back to site</a></div>
+    <div class="panel-body">
+      <p class="panel-kicker">Admin Portal</p>
+      <h1 class="panel-headline">Manage<br>Your<br>Catalog.</h1>
+      <p class="panel-sub">
+        Full control over products, categories, orders, and corporate inquiries — all in one place.
+      </p>
+    </div>
+
+    <div class="panel-stats">
+      <div class="panel-stat">
+        <div>
+          <div class="panel-stat-num">5K+</div>
+          <div class="panel-stat-label">Active SKUs</div>
+        </div>
+      </div>
+      <div class="panel-stat">
+        <div>
+          <div class="panel-stat-num">4hrs</div>
+          <div class="panel-stat-label">Quote Turnaround</div>
+        </div>
+      </div>
+      <div class="panel-stat">
+        <div>
+          <div class="panel-stat-num">PAN</div>
+          <div class="panel-stat-label">India Delivery</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Form Panel ── -->
+  <div class="form-panel">
+    <div class="form-inner">
+
+      <!-- Mobile-only logo -->
+      <div class="mobile-logo">
+        <div class="mobile-logo-mark">W</div>
+        <span class="mobile-logo-name">WrappDelights</span>
+      </div>
+
+      <div class="form-heading">
+        <p class="form-kicker">Admin CMS</p>
+        <h2 class="form-title">Welcome back.</h2>
+        <p class="form-sub">Sign in to manage your catalog &amp; inquiries.</p>
+      </div>
+
+      <div class="form-divider"></div>
+
+      {% if form.errors %}
+      <div class="error-banner">
+        <span class="material-symbols-outlined">error</span>
+        <p class="error-text">Invalid username or password. Please try again.</p>
+      </div>
+      {% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+
+        <div class="field">
+          <label class="field-label" for="id_username">Username</label>
+          <div class="field-wrap">
+            <span class="material-symbols-outlined field-icon">person</span>
+            <input
+              id="id_username"
+              type="text"
+              name="username"
+              class="field-input"
+              placeholder="admin"
+              required autofocus autocomplete="username"
+            >
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="id_password">Password</label>
+          <div class="field-wrap">
+            <span class="material-symbols-outlined field-icon">lock</span>
+            <input
+              id="id_password"
+              type="password"
+              name="password"
+              class="field-input"
+              placeholder="••••••••••"
+              required autocomplete="current-password"
+            >
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          <span class="material-symbols-outlined" style="font-size:15px;">login</span>
+          Sign In
+        </button>
+      </form>
+
+      <div class="security-note">
+        <span class="material-symbols-outlined">shield</span>
+        Restricted area. Authorised personnel only.
+      </div>
+
+      <a href="/" class="back-link">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back to site
+      </a>
+
+    </div>
+  </div>
+
 </div>
+
 </body>
 </html>

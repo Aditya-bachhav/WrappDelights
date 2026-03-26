@@ -1,107 +1,132 @@
 {% extends "base.html" %}
-{% block nav_corporate %}class="active"{% endblock %}
+{% block nav_corporate %}text-[#570012] border-b-2 border-[#570012] font-bold{% endblock %}
 {% block title %}Corporate Inquiry — Wrapp Delights{% endblock %}
 
 {% block content %}
-<section class="bg-white py-8">
-  <div class="container mx-auto px-4">
+<section class="bg-surface py-12">
+  <div class="max-w-6xl mx-auto px-6 lg:px-10">
 
-    <!-- Page Header -->
-    <div class="mb-8">
-      <div class="text-xs font-extrabold text-brand-red uppercase tracking-wider mb-1">Corporate Gifting</div>
-      <h1 class="text-2xl font-extrabold text-gray-900">Bulk & Corporate Inquiry</h1>
-      <p class="text-sm text-gray-600 mt-1">No cart, no checkout. Share your requirements and we'll respond with a tailored quote within 2 business hours.</p>
+    <!-- Hero -->
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-10">
+      <div class="max-w-2xl space-y-3">
+        <p class="wd-kicker text-primary">Corporate Gifting Desk</p>
+        <h1 class="text-4xl lg:text-[2.6rem] font-black tracking-tight leading-tight text-on-surface">
+          Bulk hampers, custom branding,
+          <span class="text-primary">quote in 2 hours.</span>
+        </h1>
+        <p class="text-sm text-on-surface-variant max-w-2xl">No cart, no checkout. Tell us your quantities, timeline, and branding needs—we'll reply fast with curated options and pricing.</p>
+        <div class="flex flex-wrap gap-3">
+          <a href="#inquiryForm" class="wd-btn wd-btn-primary px-5 py-3">Submit Inquiry</a>
+          <a href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text=Hi%2C%20I%20want%20to%20discuss%20a%20bulk%20corporate%20hamper%20order.%20Can%20you%20help%3F" target="_blank" class="wd-btn wd-btn-outline px-5 py-3 flex items-center gap-2">
+            <span class="material-symbols-outlined text-base">chat</span>
+            WhatsApp Us
+          </a>
+        </div>
+      </div>
+      <div class="bg-surface-container-low border border-outline-variant/40 px-5 py-4 w-full lg:w-[320px]">
+        <div class="text-[10px] font-bold uppercase tracking-[0.16em] text-outline mb-2">Hotline</div>
+        <div class="flex items-center gap-3 mb-3">
+          <span class="material-symbols-outlined text-primary">call</span>
+          <div>
+            <div class="text-lg font-black text-on-surface">{{ phone_number|default:'+91 83471 36985' }}</div>
+            <div class="text-xs text-on-surface-variant">Mon–Sat · 9am–7pm IST</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">schedule</span>
+          <div class="text-xs text-on-surface-variant">Replies in ~2 business hours with tailored pricing.</div>
+        </div>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-8 items-start">
 
-      <!-- Inquiry Form -->
-      <div class="border border-gray-200 bg-white rounded-2xl p-6 shadow-sm">
-        <h2 class="text-base font-extrabold text-gray-900 mb-1">Submit Your Requirement</h2>
-        <p class="text-xs text-gray-500 mb-6">Fields marked <span class="text-brand-red">*</span> are required.</p>
+      <!-- Form Card -->
+      <div class="bg-surface-container-lowest border border-outline-variant/40 p-6 lg:p-7">
+        <div class="flex items-start justify-between gap-3 mb-6">
+          <div>
+            <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-outline">Step 1</p>
+            <h2 class="text-xl font-black text-on-surface leading-tight">Share your requirements</h2>
+            <p class="text-xs text-on-surface-variant mt-1">We use this to assemble options, pricing, and timelines.</p>
+          </div>
+          <span class="text-[11px] font-bold text-primary bg-primary-fixed px-3 py-1">2h SLA</span>
+        </div>
 
-        <form method="post" novalidate>
+        <form id="inquiryForm" method="post" class="space-y-5" novalidate>
           {% csrf_token %}
           <input type="hidden" name="hamper_id" value="{% if selected_hamper %}{{ selected_hamper.id }}{% endif %}">
 
-          <!-- Inquiry Type -->
-          <div class="mb-4">
-            <label class="block text-xs font-bold text-gray-700 mb-2">Inquiry Type <span class="text-brand-red">*</span></label>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <label class="cursor-pointer">
-                <input type="radio" name="inquiry_type" value="quote" class="sr-only peer" {% if selected_type == 'quote' or not selected_type %}checked{% endif %}>
-                <div class="border-2 border-gray-200 peer-checked:border-brand-red peer-checked:bg-red-50 rounded-xl p-3 text-center transition-all">
-                  <div class="text-lg mb-1">📋</div>
-                  <div class="text-xs font-bold text-gray-800">Request Quote</div>
-                  <div class="text-[10px] text-gray-500">Get pricing for catalog items</div>
-                </div>
+          <!-- Inquiry type -->
+          <div class="space-y-2">
+            <p class="text-xs font-bold text-on-surface">Inquiry Type <span class="text-error">*</span></p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <label class="border border-outline-variant/40 p-3 flex flex-col gap-1 cursor-pointer transition-colors {% if selected_type == 'quote' or not selected_type %}ring-1 ring-primary border-primary{% endif %}">
+                <input type="radio" name="inquiry_type" value="quote" class="sr-only" {% if selected_type == 'quote' or not selected_type %}checked{% endif %}>
+                <span class="material-symbols-outlined text-primary">description</span>
+                <span class="text-sm font-bold text-on-surface">Request Quote</span>
+                <span class="text-[11px] text-on-surface-variant">Pricing for catalog items</span>
               </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="inquiry_type" value="bulk" class="sr-only peer" {% if selected_type == 'bulk' %}checked{% endif %}>
-                <div class="border-2 border-gray-200 peer-checked:border-brand-red peer-checked:bg-red-50 rounded-xl p-3 text-center transition-all">
-                  <div class="text-lg mb-1">📦</div>
-                  <div class="text-xs font-bold text-gray-800">Bulk Order</div>
-                  <div class="text-[10px] text-gray-500">Large quantity orders</div>
-                </div>
+              <label class="border border-outline-variant/40 p-3 flex flex-col gap-1 cursor-pointer transition-colors {% if selected_type == 'bulk' %}ring-1 ring-primary border-primary{% endif %}">
+                <input type="radio" name="inquiry_type" value="bulk" class="sr-only" {% if selected_type == 'bulk' %}checked{% endif %}>
+                <span class="material-symbols-outlined text-primary">inventory_2</span>
+                <span class="text-sm font-bold text-on-surface">Bulk Order</span>
+                <span class="text-[11px] text-on-surface-variant">High-volume purchase</span>
               </label>
-              <label class="cursor-pointer">
-                <input type="radio" name="inquiry_type" value="customize" class="sr-only peer" {% if selected_type == 'customize' %}checked{% endif %}>
-                <div class="border-2 border-gray-200 peer-checked:border-brand-red peer-checked:bg-red-50 rounded-xl p-3 text-center transition-all">
-                  <div class="text-lg mb-1">✏️</div>
-                  <div class="text-xs font-bold text-gray-800">Customize</div>
-                  <div class="text-[10px] text-gray-500">Branded / custom hampers</div>
-                </div>
+              <label class="border border-outline-variant/40 p-3 flex flex-col gap-1 cursor-pointer transition-colors {% if selected_type == 'customize' %}ring-1 ring-primary border-primary{% endif %}">
+                <input type="radio" name="inquiry_type" value="customize" class="sr-only" {% if selected_type == 'customize' %}checked{% endif %}>
+                <span class="material-symbols-outlined text-primary">brush</span>
+                <span class="text-sm font-bold text-on-surface">Customize</span>
+                <span class="text-[11px] text-on-surface-variant">Branding / kit curation</span>
               </label>
             </div>
           </div>
 
-          <!-- Product Interest -->
           {% if selected_hamper %}
-          <div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-3">
+          <div class="flex items-center gap-3 p-3 bg-primary-fixed/40 border border-outline-variant/60">
             {% if selected_hamper.cover_image %}
-            <img src="{{ selected_hamper.cover_image.url }}" alt="{{ selected_hamper.name }}" class="w-12 h-12 object-cover rounded-lg border border-rose-200 flex-shrink-0">
+              <img src="{{ selected_hamper.cover_image.url }}" alt="{{ selected_hamper.name }}" class="w-12 h-12 object-cover">
             {% endif %}
-            <div>
-              <div class="text-[10px] font-bold text-brand-red uppercase tracking-wider">Selected Product</div>
-              <div class="text-sm font-bold text-gray-900">{{ selected_hamper.name }}</div>
-              <div class="text-xs text-gray-500">SKU: {{ selected_hamper.sku }}</div>
+            <div class="flex-1">
+              <div class="text-[10px] font-bold uppercase tracking-[0.14em] text-outline">Selected product</div>
+              <div class="text-sm font-bold text-on-surface">{{ selected_hamper.name }}</div>
+              <div class="text-[11px] text-on-surface-variant">SKU {{ selected_hamper.sku }}</div>
             </div>
-            <a href="/corporate/" class="ml-auto text-xs text-gray-400 hover:text-brand-red">Clear</a>
+            <a href="/corporate/" class="text-xs text-primary hover:underline">Clear</a>
           </div>
           {% endif %}
 
-          <!-- Contact Details -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold text-gray-700 mb-1">Your Name <span class="text-brand-red">*</span></label>
-              <input class="form-input w-full" name="contact_person" placeholder="Priya Sharma" required>
+              <label class="text-xs font-bold text-on-surface mb-1 block">Your Name <span class="text-error">*</span></label>
+              <input name="contact_person" class="wd-input" placeholder="Priya Sharma" required>
             </div>
             <div>
-              <label class="block text-xs font-bold text-gray-700 mb-1">Company Name <span class="text-brand-red">*</span></label>
-              <input class="form-input w-full" name="company_name" placeholder="ACME Corp" required>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label class="block text-xs font-bold text-gray-700 mb-1">Phone / WhatsApp <span class="text-brand-red">*</span></label>
-              <input class="form-input w-full" name="phone" type="tel" placeholder="+91 9XXXXXXXXX" required>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-gray-700 mb-1">Email Address</label>
-              <input class="form-input w-full" name="email" type="email" placeholder="priya@acmecorp.com">
+              <label class="text-xs font-bold text-on-surface mb-1 block">Company Name <span class="text-error">*</span></label>
+              <input name="company_name" class="wd-input" placeholder="ACME Corp" required>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold text-gray-700 mb-1">Quantity Needed <span class="text-brand-red">*</span></label>
-              <input class="form-input w-full" name="quantity" type="number" min="1" value="25" required>
-              <div class="text-[10px] text-gray-400 mt-1">Minimum order: 25 units</div>
+              <label class="text-xs font-bold text-on-surface mb-1 block">Phone / WhatsApp <span class="text-error">*</span></label>
+              <input name="phone" type="tel" class="wd-input" placeholder="+91 9XXXXXXXXX" required>
+              <p class="text-[11px] text-on-surface-variant mt-1">We’ll confirm via WhatsApp first.</p>
             </div>
             <div>
-              <label class="block text-xs font-bold text-gray-700 mb-1">Event / Occasion</label>
-              <select class="form-input w-full" name="requirement">
+              <label class="text-xs font-bold text-on-surface mb-1 block">Email Address</label>
+              <input name="email" type="email" class="wd-input" placeholder="priya@acmecorp.com">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-on-surface mb-1 block">Quantity Needed <span class="text-error">*</span></label>
+              <input name="quantity" type="number" min="1" value="25" class="wd-input" required>
+              <p class="text-[11px] text-on-surface-variant mt-1">MOQ: 25 units · Tiered pricing available.</p>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-on-surface mb-1 block">Event / Occasion</label>
+              <select name="requirement" class="wd-input">
                 <option value="">Select occasion...</option>
                 <option value="Employee Welcome Kit">Employee Welcome Kit</option>
                 <option value="Diwali / Festival Gifting">Diwali / Festival Gifting</option>
@@ -113,145 +138,122 @@
             </div>
           </div>
 
-          <div class="mb-4">
-            <label class="block text-xs font-bold text-gray-700 mb-1">Delivery Address</label>
-            <textarea class="form-input w-full" name="delivery_address" rows="2" placeholder="City, State (full address can be shared later)"></textarea>
+          <div>
+            <label class="text-xs font-bold text-on-surface mb-1 block">Delivery Address</label>
+            <textarea name="delivery_address" rows="2" class="wd-input" placeholder="City, State (full address can be shared later)"></textarea>
           </div>
 
-          <div class="mb-6">
-            <label class="block text-xs font-bold text-gray-700 mb-1">Additional Requirements / Customization Notes</label>
-            <textarea class="form-input w-full" name="customization_details" rows="3" placeholder="e.g. Company logo on packaging, specific items, delivery date, budget per hamper..."></textarea>
+          <div>
+            <label class="text-xs font-bold text-on-surface mb-1 block">Additional Requirements / Customization Notes</label>
+            <textarea name="customization_details" rows="3" class="wd-input" placeholder="Logo placement, items to include, delivery date, budget per hamper..."></textarea>
           </div>
 
-          <!-- Trust Note -->
-          <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 mb-5 flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            <div class="text-xs text-gray-600">
-              Your information is confidential and used only to prepare your quote. We'll reach out via <strong>WhatsApp first</strong>, then a phone call to discuss your order.
-            </div>
+          <div class="flex items-start gap-3 bg-surface-container-low border border-outline-variant/60 p-3">
+            <span class="material-symbols-outlined text-secondary">verified_user</span>
+            <p class="text-xs text-on-surface-variant">Your details stay private and help us deliver an accurate quote. Expect a WhatsApp confirmation followed by a quick call.</p>
           </div>
 
-          <!-- Submit Buttons -->
-          <div class="flex flex-col sm:flex-row gap-3">
-            <button type="submit" class="flex-1 bg-brand-red hover:bg-brand-dark text-white py-3 px-6 font-bold uppercase tracking-wider text-sm transition-colors rounded-lg flex items-center justify-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
-              Submit Inquiry
-            </button>
-            <a href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text=Hi%2C%20I%20want%20to%20discuss%20a%20bulk%20corporate%20hamper%20order.%20Can%20you%20help%3F"
-               target="_blank"
-               class="flex-1 border-2 border-green-400 bg-green-50 hover:bg-green-100 text-green-700 py-3 px-6 font-bold uppercase tracking-wider text-sm transition-colors rounded-lg flex items-center justify-center gap-2">
-              <svg viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-              </svg>
-              WhatsApp Instead
-            </a>
+          <div class="flex flex-col sm:flex-row gap-3 pt-2">
+            <button type="submit" class="flex-1 wd-btn wd-btn-primary py-3 justify-center">Submit Inquiry</button>
+            <a href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text=Hi%2C%20I%20want%20to%20discuss%20a%20bulk%20corporate%20hamper%20order.%20Can%20you%20help%3F" target="_blank" class="flex-1 wd-btn wd-btn-outline py-3 justify-center">WhatsApp Instead</a>
           </div>
         </form>
       </div>
 
-      <!-- Sidebar: Why Us + Catalog Picks -->
+      <!-- Sidebar -->
       <div class="space-y-5">
 
-        <!-- Why choose us -->
-        <div class="border border-gray-200 bg-white rounded-2xl p-5">
-          <h3 class="text-xs font-extrabold text-gray-900 uppercase tracking-wider mb-4">Why Corporate Buyers Choose Us</h3>
+        <div class="bg-surface-container-lowest border border-outline-variant/40 p-5">
+          <div class="flex items-center justify-between mb-4">
+            <p class="wd-kicker text-primary">Why teams choose us</p>
+            <span class="text-[10px] font-bold text-outline">Trusted by HR & CXOs</span>
+          </div>
           <div class="space-y-3">
-            <div class="flex items-start gap-3">
-              <div class="text-lg flex-shrink-0">🎁</div>
+            <div class="flex items-start gap-3 p-3 border border-outline-variant/20">
+              <span class="material-symbols-outlined text-primary">redeem</span>
               <div>
-                <div class="text-xs font-bold text-gray-800">Curated Hampers</div>
-                <div class="text-xs text-gray-500">Thoughtfully assembled kits for every occasion and budget.</div>
+                <p class="text-sm font-bold text-on-surface">Curated hampers</p>
+                <p class="text-xs text-on-surface-variant">Designed for onboarding, events, and festive drops</p>
               </div>
             </div>
-            <div class="flex items-start gap-3">
-              <div class="text-lg flex-shrink-0">🏷️</div>
+            <div class="flex items-start gap-3 p-3 border border-outline-variant/20">
+              <span class="material-symbols-outlined text-primary">branding_watermark</span>
               <div>
-                <div class="text-xs font-bold text-gray-800">Custom Branding</div>
-                <div class="text-xs text-gray-500">Add your logo, ribbon, or message on any hamper.</div>
+                <p class="text-sm font-bold text-on-surface">Branding ready</p>
+                <p class="text-xs text-on-surface-variant">Logo sleeves, ribbons, cards, QR inserts</p>
               </div>
             </div>
-            <div class="flex items-start gap-3">
-              <div class="text-lg flex-shrink-0">📦</div>
+            <div class="flex items-start gap-3 p-3 border border-outline-variant/20">
+              <span class="material-symbols-outlined text-primary">local_shipping</span>
               <div>
-                <div class="text-xs font-bold text-gray-800">Bulk Pricing</div>
-                <div class="text-xs text-gray-500">Better rates for orders of 25+ units. Volume discounts available.</div>
+                <p class="text-sm font-bold text-on-surface">PAN-India logistics</p>
+                <p class="text-xs text-on-surface-variant">Consolidated or multi-address fulfillment</p>
               </div>
             </div>
-            <div class="flex items-start gap-3">
-              <div class="text-lg flex-shrink-0">🚚</div>
+            <div class="flex items-start gap-3 p-3 border border-outline-variant/20">
+              <span class="material-symbols-outlined text-primary">schedule</span>
               <div>
-                <div class="text-xs font-bold text-gray-800">Pan-India Delivery</div>
-                <div class="text-xs text-gray-500">Reliable shipping to any city, office, or event venue.</div>
+                <p class="text-sm font-bold text-on-surface">Fast SLAs</p>
+                <p class="text-xs text-on-surface-variant">Quote in 2 hours, dispatch from 72h</p>
               </div>
             </div>
-            <div class="flex items-start gap-3">
-              <div class="text-lg flex-shrink-0">⏱️</div>
+            <div class="flex items-start gap-3 p-3 border border-outline-variant/20">
+              <span class="material-symbols-outlined text-primary">verified</span>
               <div>
-                <div class="text-xs font-bold text-gray-800">2-Hour Response</div>
-                <div class="text-xs text-gray-500">Our team responds to all inquiries within 2 business hours.</div>
+                <p class="text-sm font-bold text-on-surface">Quality assured</p>
+                <p class="text-xs text-on-surface-variant">QC checklist + photo confirmation on request</p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Contact Direct -->
-        <div class="border border-gray-200 bg-white rounded-2xl p-5">
-          <h3 class="text-xs font-extrabold text-gray-900 uppercase tracking-wider mb-3">Prefer Direct Contact?</h3>
-          <div class="space-y-2">
-            <a href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}" target="_blank" class="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100 transition-colors">
-              <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg viewBox="0 0 24 24" fill="white" class="w-4 h-4">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-              </div>
+        <div class="bg-surface-container-lowest border border-outline-variant/40 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <p class="wd-kicker text-primary">Talk to a human</p>
+            <span class="text-[10px] font-bold text-outline">Instant</span>
+          </div>
+          <div class="space-y-3">
+            <a href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}" target="_blank" class="flex items-center gap-3 p-3 border border-outline-variant/30 hover:border-primary transition-colors">
+              <span class="material-symbols-outlined text-primary">chat</span>
               <div>
-                <div class="text-xs font-bold text-gray-800">WhatsApp</div>
-                <div class="text-xs text-gray-500">+91 83471 36985 · Instant reply</div>
+                <p class="text-sm font-bold text-on-surface">WhatsApp</p>
+                <p class="text-xs text-on-surface-variant">+91 83471 36985 · Instant reply</p>
               </div>
             </a>
-            <a href="tel:{{ phone_number_raw|default:'+918347136985' }}" class="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 transition-colors">
-              <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-              </div>
+            <a href="tel:{{ phone_number_raw|default:'+918347136985' }}" class="flex items-center gap-3 p-3 border border-outline-variant/30 hover:border-primary transition-colors">
+              <span class="material-symbols-outlined text-primary">call</span>
               <div>
-                <div class="text-xs font-bold text-gray-800">Call Us</div>
-                <div class="text-xs text-gray-500">+91 83471 36985 · Mon–Sat 9am–7pm</div>
+                <p class="text-sm font-bold text-on-surface">Call us</p>
+                <p class="text-xs text-on-surface-variant">Mon–Sat 9am–7pm IST</p>
               </div>
             </a>
           </div>
         </div>
 
-        <!-- Popular Products -->
         {% if products %}
-        <div class="border border-gray-200 bg-white rounded-2xl p-5">
-          <h3 class="text-xs font-extrabold text-gray-900 uppercase tracking-wider mb-3">Popular Hampers</h3>
+        <div class="bg-surface-container-lowest border border-outline-variant/40 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <p class="wd-kicker text-primary">Popular hampers</p>
+            <a href="/products/" class="text-[11px] font-bold text-primary hover:underline">View all</a>
+          </div>
           <div class="space-y-2">
             {% for p in products|slice:":5" %}
-            <a href="{% url 'product_detail' p.id %}" class="flex items-center gap-3 hover:bg-gray-50 rounded-xl p-2 transition-colors border border-transparent hover:border-gray-200">
-              <div class="w-10 h-10 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
+            <a href="{% url 'product_detail' p.id %}" class="flex items-center gap-3 p-2 border border-transparent hover:border-outline-variant/50 transition-colors">
+              <div class="w-11 h-11 bg-surface-container-high overflow-hidden">
                 {% if p.cover_image %}
                   <img src="{{ p.cover_image.url }}" alt="{{ p.name }}" class="w-full h-full object-cover">
                 {% else %}
-                  <div class="w-full h-full flex items-center justify-center text-gray-300 text-xs font-bold">No img</div>
+                  <div class="w-full h-full flex items-center justify-center text-[10px] text-outline">No image</div>
                 {% endif %}
               </div>
               <div class="flex-1 min-w-0">
-                <div class="text-xs font-bold text-gray-800 truncate">{{ p.name }}</div>
-                <div class="text-[10px] text-gray-400">MOQ: {{ p.min_bulk_quantity }} · SKU: {{ p.sku }}</div>
+                <p class="text-sm font-bold text-on-surface truncate">{{ p.name }}</p>
+                <p class="text-[11px] text-on-surface-variant">MOQ {{ p.min_bulk_quantity }} · SKU {{ p.sku }}</p>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
+              <span class="material-symbols-outlined text-outline text-base">chevron_right</span>
             </a>
             {% endfor %}
           </div>
-          <a href="/products/" class="block text-center text-xs font-bold text-brand-red hover:underline mt-3">View All Products →</a>
         </div>
         {% endif %}
 

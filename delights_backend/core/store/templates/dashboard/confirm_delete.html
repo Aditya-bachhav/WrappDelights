@@ -4,14 +4,20 @@
 
 {% block content %}
 <div class="danger-zone">
-  <div style="width:48px;height:48px;background:#FEF3F2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B42318" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+  <div class="danger-icon">
+    <span class="material-symbols-outlined">delete_forever</span>
   </div>
   <h2>Delete {{ type }}</h2>
-  <p>Are you sure you want to delete <strong>"{{ object }}"</strong>? This action cannot be undone.</p>
-  <form method="post" style="display:flex;gap:10px;justify-content:center">
+  <p>
+    Are you sure you want to delete <strong style="color:var(--ink)">"{{ object }}"</strong>?<br>
+    This action <strong>cannot be undone</strong>.
+  </p>
+  <form method="post" style="display:flex;gap:8px;justify-content:center">
     {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <button type="submit" class="btn btn-danger">
+      <span class="material-symbols-outlined" style="font-size:15px">delete</span>
+      Yes, Delete
+    </button>
     <a href="javascript:history.back()" class="btn btn-outline">Cancel</a>
   </form>
 </div>

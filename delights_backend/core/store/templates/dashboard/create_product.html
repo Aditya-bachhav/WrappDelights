@@ -5,18 +5,25 @@
 {% block content %}
 <div class="page-header">
   <div>
-    <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / <a href="{% url 'dashboard_products' %}">Hampers</a> / Add</div>
+    <div class="breadcrumb">
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <span class="material-symbols-outlined" style="font-size:12px">chevron_right</span>
+      <a href="{% url 'dashboard_products' %}">Hampers</a>
+      <span class="material-symbols-outlined" style="font-size:12px">chevron_right</span>
+      Add
+    </div>
     <h1>Add New Hamper</h1>
   </div>
 </div>
 
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
-  <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start">
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:14px;align-items:start">
 
-    <!-- Left: Main fields -->
-    <div>
-      <div class="card" style="margin-bottom:14px">
+    <!-- LEFT -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <div class="card">
         <div class="form-section">
           <div class="form-section-title">Basic Info</div>
           <div class="form-group" style="margin-bottom:12px">
@@ -38,10 +45,11 @@
             </div>
           </div>
         </div>
+
         <div class="form-section">
           <div class="form-section-title">Description</div>
           <div class="form-group" style="margin-bottom:12px">
-            <label class="form-label">Short Description <span style="font-weight:400;color:var(--ash)">(max 220 chars)</span></label>
+            <label class="form-label">Short Description <span style="font-weight:500;color:var(--mist)">(max 220 chars)</span></label>
             <input class="form-input" name="short_description" maxlength="220" placeholder="Brief one-liner for catalog cards">
           </div>
           <div class="form-group">
@@ -49,10 +57,11 @@
             <textarea class="form-textarea" name="description" rows="5" placeholder="Detailed product description…"></textarea>
           </div>
         </div>
+
         <div class="form-section">
           <div class="form-section-title">Included Items</div>
           <div class="form-group">
-            <label class="form-label">Items List <span style="font-weight:400;color:var(--ash)">(one per line)</span></label>
+            <label class="form-label">Items List <span style="font-weight:500;color:var(--mist)">(one per line)</span></label>
             <textarea class="form-textarea" name="included_items" rows="5" placeholder="Premium Leather Notebook&#10;Stainless Steel Bottle&#10;Artisan Chocolate Box&#10;Custom Branded Pen"></textarea>
           </div>
         </div>
@@ -75,11 +84,13 @@
           </div>
         </div>
       </div>
+
     </div>
 
-    <!-- Right: Sidebar options -->
-    <div>
-      <div class="card" style="margin-bottom:14px">
+    <!-- RIGHT -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <div class="card">
         <div class="form-section">
           <div class="form-section-title">Visibility & Flags</div>
           <div style="display:flex;flex-direction:column;gap:10px">
@@ -100,24 +111,33 @@
       <div class="card">
         <div class="form-section">
           <div class="form-section-title">Homepage Sections</div>
-          <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;flex-direction:column;gap:10px">
             {% for section in homepage_sections %}
             <label class="form-check">
               <input type="checkbox" name="homepage_sections" value="{{ section.id }}">
-              <span style="font-size:.78rem">{{ section.title }}<br><span style="color:var(--ash);font-weight:400">{{ section.get_section_type_display }}</span></span>
+              <span style="font-size:.76rem">
+                {{ section.title }}<br>
+                <span style="color:var(--mist);font-weight:500">{{ section.get_section_type_display }}</span>
+              </span>
             </label>
             {% empty %}
-            <span style="font-size:.78rem;color:var(--mist)">No active sections. <a href="{% url 'dashboard_create_section' %}" style="color:var(--red)">Create one →</a></span>
+            <span style="font-size:.76rem;color:var(--mist)">
+              No active sections.
+              <a href="{% url 'dashboard_create_section' %}" style="color:var(--primary);font-weight:700">Create one →</a>
+            </span>
             {% endfor %}
           </div>
         </div>
       </div>
-    </div>
 
+    </div>
   </div>
 
-  <div style="display:flex;gap:10px;margin-top:14px">
-    <button type="submit" class="btn btn-primary">Create Hamper</button>
+  <div style="display:flex;gap:8px;margin-top:14px">
+    <button type="submit" class="btn btn-primary">
+      <span class="material-symbols-outlined" style="font-size:15px">save</span>
+      Create Hamper
+    </button>
     <a href="{% url 'dashboard_products' %}" class="btn btn-outline">Cancel</a>
   </div>
 </form>

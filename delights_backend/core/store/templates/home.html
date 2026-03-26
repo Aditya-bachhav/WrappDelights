@@ -1,229 +1,1254 @@
 {% extends "base.html" %}
-{% block nav_home %}class="active"{% endblock %}
-{% block title %}Corporate Hamper Catalog — Wrapp Delights{% endblock %}
+
+{% block nav_home %}text-[#570012] border-b-2 border-[#570012] font-bold{% endblock %}
+
+{% block title %}WrappDelights | Corporate Gifting Catalog{% endblock %}
+
 {% block extra_css %}
 <style>
-  .home-simple {
-    padding: 28px 0 56px;
+  /* ─── Design Tokens (matching reference) ─── */
+  :root {
+    --primary: #570012;
+    --primary-container: #80011f;
+    --primary-fixed: #ffdada;
+    --primary-fixed-dim: #ffb3b4;
+    --on-primary: #ffffff;
+    --surface: #fcf9f8;
+    --surface-bright: #fcf9f8;
+    --surface-container-low: #f6f3f2;
+    --surface-container: #f0eded;
+    --surface-container-high: #eae7e7;
+    --surface-container-lowest: #ffffff;
+    --on-surface: #1c1b1b;
+    --on-surface-variant: #584141;
+    --outline: #8c7070;
+    --outline-variant: #e0bfbf;
+    --secondary-container: #b9eeab;
+    --on-secondary-fixed-variant: #23501e;
   }
 
-  .simple-hero {
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    background: #fff;
-    padding: 26px;
+  /* ─── Base ─── */
+  body { background: var(--surface); color: var(--on-surface); font-family: 'Inter', sans-serif; }
+
+  /* ─── Ledger dot-grid background ─── */
+  .ledger-grid {
+    background-image: radial-gradient(circle, #e0bfbf 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* ─── Hero ─── */
+  .hero {
+    position: relative;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    background: var(--surface-container-low);
+    overflow: hidden;
+    border-bottom: 1px solid rgba(224,191,191,0.2);
+  }
+  .hero-grid-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.1;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 64px 32px;
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: 48px;
+    align-items: center;
+    width: 100%;
+  }
+  .hero-kicker {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--secondary-container);
+    color: var(--on-secondary-fixed-variant);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+  .hero-title {
+    font-size: clamp(2.8rem, 6vw, 4.5rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    color: var(--primary);
     margin-bottom: 24px;
   }
-
-  .simple-title {
-    font-size: clamp(1.7rem, 4vw, 2.4rem);
-    line-height: 1.2;
-    font-weight: 800;
-    color: #111827;
+  .hero-sub {
+    font-size: 17px;
+    color: var(--on-surface-variant);
+    line-height: 1.65;
+    max-width: 520px;
+    font-weight: 300;
+    margin-bottom: 36px;
   }
-
-  .simple-subtitle {
-    margin-top: 8px;
-    color: #4b5563;
-    font-size: 0.95rem;
-  }
-
-  .simple-actions {
-    margin-top: 16px;
+  .hero-actions {
     display: flex;
-    gap: 10px;
+    gap: 16px;
     flex-wrap: wrap;
+    align-items: center;
+  }
+  .hero-img-wrap {
+    position: relative;
+  }
+  .hero-img-box {
+    aspect-ratio: 1;
+    background: var(--surface-container-lowest);
+    border: 1px solid rgba(224,191,191,0.3);
+    padding: 16px;
+    box-shadow: 0 20px 60px rgba(28,27,27,0.05);
+    overflow: hidden;
+  }
+  .hero-img-box img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(20%);
+    transition: transform 2s ease;
+  }
+  .hero-img-box:hover img { transform: scale(1.04); }
+  .hero-stat-badge {
+    position: absolute;
+    bottom: -24px;
+    left: -24px;
+    background: white;
+    border: 1px solid rgba(224,191,191,0.3);
+    padding: 20px 24px;
+  }
+  .hero-stat-badge .num {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--primary);
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .hero-stat-badge .lbl {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #8c7070;
+    margin-top: 4px;
   }
 
-  .simple-section {
-    margin-top: 26px;
+  /* ─── Trust Strip ─── */
+  .trust-strip {
+    background: var(--surface);
+    border-bottom: 1px solid rgba(224,191,191,0.2);
+    padding: 28px 0;
   }
-
-  .simple-heading {
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: #111827;
-    margin-bottom: 12px;
-  }
-
-  .category-row {
+  .trust-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 32px;
     display: flex;
-    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
     flex-wrap: wrap;
+    gap: 24px;
+  }
+  .trust-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: #aaa;
+  }
+  .trust-items {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--on-surface);
+  }
+  .trust-item .material-symbols-outlined {
+    color: var(--primary);
+    font-size: 20px;
+    font-variation-settings: 'FILL' 1;
+    transition: transform 0.2s;
+  }
+  .trust-item:hover .material-symbols-outlined { transform: scale(1.15); }
+
+  /* ─── Process Section ─── */
+  .process-section {
+    padding: 80px 0;
+    background: var(--surface);
+  }
+  .section-head {
+    margin-bottom: 56px;
+  }
+  .section-head h2 {
+    font-size: clamp(1.6rem, 3vw, 2rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .section-head-bar {
+    height: 4px;
+    width: 64px;
+    background: var(--primary);
+  }
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  .process-connector {
+    position: absolute;
+    top: 48px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(224,191,191,0.3);
+  }
+  .process-step {
+    position: relative;
+    z-index: 1;
+  }
+  .process-step-icon {
+    width: 96px;
+    height: 96px;
+    background: var(--surface-container-low);
+    border: 1px solid rgba(224,191,191,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--on-surface);
+    transition: background 0.3s, color 0.3s;
+  }
+  .process-step:hover .process-step-icon {
+    background: var(--primary);
+    color: white;
+  }
+  .process-step h3 {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+    color: var(--on-surface);
+  }
+  .process-step p {
+    font-size: 11px;
+    color: var(--on-surface-variant);
+    line-height: 1.6;
   }
 
-  .category-pill {
+  /* ─── Value Bento ─── */
+  .value-section {
+    padding: 80px 0;
+    background: var(--surface-container-low);
+  }
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .bento-cell {
+    background: var(--surface-container-lowest);
+    border: 1px solid rgba(224,191,191,0.3);
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: box-shadow 0.3s;
+  }
+  .bento-cell:hover { box-shadow: 0 8px 32px rgba(87,0,18,0.06); }
+  .bento-cell.tall { grid-row: span 2; justify-content: space-between; }
+  .bento-cell .material-symbols-outlined {
+    font-size: 36px;
+    color: var(--primary);
+    font-variation-settings: 'FILL' 0;
+    margin-bottom: 8px;
+  }
+  .bento-cell h3 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--primary);
+  }
+  .bento-cell.small h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+  }
+  .bento-cell p {
+    font-size: 13px;
+    color: var(--on-surface-variant);
+    line-height: 1.65;
+  }
+  .bento-cell.small p { font-size: 11px; }
+  .bento-progress {
+    height: 6px;
+    width: 100%;
+    background: var(--surface-container);
+    border-radius: 1px;
+  }
+  .bento-progress-fill {
+    height: 100%;
+    background: var(--primary);
+    width: 100%;
+    transition: width 1s ease;
+  }
+
+  /* ─── Kit Builder Feature ─── */
+  .builder-section {
+    padding: 80px 0;
+    background: var(--primary);
+    color: var(--on-primary);
+    overflow: hidden;
+  }
+  .builder-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .builder-kicker {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+  .builder-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    color: white;
+    margin-bottom: 24px;
+  }
+  .builder-sub {
+    font-size: 17px;
+    color: var(--primary-fixed-dim);
+    line-height: 1.65;
+    font-weight: 300;
+    margin-bottom: 32px;
+    max-width: 440px;
+  }
+  .builder-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .builder-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: white;
+  }
+  .builder-features li .material-symbols-outlined {
+    font-size: 18px;
+    color: #3b6934;
+    font-variation-settings: 'FILL' 1;
+  }
+  .builder-img-wrap {
+    position: relative;
+  }
+  .builder-img-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+  .builder-img-wrap img {
+    width: 100%;
+    filter: grayscale(1) brightness(0.75);
+    transition: filter 0.7s ease;
+  }
+  .builder-img-wrap:hover img { filter: grayscale(0) brightness(1); }
+
+  /* ─── Categories Pill Row ─── */
+  .pill-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .cat-pill {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 8px 14px;
-    border: 1px solid #e5e7eb;
-    border-radius: 999px;
-    background: #fff;
-    color: #374151;
-    font-size: 0.85rem;
+    padding: 7px 16px;
+    border: 1px solid rgba(224,191,191,0.5);
+    background: white;
+    color: var(--on-surface-variant);
+    font-size: 11px;
     font-weight: 700;
-    transition: all .2s;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .cat-pill:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-fixed);
   }
 
-  .category-pill:hover {
-    color: #9f1239;
-    border-color: #9f1239;
+  /* ─── Product Carousel ─── */
+  .carousel-section {
+    padding: 80px 0;
+    background: var(--surface);
   }
-
-  .catalog-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
+  .carousel-section-alt {
+    background: var(--surface-container-low);
   }
+  .carousel-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(224,191,191,0.3);
+    padding-bottom: 16px;
+    margin-bottom: 32px;
+  }
+  .carousel-header h2 {
+    font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+  .section-link {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--on-surface-variant);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s, gap 0.2s;
+    text-decoration: none;
+  }
+  .section-link:hover { color: var(--primary); gap: 8px; }
 
-  .catalog-item {
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    background: #fff;
-    overflow: hidden;
+  .product-scroll {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .product-scroll::-webkit-scrollbar { display: none; }
+
+  /* ─── Product Card ─── */
+  .p-card {
+    flex: 0 0 320px;
+    scroll-snap-align: start;
+    background: white;
+    border: 1px solid rgba(224,191,191,0.3);
     display: flex;
     flex-direction: column;
-    transition: box-shadow .2s;
+    transition: box-shadow 0.3s;
   }
-
-  .catalog-item:hover {
-    box-shadow: 0 10px 22px rgba(15, 23, 42, .09);
+  .p-card:hover { box-shadow: 0 8px 32px rgba(87,0,18,0.08); }
+  .p-card-img {
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--surface-container-low);
+    position: relative;
   }
-
-  .catalog-image {
-    height: 180px;
-    background: #f8fafc;
+  .p-card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .p-card:hover .p-card-img img { transform: scale(1.05); }
+  .p-card-img-placeholder {
+    width: 100%; height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--outline);
   }
-
-  .catalog-image img {
-    max-height: 100%;
-    max-width: 100%;
-    object-fit: contain;
+  .p-card-tags {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    gap: 4px;
   }
-
-  .catalog-body {
-    padding: 12px;
+  .p-card-body {
+    padding: 20px 24px;
     display: flex;
     flex-direction: column;
+    flex: 1;
     gap: 8px;
   }
-
-  .catalog-name {
-    font-size: 0.95rem;
-    line-height: 1.35;
-    font-weight: 800;
-    color: #111827;
-    min-height: 2.5em;
+  .p-card-category {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #8c7070;
   }
-
-  .catalog-desc {
-    font-size: 0.8rem;
-    color: #6b7280;
-    line-height: 1.4;
-    min-height: 2.7em;
+  .p-card-name {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--primary);
+    line-height: 1.3;
+    text-decoration: none;
   }
-
-  .catalog-cta {
+  .p-card-name:hover { color: var(--primary-container); }
+  .p-card-meta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid rgba(224,191,191,0.15);
+    border-bottom: 1px solid rgba(224,191,191,0.15);
+    padding: 12px 0;
+    margin: 4px 0;
+  }
+  .p-card-meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .p-card-meta-item .meta-label {
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #aaa;
+  }
+  .p-card-meta-item .meta-val {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--on-surface);
+  }
+  .p-card-cta {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    text-align: center;
+    background: var(--surface-container);
+    color: var(--primary);
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none;
     margin-top: auto;
-    display: inline-flex;
+  }
+  .p-card-cta:hover { background: var(--primary); color: white; }
+
+  /* ─── Festive Grid ─── */
+  .festive-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .festive-card {
+    background: var(--surface-container-lowest);
+    border: 1px solid rgba(224,191,191,0.2);
+    padding: 16px;
+    text-decoration: none;
+    display: block;
+    transition: box-shadow 0.2s;
+  }
+  .festive-card:hover { box-shadow: 0 4px 20px rgba(87,0,18,0.08); }
+  .festive-img {
+    aspect-ratio: 16/9;
+    background: var(--surface-container-low);
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .festive-img img { width: 100%; height: 100%; object-fit: cover; }
+  .festive-img-placeholder {
+    width: 100%; height: 100%;
+    display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 8px 10px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: #1f2937;
+    font-size: 9px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    transition: all .2s;
+    letter-spacing: 0.1em;
+    color: var(--outline);
+  }
+  .festive-name {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .festive-price {
+    font-size: 10px;
+    color: #8c7070;
   }
 
-  .catalog-cta:hover {
-    border-color: #9f1239;
-    color: #9f1239;
+  /* ─── Stats Section ─── */
+  .stats-section {
+    padding: 80px 0;
+    background: var(--surface-container-high);
+    border-top: 1px solid rgba(224,191,191,0.3);
+    border-bottom: 1px solid rgba(224,191,191,0.3);
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    text-align: center;
+  }
+  .stat-cell {
+    padding: 0 32px;
+    border-right: 1px solid rgba(224,191,191,0.3);
+  }
+  .stat-cell:last-child { border-right: none; }
+  .stat-num {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-weight: 900;
+    color: var(--primary);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .stat-lbl {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--on-surface-variant);
   }
 
-  @media (max-width: 1024px) {
-    .catalog-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  /* ─── CTA Banner ─── */
+  .cta-section {
+    padding: 100px 0;
+    background: var(--surface);
+    text-align: center;
+  }
+  .cta-title {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: var(--primary);
+    line-height: 0.95;
+    margin-bottom: 40px;
+  }
+  .cta-btns {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
   }
 
-  @media (max-width: 640px) {
-    .simple-hero {
-      padding: 18px;
-    }
+  /* ─── Shared Buttons ─── */
+  .wd-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--primary);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 14px 28px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+    border-radius: 2px;
+  }
+  .wd-btn-primary:hover { background: var(--primary-container); color: white; }
+  .wd-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 14px 28px;
+    border: 1px solid var(--outline);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    border-radius: 2px;
+  }
+  .wd-btn-outline:hover { background: var(--surface-container); }
+  .wd-btn-ghost-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--on-surface-variant);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .wd-btn-ghost-text:hover { color: var(--primary); }
+  .wd-btn-ghost-text:hover .material-symbols-outlined { transform: translateX(4px); }
+  .wd-btn-ghost-text .material-symbols-outlined { transition: transform 0.2s; }
+  .wd-btn-cta-lg {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--primary);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 20px 48px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+    text-decoration: none;
+    border-radius: 2px;
+  }
+  .wd-btn-cta-lg:hover { transform: scale(1.03); color: white; }
+  .wd-btn-outline-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 20px 48px;
+    border: 2px solid var(--primary);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    border-radius: 2px;
+  }
+  .wd-btn-outline-cta:hover { background: var(--primary); color: white; }
 
-    .catalog-grid {
-      grid-template-columns: 1fr;
-    }
+  /* ─── Badges ─── */
+  .wd-badge-bulk {
+    background: var(--secondary-container);
+    color: var(--on-secondary-fixed-variant);
+    font-size: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+  .wd-badge-featured {
+    background: var(--primary);
+    color: white;
+    font-size: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  /* ─── Container ─── */
+  .wd-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 1100px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-img-wrap { display: none; }
+    .bento-grid { grid-template-columns: repeat(2, 1fr); }
+    .bento-cell.tall { grid-row: span 1; }
+    .process-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .process-connector { display: none; }
+    .festive-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    .builder-inner { grid-template-columns: 1fr; }
+    .builder-img-wrap { display: none; }
+  }
+
+  @media (max-width: 768px) {
+    .trust-inner { flex-direction: column; align-items: flex-start; }
+    .bento-grid { grid-template-columns: 1fr; }
+    .process-grid { grid-template-columns: repeat(2, 1fr); }
+    .festive-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr; gap: 40px; }
+    .stat-cell { border-right: none; border-bottom: 1px solid rgba(224,191,191,0.3); padding-bottom: 40px; }
+    .stat-cell:last-child { border-bottom: none; }
+    .cta-btns { flex-direction: column; align-items: center; }
+  }
+
+  @media (max-width: 480px) {
+    .wd-container { padding: 0 16px; }
+    .p-card { flex-basis: 280px; }
+    .process-grid { grid-template-columns: 1fr; }
   }
 </style>
 {% endblock %}
+
 {% block content %}
-<div class="home-simple">
-  <section>
-    <div class="container">
-      <div class="simple-hero">
-        <h1 class="simple-title">Corporate Hampers, Easy to Browse</h1>
-        <p class="simple-subtitle">Explore categories, check featured catalog items, and send inquiry requests quickly.</p>
-        <div class="simple-actions">
-          <a href="{% url 'products' %}" class="btn btn-primary">Browse Catalog</a>
-          <a href="{% url 'corporate' %}" class="btn btn-outline">Start Inquiry</a>
-        </div>
+
+<!-- ═══════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-grid-overlay ledger-grid"></div>
+  <div class="hero-inner">
+    <!-- Left: Copy -->
+    <div>
+      <span class="hero-kicker">Enterprise Procurement</span>
+      <h1 class="hero-title">
+        Simplify Corporate<br>Gifting at Scale
+      </h1>
+      <p class="hero-sub">
+        High-performance procurement for corporate teams. Discover, customize, and procure premium gift kits in bulk — we handle the sourcing, branding, and logistics.
+      </p>
+      <div class="hero-actions">
+        <a href="{% url 'products' %}" class="wd-btn-primary">
+          Request Quote
+        </a>
+        <a href="{% url 'custom_hamper' %}" class="wd-btn-outline">
+          Build Custom Hamper
+        </a>
+        <a href="{% url 'products' %}" class="wd-btn-ghost-text">
+          Browse Catalog
+          <span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span>
+        </a>
       </div>
     </div>
-  </section>
 
-  <section class="simple-section">
-    <div class="container">
-      <h2 class="simple-heading">Categories</h2>
-      <div class="category-row">
-        {% for cat in categories|slice:":8" %}
-          <a href="{% url 'products' %}?category={{ cat.slug }}" class="category-pill">{{ cat.name }}</a>
-        {% empty %}
-          <a href="{% url 'products' %}" class="category-pill">All Products</a>
-        {% endfor %}
-        <a href="{% url 'products' %}" class="category-pill">View All</a>
+    <!-- Right: Image -->
+    <div class="hero-img-wrap">
+      <div class="hero-img-box">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJZxYxWWbU7GaPlnWl0VILxubzUld8XhuYZdTcjQteLhFURLG4XxF1Icq2_6cS8ifgqjxXd8Jeglm_F8XQhsNScAdYa5TE6iE1Hz7whzmZSRymHaIRiRhGwfIAuFGkU93B68GJ3WFN44bhyXd8n2OhGUMUFk6TLMtfX0I3bQUlM3Yty_gAqv5J9ZscCXQ4f0GM0hjVz7fhiEzpjVc8lKVEk70AG2_dm0Sq9NU-NJqj8k8pR_HGGJ8vnrgoq2YaQUAezvhmpxwySQ" alt="Premium corporate gift box">
+      </div>
+      <div class="hero-stat-badge">
+        <div class="num">10,000+</div>
+        <div class="lbl">Units Fulfilled Monthly</div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="simple-section">
-    <div class="container">
-      <div class="flex items-center justify-between mb-3 gap-3">
-        <h2 class="simple-heading mb-0">Featured Catalog</h2>
-        <a href="{% url 'products' %}" class="text-sm font-bold text-brand-red hover:underline">See All</a>
+<!-- ═══════════════════════════════════════════════
+     TRUST STRIP
+════════════════════════════════════════════════ -->
+<div class="trust-strip">
+  <div class="trust-inner">
+    <p class="trust-label">Trusted By Professionals</p>
+    <div class="trust-items">
+      <div class="trust-item">
+        <span class="material-symbols-outlined">groups</span>
+        HR Teams
       </div>
-
-      <div class="catalog-grid">
-        {% for product in featured_hampers|slice:":8" %}
-          <article class="catalog-item">
-            <a href="{% url 'product_detail' product.id %}" class="catalog-image">
-              {% if product.cover_image %}
-                <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
-              {% else %}
-                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">No Image</span>
-              {% endif %}
-            </a>
-            <div class="catalog-body">
-              <a href="{% url 'product_detail' product.id %}" class="catalog-name">{{ product.name }}</a>
-              <p class="catalog-desc">{{ product.short_description|default:"Available for bulk corporate orders." }}</p>
-              <a href="{% url 'corporate' %}?hamper={{ product.id }}&type=quote" class="catalog-cta">Request Quote</a>
-            </div>
-          </article>
-        {% empty %}
-          <div class="col-span-full border border-slate-200 bg-white p-6 text-center text-slate-600 rounded-lg">No featured products yet.</div>
-        {% endfor %}
+      <div class="trust-item">
+        <span class="material-symbols-outlined">admin_panel_settings</span>
+        Admin Teams
+      </div>
+      <div class="trust-item">
+        <span class="material-symbols-outlined">event</span>
+        Event Planners
       </div>
     </div>
-  </section>
+  </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════════════════════ -->
+<section class="process-section">
+  <div class="wd-container">
+    <div class="section-head">
+      <h2>Our Procurement Workflow</h2>
+      <div class="section-head-bar"></div>
+    </div>
+    <div class="process-grid">
+      <div class="process-connector"></div>
+      <div class="process-step">
+        <div class="process-step-icon">01</div>
+        <h3>Browse</h3>
+        <p>Systematic SKU discovery across categories curated for bulk professional gifting.</p>
+      </div>
+      <div class="process-step">
+        <div class="process-step-icon">02</div>
+        <h3>Shortlist / Build</h3>
+        <p>Utilize our digital workspace to compare kits or build unique hampers.</p>
+      </div>
+      <div class="process-step">
+        <div class="process-step-icon">03</div>
+        <h3>Submit Inquiry</h3>
+        <p>Specify volume requirements and timelines to initiate the formal bidding process.</p>
+      </div>
+      <div class="process-step">
+        <div class="process-step-icon">04</div>
+        <h3>Customization</h3>
+        <p>Direct access to our sourcing expertise and white-label branding capabilities.</p>
+      </div>
+      <div class="process-step">
+        <div class="process-step-icon">05</div>
+        <h3>Reliable Delivery</h3>
+        <p>Precision Pan-India logistics handling diverse multi-location distribution.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     VALUE PROPOSITION BENTO
+════════════════════════════════════════════════ -->
+<section class="value-section">
+  <div class="wd-container">
+    <div class="bento-grid">
+
+      <!-- Tall primary card -->
+      <div class="bento-cell tall">
+        <div>
+          <span class="material-symbols-outlined">verified</span>
+          <h3>No Vendor Chasing</h3>
+          <p>We act as your single point of contact, managing over 200+ micro-vendors to ensure quality consistency across every unit.</p>
+        </div>
+        <div class="bento-progress">
+          <div class="bento-progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- 2×2 small cards -->
+      <div class="bento-cell small">
+        <span class="material-symbols-outlined" style="font-size:24px;">inventory_2</span>
+        <h3>Bulk-Ready SKUs</h3>
+        <p>Inventory locked and secured for high-volume requirements without lead-time surprises.</p>
+      </div>
+      <div class="bento-cell small">
+        <span class="material-symbols-outlined" style="font-size:24px;">speed</span>
+        <h3>Fast Quotes</h3>
+        <p>Turnaround reduced to under 4 hours for standard catalog items.</p>
+      </div>
+      <div class="bento-cell small">
+        <span class="material-symbols-outlined" style="font-size:24px;">branding_watermark</span>
+        <h3>Custom Branding</h3>
+        <p>Laser engraving, embroidery, and premium packaging customization available.</p>
+      </div>
+      <div class="bento-cell small">
+        <span class="material-symbols-outlined" style="font-size:24px;">local_shipping</span>
+        <h3>Reliable Logistics</h3>
+        <p>Real-time tracking for bulk shipments across tier 1, 2, and 3 cities in India.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     CUSTOM KIT BUILDER
+════════════════════════════════════════════════ -->
+<section class="builder-section">
+  <div class="builder-inner">
+    <div>
+      <span class="builder-kicker">Proprietary Tool</span>
+      <h2 class="builder-title">The Custom Kit Builder™</h2>
+      <p class="builder-sub">
+        Move beyond off-the-shelf options. Our digital builder lets you select individual SKUs, define custom branding placements, and get real-time price estimates for unique bulk bundles.
+      </p>
+      <ul class="builder-features">
+        <li>
+          <span class="material-symbols-outlined">check_circle</span>
+          500+ Mix-and-match SKUs
+        </li>
+        <li>
+          <span class="material-symbols-outlined">check_circle</span>
+          Automated MOQ validation
+        </li>
+        <li>
+          <span class="material-symbols-outlined">check_circle</span>
+          PDF Proposal Generator
+        </li>
+      </ul>
+      <a href="{% url 'custom_hamper' %}" style="display:inline-flex;align-items:center;gap:6px;background:white;color:var(--primary);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;padding:18px 40px;border:none;cursor:pointer;transition:background 0.2s;text-decoration:none;border-radius:2px;">
+        Launch Builder
+      </a>
+    </div>
+    <div class="builder-img-wrap">
+      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKWCzjrxNpSr6KRH_T14D0ehmR7NBMiDgHKfRgJVuGP2gD3B13ugqQnpjPc-NgDFJrQr19YjhZaswIIeih5WSZTZKRANMLi4dJ3zOEvjxDpcYYWDrEWSQV9_ZETVZEJX4PZtbDU_a2lEm7mrWV0o9SIfe5OPYp8v89bb-R2r7lW5mwhkPcU6rLpKLkO9hn341yoz-mTDSdlLGxmlt9nuPasj4TNVK0b50DCJpu61KiRxkoMW0Fi-2708J5DXBEs-BG0PRo6qMFyA" alt="Custom kit builder workspace">
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     CATEGORY PILLS
+════════════════════════════════════════════════ -->
+<section class="carousel-section">
+  <div class="wd-container">
+    <div class="carousel-header" style="margin-bottom:24px;">
+      <h2>Browse By Category</h2>
+    </div>
+    <div class="pill-row">
+      {% for cat in categories|slice:":10" %}
+        <a href="{% url 'products' %}?category={{ cat.slug }}" class="cat-pill">{{ cat.name }}</a>
+      {% empty %}
+        <a href="{% url 'products' %}" class="cat-pill">All Products</a>
+        <a href="{% url 'products' %}?category=corporate" class="cat-pill">Corporate</a>
+        <a href="{% url 'products' %}?category=festive" class="cat-pill">Festive</a>
+        <a href="{% url 'products' %}?category=wellness" class="cat-pill">Wellness</a>
+        <a href="{% url 'products' %}?category=custom" class="cat-pill">Custom Hampers</a>
+        <a href="{% url 'products' %}?category=eco" class="cat-pill">Eco-Friendly</a>
+        <a href="{% url 'products' %}?category=tech" class="cat-pill">Tech & Productivity</a>
+        <a href="{% url 'products' %}?category=gourmet" class="cat-pill">Gourmet Food</a>
+      {% endfor %}
+    </div>
+
+    <!-- Featured Hampers Carousel -->
+    <div class="carousel-header">
+      <h2>Featured Hampers</h2>
+      <a href="{% url 'products' %}" class="section-link">
+        View All Catalog
+        <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+      </a>
+    </div>
+
+    <div class="product-scroll" id="productScroll">
+      {% for product in featured_hampers|slice:":10" %}
+        <article class="p-card">
+          <a href="{% url 'product_detail' product.id %}" class="p-card-img">
+            {% if product.cover_image %}
+              <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
+            {% else %}
+              <div class="p-card-img-placeholder">No Image</div>
+            {% endif %}
+            <div class="p-card-tags">
+              {% if product.is_featured %}<span class="wd-badge-featured">Featured</span>{% endif %}
+              {% if product.is_new %}<span class="wd-badge-bulk">New</span>{% endif %}
+            </div>
+          </a>
+          <div class="p-card-body">
+            <span class="p-card-category">{{ product.category|default:"Corporate" }}</span>
+            <a href="{% url 'product_detail' product.id %}" class="p-card-name">{{ product.name }}</a>
+            <div class="p-card-meta-row">
+              <div class="p-card-meta-item">
+                <span class="meta-label">MOQ</span>
+                <span class="meta-val">{{ product.min_quantity|default:"25" }} Units</span>
+              </div>
+              <div class="p-card-meta-item">
+                <span class="meta-label">Lead Time</span>
+                <span class="meta-val">{{ product.lead_time|default:"7-10 Days" }}</span>
+              </div>
+            </div>
+            <a href="{% url 'corporate' %}?hamper={{ product.id }}&type=quote" class="p-card-cta">
+              Shortlist For Inquiry
+            </a>
+          </div>
+        </article>
+      {% empty %}
+        <!-- Placeholder cards -->
+        <article class="p-card">
+          <a href="{% url 'products' %}" class="p-card-img">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGk4kqNI1PgJdIKEPtHSpb4ZRi3ZDFNegjKEIqYyCkb0NTLb35TPVzLz0cUQUelIwLG6Yhe602IOrCBlsKRJfo-vsREM2SjtQ-UuIMonme086A84GL7fHc4FMq0ioaORgiUB0Ov0vVB-EmzIZ-GZi8bbsTbJfhwwCDiydb1Hf3u8t_sXE7GVMdHCVpoe2TAQgyiYLwotwHH7GfVGoE5Dpd84I4Z91E_quSgSa4_B3tqV7klPMJ5jmbWzku2pkFTfyz_9brod7DnQ" alt="Executive Zen Suite" loading="lazy">
+            <div class="p-card-tags"><span class="wd-badge-bulk">Bulk Friendly</span></div>
+          </a>
+          <div class="p-card-body">
+            <span class="p-card-category">Wellness &amp; Lifestyle</span>
+            <a href="{% url 'products' %}" class="p-card-name">Executive Zen Suite</a>
+            <div class="p-card-meta-row">
+              <div class="p-card-meta-item"><span class="meta-label">MOQ</span><span class="meta-val">50 Units</span></div>
+              <div class="p-card-meta-item"><span class="meta-label">Lead Time</span><span class="meta-val">7-10 Days</span></div>
+            </div>
+            <a href="{% url 'corporate' %}" class="p-card-cta">Shortlist For Inquiry</a>
+          </div>
+        </article>
+        <article class="p-card">
+          <a href="{% url 'products' %}" class="p-card-img">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwsbC9Skc5GOcEqUQ2S8bRJdAEF-DvpMLI4FCAlYAhd5PYmdq8lG0hyQUJlNxwsXNHKV2oDKqfQ7HLWiEUfAaHJuZiIJO-SrkxTBdt6HNGYTF7Wz7Oib1ZBD13YdJp30Pitgn06KNTKQTxCxp6LyvkcKyJhrqdt0v-QKsgzWhnQROs7iKfi7H7Dl9tGPE24v8EdqD2obbJVYumBjNh-KMPRSA7RQcsBTFwniMcPQn35AChz-cMPS0nost4fZInkMBBDOWuWPnesw" alt="Digital Nomad Kit" loading="lazy">
+            <div class="p-card-tags"><span class="wd-badge-bulk">Bulk Friendly</span></div>
+          </a>
+          <div class="p-card-body">
+            <span class="p-card-category">Tech &amp; Productivity</span>
+            <a href="{% url 'products' %}" class="p-card-name">Digital Nomad Kit</a>
+            <div class="p-card-meta-row">
+              <div class="p-card-meta-item"><span class="meta-label">MOQ</span><span class="meta-val">25 Units</span></div>
+              <div class="p-card-meta-item"><span class="meta-label">Lead Time</span><span class="meta-val">12-15 Days</span></div>
+            </div>
+            <a href="{% url 'corporate' %}" class="p-card-cta">Shortlist For Inquiry</a>
+          </div>
+        </article>
+        <article class="p-card">
+          <a href="{% url 'products' %}" class="p-card-img">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1FStIw2PkeHosUS-sDC1d5J73BXxbY-eELNQm2LnWppBVlk9N8R1T61m5DfxFhq6BvbIszuNqtqA9BKURlKvB7_U08Xpc_wOSYnUN-Myww2wy3Sx-HXjK-PIyIVhA4NF4N5V9ya4_rAKaM6baCS7-xx9ZLT1hOVqzUyNqDnrnXo-PR-P1us71O7U7TH_iMuhqOxI8UIaR_TS8LOMzkuA-eKrihaA_wb5sb8WwzXzkKpJG1Bi9SnBECQ7WOFWB-KjMp3kYTemD4g" alt="Green Office Box" loading="lazy">
+            <div class="p-card-tags"><span class="wd-badge-bulk">Bulk Friendly</span></div>
+          </a>
+          <div class="p-card-body">
+            <span class="p-card-category">Eco-Sustainability</span>
+            <a href="{% url 'products' %}" class="p-card-name">Green Office Box</a>
+            <div class="p-card-meta-row">
+              <div class="p-card-meta-item"><span class="meta-label">MOQ</span><span class="meta-val">100 Units</span></div>
+              <div class="p-card-meta-item"><span class="meta-label">Lead Time</span><span class="meta-val">15 Days</span></div>
+            </div>
+            <a href="{% url 'corporate' %}" class="p-card-cta">Shortlist For Inquiry</a>
+          </div>
+        </article>
+        <article class="p-card">
+          <a href="{% url 'products' %}" class="p-card-img">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq3BPrrD2GFxjX3EyhtNXagSvxLvVkHeDOIkozyQFkvUuORr21vVLX_UdxoiZ2CYReCrbtOPt_P0OjHdMOA6p6YOoa-GiStboU0cELetC87c858H-i5KEVzaVpidpu6b6OlTpGZWHJjKAU6N1eKAm3BB8WZYFaYTm0cZdlBR83_wB8F1N_TuhIRdNh2ioajTvTl7Z_MDjK6Rt0pSSWnGwHIBHjqJtjy_5KMcsLUixbOkKncn9DyBqFEnP_nDEeEJCt5NDiVixFiA" alt="Barista's Choice" loading="lazy">
+            <div class="p-card-tags"><span class="wd-badge-bulk">Bulk Friendly</span></div>
+          </a>
+          <div class="p-card-body">
+            <span class="p-card-category">Gourmet Food</span>
+            <a href="{% url 'products' %}" class="p-card-name">Barista's Choice</a>
+            <div class="p-card-meta-row">
+              <div class="p-card-meta-item"><span class="meta-label">MOQ</span><span class="meta-val">30 Units</span></div>
+              <div class="p-card-meta-item"><span class="meta-label">Lead Time</span><span class="meta-val">5-7 Days</span></div>
+            </div>
+            <a href="{% url 'corporate' %}" class="p-card-cta">Shortlist For Inquiry</a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     FESTIVE HAMPERS
+════════════════════════════════════════════════ -->
+<section class="carousel-section carousel-section-alt">
+  <div class="wd-container">
+    <div class="carousel-header">
+      <h2>Festive Hampers</h2>
+      <a href="{% url 'products' %}?category=festive" class="section-link">
+        Seasonal Collection
+        <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+      </a>
+    </div>
+    <div class="festive-grid">
+      <a href="{% url 'products' %}?category=diwali" class="festive-card">
+        <div class="festive-img">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQN-BXUc0Dl8NdkZNMiTV1tyd301jMyhMJ1cDwFidPSsnRrpl5ct9vGIIfKi1HhEZKqf3ZG2WNdesWxR6IHNCieIig9g2pcgBSDyx2OLcYkcqUfEhJviZio0lQvLhDcPYT5CduABe9GqwCiGWFWq62BSubbO13gpOhmQBThJcZ_oy0Q4fNt-ow96xdg7cTeqT1eTB28DE_sRAZ1jMmFiw5aLJDswoAPboeg19uut6Zvge_I4sDg7n1_h57gqpzuLCDLJYUuasu0g" alt="Diwali Grandeur">
+        </div>
+        <div class="festive-name">Diwali Grandeur</div>
+        <div class="festive-price">From ₹2,450 / Unit</div>
+      </a>
+      <a href="{% url 'products' %}?category=christmas" class="festive-card">
+        <div class="festive-img">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbPrR0WXCbbna3moxk9Jg-4UDBrSOBv3lQwv16Mn7RxTGN-RzILqHgLdR-ug0gfANF0qFd-61Hc59CnrcwUCby9O00JHyqCXEXNNkclYhkaMJqsOVqXZJTgkixyBfHr7v468UV4ql_UvASYt5UBnUlK_79gG_x-HWxcRIcIoqSa78rC-yfiog68PFuo2C3EQr_h-WXwI8DTr1DjzgoYCohUAyoXUhfcnYlcpW6Ar6ACm9o0ojaHlcCBVyuIkjmSlNae-qKzsqcgw" alt="Yuletide Spirit">
+        </div>
+        <div class="festive-name">Yuletide Spirit</div>
+        <div class="festive-price">From ₹1,800 / Unit</div>
+      </a>
+      <a href="{% url 'products' %}?category=celebration" class="festive-card">
+        <div class="festive-img">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtkcu1tLE-HlJoM9AnZ2IayIpRMx-v4CUQwZJQiiTAlDamI2Rl5bZSwuZ8Amm6Rn6mCe20tZahDyivxA2NXpiD6c9eUQXOpr41BE35-bIFhswe6X8ulEa9hhsXtmt36qpSU4vG8vQ8th6evaM_-pP1QHVYHnpEl-NbvgGnIw9SKbnI5-eMd0RbpWVnLpLbHEX7eKTI3evKo00mIvnBSEMnTSNy4uPTvWYmyaDvogV3o7E3XJPMkVCh1rRm783xQ8r_KnRdeoMqgg" alt="Achievement Gala">
+        </div>
+        <div class="festive-name">Achievement Gala</div>
+        <div class="festive-price">From ₹3,200 / Unit</div>
+      </a>
+      <a href="{% url 'products' %}?category=rewards" class="festive-card">
+        <div class="festive-img">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_GB9kUZ1_vK0lYrWvw70qjrJ1DBbgxiqWpzbWeqxqsYZ5zZbqFU4dr-GzDXNNN9qVAb9Je4aWC7t9ECeUthGEXfgV4qL_Zx3Pembpyjf4juAkolErPsQu-_emugxQHQHRyzMH1sICCjfuxoonB7Lg3BrEszohcbkT5TazUZv2CX_-tVaBBbdhVoycez-ZYI8KWgwLNmrHCHqmwggiOLO3wIfVT7U2H0D46RpYOyV9lmg_8bajlo3MsUBipTC73ZzMgSvt9FvnmQ" alt="Annual Rewards">
+        </div>
+        <div class="festive-name">Annual Rewards</div>
+        <div class="festive-price">From ₹1,200 / Unit</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     TRUST METRICS
+════════════════════════════════════════════════ -->
+<section class="stats-section">
+  <div class="wd-container">
+    <div class="stats-grid">
+      <div class="stat-cell">
+        <div class="stat-num">50+</div>
+        <div class="stat-lbl">Global Fortune Clients</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">5,000+</div>
+        <div class="stat-lbl">Kits Delivered Monthly</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">100%</div>
+        <div class="stat-lbl">Verified Supply Chain</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     FINAL CTA
+════════════════════════════════════════════════ -->
+<section class="cta-section">
+  <div class="wd-container">
+    <h2 class="cta-title">Ready to start your<br>procurement?</h2>
+    <div class="cta-btns">
+      <a href="{% url 'corporate' %}" class="wd-btn-cta-lg">
+        Request Quote
+      </a>
+      <a href="{% url 'corporate' %}#contact" class="wd-btn-outline-cta">
+        Contact Us
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var track = document.getElementById('productScroll');
+  if (!track) return;
+  var STEP = 340;
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight') track.scrollBy({ left: STEP, behavior: 'smooth' });
+    if (e.key === 'ArrowLeft')  track.scrollBy({ left: -STEP, behavior: 'smooth' });
+  });
+})();
+</script>
 {% endblock %}

@@ -1,1044 +1,688 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block title %}Wrapp Delights{% endblock %}</title>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>{% block title %}WrappDelights | Corporate Gifting{% endblock %}</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<!-- Design System Tokens -->
+<script id="tailwind-config">
   tailwind.config = {
+    darkMode: "class",
     theme: {
       extend: {
         colors: {
-          brand: {
-            red: '#80011F',
-            dark: '#650018',
-            blush: '#FFF3F4'
-          }
-        }
-      }
-    }
+          /* ─── Primary (Burgundy/Crimson) ─── */
+          "primary":                    "#570012",
+          "on-primary":                 "#ffffff",
+          "primary-container":          "#80011f",
+          "on-primary-container":       "#ff8389",
+          "primary-fixed":              "#ffdada",
+          "primary-fixed-dim":          "#ffb3b4",
+          "on-primary-fixed":           "#40000b",
+          "on-primary-fixed-variant":   "#8e1027",
+          "inverse-primary":            "#ffb3b4",
+          "surface-tint":               "#af2c3c",
+
+          /* ─── Secondary (Forest Green) ─── */
+          "secondary":                  "#3b6934",
+          "on-secondary":               "#ffffff",
+          "secondary-container":        "#b9eeab",
+          "on-secondary-container":     "#3f6d38",
+          "secondary-fixed":            "#bcf0ae",
+          "secondary-fixed-dim":        "#a1d494",
+          "on-secondary-fixed":         "#002201",
+          "on-secondary-fixed-variant": "#23501e",
+
+          /* ─── Tertiary (Teal) ─── */
+          "tertiary":                   "#002c37",
+          "on-tertiary":                "#ffffff",
+          "tertiary-container":         "#004453",
+          "on-tertiary-container":      "#7db1c2",
+          "tertiary-fixed":             "#b6ebfd",
+          "tertiary-fixed-dim":         "#9acfe1",
+          "on-tertiary-fixed":          "#001f27",
+          "on-tertiary-fixed-variant":  "#114d5c",
+
+          /* ─── Error ─── */
+          "error":                      "#ba1a1a",
+          "on-error":                   "#ffffff",
+          "error-container":            "#ffdad6",
+          "on-error-container":         "#93000a",
+
+          /* ─── Surfaces ─── */
+          "background":                 "#fcf9f8",
+          "on-background":              "#1c1b1b",
+          "surface":                    "#fcf9f8",
+          "on-surface":                 "#1c1b1b",
+          "surface-variant":            "#e5e2e1",
+          "on-surface-variant":         "#584141",
+          "surface-bright":             "#fcf9f8",
+          "surface-dim":                "#dcd9d9",
+          "surface-container-lowest":   "#ffffff",
+          "surface-container-low":      "#f6f3f2",
+          "surface-container":          "#f0eded",
+          "surface-container-high":     "#eae7e7",
+          "surface-container-highest":  "#e5e2e1",
+          "inverse-surface":            "#313030",
+          "inverse-on-surface":         "#f3f0ef",
+
+          /* ─── Outline ─── */
+          "outline":                    "#8c7070",
+          "outline-variant":            "#e0bfbf",
+        },
+        fontFamily: {
+          "headline": ["Inter"],
+          "body":     ["Inter"],
+          "label":    ["Inter"],
+        },
+        /* Architectural sharp-to-soft radius scale */
+        borderRadius: {
+          "DEFAULT": "0.125rem",
+          "lg":      "0.25rem",
+          "xl":      "0.5rem",
+          "full":    "0.75rem",
+        },
+      },
+    },
   };
 </script>
+
 <style>
-:root {
-  --gold: #80011F;
-  --gold-light: #9a1a38;
-  --gold-dim: rgba(128,1,31,0.12);
-  --gold-border: rgba(128,1,31,0.24);
-  --obsidian: #0F172A;
-  --charcoal: #1F2937;
-  --surface: #F9FAFB;
-  --surface-raised: #FFFFFF;
-  --surface-high: #FFFFFF;
-  --fog: #FFFBEF;
-  --fog-deep: #EEF2F7;
-  --ash: #555555;
-  --mist: #98A2B3;
-  --ink: #111111;
-  --white: #fff;
-  --max-w: 1240px;
-  --radius: 14px;
-  --radius-sm: 10px;
-  --transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: var(--fog);
-  color: var(--ink);
-  line-height: 1.55;
-  -webkit-font-smoothing: antialiased;
-}
-
-a { text-decoration: none; color: inherit; }
-img { max-width: 100%; display: block; }
-button, input, textarea, select { font-family: inherit; font-size: inherit; }
-
-.container {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
-.site-top-strip {
-  background: #fff;
-  border-bottom: 1px solid #E4E7EC;
-  color: #667085;
-  font-size: .72rem;
-}
-
-.site-top-strip .container {
-  min-height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.site-header-main {
-  background: #fff;
-  border-bottom: 1px solid #E4E7EC;
-}
-
-.site-header-main .container {
-  min-height: 82px;
-  display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) auto;
-  gap: 16px;
-  align-items: center;
-}
-
-.brand-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.brand-link img {
-  height: 42px;
-  width: auto;
-}
-
-.brand-copy strong {
-  display: block;
-  font-size: .92rem;
-  line-height: 1.1;
-}
-
-.brand-copy span {
-  font-size: .62rem;
-  color: #667085;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-}
-
-.site-search {
-  position: relative;
-}
-
-.site-search input {
-  width: 100%;
-  height: 40px;
-  border: 1px solid #D0D5DD;
-  border-radius: 999px;
-  padding: 0 40px 0 14px;
-  font-size: .82rem;
-  background: #fff;
-}
-
-.site-search input:focus {
-  outline: none;
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(128,1,31,.1);
-}
-
-.site-search button {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #667085;
-}
-
-.site-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.site-actions a {
-  font-size: .76rem;
-  font-weight: 700;
-  color: #475467;
-}
-
-.site-actions a:hover {
-  color: var(--gold);
-}
-
-.site-primary-nav {
-  background: #fff;
-  border-bottom: 1px solid #E4E7EC;
-}
-
-.site-primary-nav .container {
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  overflow-x: auto;
-}
-
-.mobile-nav-toggle {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid #D0D5DD;
-  border-radius: 8px;
-  background: #fff;
-  color: #475467;
-  flex-shrink: 0;
-}
-
-.mobile-nav-toggle:hover {
-  border-color: var(--gold-border);
-  color: var(--gold);
-}
-
-.site-primary-nav-links {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  overflow-x: auto;
-}
-
-.site-primary-nav a {
-  font-size: .75rem;
-  font-weight: 700;
-  color: #475467;
-  padding: 7px 12px;
-  border-radius: 8px;
-  white-space: nowrap;
-}
-
-.site-primary-nav a:hover,
-.site-primary-nav a.active {
-  color: var(--gold);
-  background: #FFF3F4;
-}
-
-main { padding-top: 16px; }
-
-/* ─── TOPBAR ─── */
-.topbar {
-  background: #F9FAFB;
-  color: #6B7280;
-  font-size: .7rem;
-  letter-spacing: .4px;
-  padding: 7px 0;
-  font-weight: 600;
-  text-transform: none;
-  border-bottom: 1px solid rgba(0,0,0,.06);
-}
-.topbar .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.topbar a {
-  color: var(--gold);
-  font-weight: 800;
-  letter-spacing: .2px;
-  transition: opacity .2s;
-}
-.topbar a:hover { opacity: .8; }
-
-/* ─── NAV ─── */
-.nav {
-  position: relative;
-  background: #fff;
-  border-bottom: 1px solid rgba(0,0,0,.08);
-  box-shadow: none;
-}
-.nav .container {
-  height: 78px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.brand {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--ink);
-  letter-spacing: .2px;
-  margin-right: 12px;
-  flex-shrink: 0;
-}
-.brand span { color: var(--gold); }
-
-.nav-links {
-  display: flex;
-  gap: 2px;
-  flex-wrap: wrap;
-  flex: 1;
-}
-.nav-links a {
-  font-size: .72rem;
-  color: var(--mist);
-  padding: 7px 11px;
-  border-radius: 6px;
-  transition: all .2s var(--transition);
-  font-weight: 500;
-  letter-spacing: .3px;
-  white-space: nowrap;
-}
-.nav-links a:hover,
-.nav-links a.active {
-  color: var(--gold-light);
-  background: rgba(201,162,74,.1);
-}
-.nav-links a.active {
-  border-bottom: 1px solid var(--gold);
-}
-
-.nav-right {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-}
-.nav-search-wrap {
-  position: relative;
-}
-.nav-search-wrap svg {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--ash);
-  pointer-events: none;
-}
-.nav-right .search {
-  width: 210px;
-  padding: 8px 10px 8px 32px;
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 8px;
-  color: var(--white);
-  font-size: .76rem;
-  transition: all .2s;
-}
-.nav-right .search::placeholder { color: var(--ash); }
-.nav-right .search:focus {
-  outline: none;
-  border-color: var(--gold-border);
-  background: rgba(255,255,255,.09);
-}
-
-/* ─── BUTTONS ─── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
-  padding: 9px 16px;
-  font-size: .78rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .2s var(--transition);
-  letter-spacing: .3px;
-  white-space: nowrap;
-}
-.btn-primary {
-  background: linear-gradient(135deg, #80011F 0%, #680018 100%);
-  color: #fff;
-  border-color: #680018;
-}
-.btn-primary:hover {
-  background: linear-gradient(135deg, #8e1430 0%, #72041f 100%);
-  border-color: #72041f;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(128, 1, 31, 0.22);
-}
-.btn-outline {
-  background: transparent;
-  border-color: rgba(0,0,0,.18);
-  color: var(--ink);
-}
-.btn-outline:hover {
-  border-color: var(--gold-border);
-  color: var(--gold);
-  background: rgba(200,16,46,.06);
-}
-.btn-outline-dark {
-  background: transparent;
-  border-color: rgba(0,0,0,.2);
-  color: var(--ink);
-}
-.btn-outline-dark:hover {
-  border-color: var(--gold);
-  color: #7a5c17;
-  background: rgba(201,162,74,.08);
-}
-
-/* ─── PRODUCT CARD ─── */
-.product-card {
-  background: #fff;
-  border: 1px solid #e4e7ec;
-  border-radius: var(--radius);
-  overflow: hidden;
-  transition: transform .28s var(--transition), box-shadow .28s var(--transition);
-  cursor: pointer;
-  position: relative;
-}
-.product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 34px rgba(16, 24, 40, .13);
-}
-.product-card:hover .card-img img {
-  transform: scale(1.04);
-}
-.card-img {
-  height: 200px;
-  background: var(--fog-deep);
-  overflow: hidden;
-  position: relative;
-}
-.card-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform .5s var(--transition);
-}
-.card-img-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ash);
-  font-size: .75rem;
-  letter-spacing: .5px;
-  text-transform: uppercase;
-}
-.card-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: var(--charcoal);
-  color: var(--gold-light);
-  font-size: .62rem;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 999px;
-  letter-spacing: .5px;
-  text-transform: uppercase;
-}
-.card-body { padding: 14px 14px 10px; }
-.card-cat {
-  font-size: .63rem;
-  color: var(--ash);
-  text-transform: uppercase;
-  letter-spacing: .7px;
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-.card-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.18rem;
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 5px;
-  line-height: 1.3;
-}
-.card-desc {
-  font-size: .73rem;
-  color: var(--ash);
-  display: -webkit-box;
-  line-clamp: 2;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-height: 1.5;
-}
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 12px;
-  padding: 10px 14px;
-  border-top: 1px solid #eaecf0;
-  gap: 8px;
-}
-.price-pill {
-  font-size: .68rem;
-  background: #fff3f4;
-  color: #9f1239;
-  border: 1px solid var(--gold-border);
-  padding: 4px 9px;
-  border-radius: 999px;
-  font-weight: 600;
-  letter-spacing: .2px;
-}
-
-/* ─── SECTION / GRID ─── */
-.section { padding: 40px 0; }
-.section-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.section-head h2 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.7rem;
-  font-weight: 600;
-}
-.section-head p { font-size: .78rem; color: var(--ash); }
-
-.carousel-row {
-  display: flex;
-  gap: 14px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 8px;
-  scrollbar-width: none;
-}
-.carousel-row::-webkit-scrollbar { display: none; }
-.carousel-row .product-card {
-  flex: 0 0 270px;
-  scroll-snap-align: start;
-}
-
-.grid-auto {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 14px;
-}
-
-.empty {
-  text-align: center;
-  padding: 60px 10px;
-  color: var(--ash);
-}
-
-/* ─── FORM ─── */
-.form-group { margin-bottom: 13px; }
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  color: var(--ash);
-  font-size: .74rem;
-  font-weight: 500;
-  letter-spacing: .3px;
-}
-.form-input {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid #d0d5dd;
-  background: #fff;
-  color: var(--ink);
-  font-size: .82rem;
-  transition: border-color .2s;
-}
-.form-input:focus {
-  outline: none;
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.12);
-}
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-/* ─── FOOTER ─── */
-.footer {
-  background: #fff;
-  color: #6B7280;
-  font-size: .74rem;
-  margin-top: 0;
-  border-top: 1px solid rgba(0,0,0,.08);
-}
-.footer-inner {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
-  gap: 20px;
-  padding: 36px 0 28px;
-}
-.footer-brand {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 8px;
-}
-.footer-brand span { color: var(--gold); }
-.footer-col h5 {
-  color: #374151;
-  font-size: .7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .8px;
-  margin-bottom: 10px;
-}
-.footer-col a {
-  display: block;
-  margin-bottom: 6px;
-  color: #6B7280;
-  transition: color .2s;
-}
-.footer-col a:hover { color: var(--gold); }
-.footer-bottom {
-  border-top: 1px solid rgba(0,0,0,.08);
-  padding: 14px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: .68rem;
-  color: #9CA3AF;
-}
-
-/* ─── WA FLOAT ─── */
-.wa-float {
-  position: fixed;
-  right: 22px;
-  bottom: 22px;
-  z-index: 60;
-  background: #25D366;
-  color: #fff;
-  width: 52px;
-  height: 52px;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 24px rgba(37,211,102,.4);
-  font-size: 1.3rem;
-  font-weight: 700;
-  transition: transform .2s var(--transition), box-shadow .2s;
-}
-.wa-float:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 14px 32px rgba(37,211,102,.5);
-}
-.wa-float svg { width: 24px; height: 24px; }
-
-/* ─── DIVIDER ─── */
-.gold-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-border), transparent);
-  margin: 2px 0;
-}
-
-/* ─── MEDIA ─── */
-@media (max-width: 960px) {
-  .nav-links { display: none; }
-  .nav-right .search { width: 160px; }
-  .footer-inner { grid-template-columns: 1fr 1fr; }
-  .site-header-main .container {
-    grid-template-columns: 1fr;
-    padding-top: 10px;
-    padding-bottom: 10px;
+  /* ─── Material Symbols ─── */
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
   }
-  .site-actions { justify-content: flex-start; }
-  .site-top-strip .container {
-    align-items: flex-start;
-    flex-direction: column;
-    padding-top: 6px;
-    padding-bottom: 6px;
+
+  /* ─── Base ─── */
+  body {
+    background-color: #fcf9f8;
+    color: #1c1b1b;
+    font-family: 'Inter', sans-serif;
   }
-  .site-top-strip .container > div:last-child {
-    width: 100%;
-    justify-content: space-between;
-  }
-}
-@media (max-width: 640px) {
-  .container { padding: 0 16px; }
-  .form-row { grid-template-columns: 1fr; }
-  .nav-right .search { display: none; }
-  .carousel-row .product-card { flex-basis: 220px; }
-  .footer-inner { grid-template-columns: 1fr; }
-  .footer-bottom { flex-direction: column; gap: 6px; text-align: center; }
-  .site-top-strip .container { min-height: 30px; }
-  .site-primary-nav .container { min-height: 40px; }
-  .site-actions {
-    width: 100%;
-    gap: 6px;
-  }
-  .site-actions a,
-  .site-actions form {
-    flex: 1 1 auto;
-  }
-  .site-actions a,
-  .site-actions button {
-    display: inline-flex;
-    justify-content: center;
-    padding: 8px 10px;
-    border: 1px solid #E4E7EC;
-    border-radius: 8px;
-    background: #fff;
-  }
-  .mobile-nav-toggle {
-    display: inline-flex;
-  }
-  .site-primary-nav .container {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    overflow: visible;
-  }
-  .site-primary-nav-links {
-    display: none;
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-    overflow: visible;
-  }
-  .site-primary-nav.is-open .site-primary-nav-links {
+
+  /* ─── Scrollbar ─── */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* ─── Selection ─── */
+  ::selection { background: #80011f; color: #fff; }
+
+  /* ─── Shared reusable component classes ─── */
+
+  /* Product Card */
+  .wd-card {
+    background: #ffffff;
+    border: 1px solid transparent;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
     display: flex;
+    flex-direction: column;
   }
-  .site-primary-nav a {
+  .wd-card:hover {
+    border-color: rgba(224, 191, 191, 0.3);
+    box-shadow: 0 4px 24px rgba(87, 0, 18, 0.08);
+  }
+  .wd-card:hover .wd-card-img img {
+    transform: scale(1.05);
+  }
+  .wd-card-img {
+    overflow: hidden;
+    background: #eae7e7;
+    position: relative;
+  }
+  .wd-card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  /* Badge */
+  .wd-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+  .wd-badge-primary {
+    border: 1px solid #570012;
+    color: #570012;
+  }
+  .wd-badge-secondary {
+    border: 1px solid #3b6934;
+    color: #3b6934;
+  }
+  .wd-badge-surface {
+    background: #b9eeab;
+    color: #23501e;
+  }
+
+  /* CTA Buttons */
+  .wd-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+  }
+  .wd-btn:active { transform: scale(0.98); }
+
+  .wd-btn-primary {
+    background: #570012;
+    color: #fff;
+  }
+  .wd-btn-primary:hover { background: #8e1027; }
+
+  .wd-btn-outline {
+    background: transparent;
+    border: 1px solid rgba(140, 112, 112, 0.35);
+    color: #570012;
+  }
+  .wd-btn-outline:hover { background: #f6f3f2; }
+
+  /* Form Inputs */
+  .wd-input {
     width: 100%;
-    text-align: center;
+    background: #ffffff;
+    border: 1px solid rgba(224, 191, 191, 0.5);
+    color: #1c1b1b;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    padding: 10px 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    border-radius: 2px;
   }
-}
-
-.catalog-panel {
-  background: #fff;
-  border: 1px solid #E4E7EC;
-  border-radius: 14px;
-  box-shadow: 0 8px 18px rgba(16, 24, 40, 0.04);
-}
-
-.catalog-kicker {
-  font-size: .69rem;
-  text-transform: uppercase;
-  letter-spacing: .16em;
-  font-weight: 800;
-  color: #9f1239;
-}
-
-/* ─── Shared Utilities ─── */
-.clamp-1 { display: -webkit-box; line-clamp: 1; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-.clamp-2 { display: -webkit-box; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-/* ─── Mega Menu (Catalog Navbar) ─── */
-.mega-menu {
-  position: absolute;
-  left: 0;
-  top: calc(100% + 1px);
-  min-width: 760px;
-  background: #fff;
-  border: 1px solid rgba(0,0,0,.08);
-  border-top: 0;
-  display: none;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-  padding: 16px;
-  z-index: 2147483647;
-  box-shadow: 0 6px 16px rgba(0,0,0,.08);
-  max-height: calc(100vh - 120px);
-  overflow: auto;
-}
-.mega-menu .mega-col h4 {
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: .2px;
-  color: var(--ink);
-  margin-bottom: 8px;
-  text-transform: uppercase;
-}
-.mega-menu .mega-col a {
-  display: block;
-  font-size: 13px;
-  color: #374151;
-  padding: 6px 0;
-  border-bottom: 1px solid rgba(0,0,0,.04);
-}
-.mega-menu .mega-col a:last-child { border-bottom: 0; }
-.nav-item:hover .mega-menu,
-.nav-item:focus-within .mega-menu { display: grid; }
-.nav-item.mega-open .mega-menu { display: grid; }
-
-.category-navbar { position: relative; z-index: 200; }
-
-.category-navbar { overflow: visible; }
-.category-nav-scroll {
-  overflow-x: auto;
-  overflow-y: visible;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  position: relative;
-  z-index: 2147483630;
-}
-.category-nav-scroll::-webkit-scrollbar { display: none; }
-.category-nav-scroll ul { overflow: visible; }
-
-@media (max-width: 640px) {
-  .mega-menu {
-    min-width: 0;
-    width: 100%;
-    left: 0;
-    right: 0;
-    top: 100%;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 12px;
-    border-left: 0;
-    border-right: 0;
-    border-bottom: 0;
+  .wd-input:focus {
+    border-color: #570012;
+    box-shadow: 0 0 0 3px rgba(87, 0, 18, 0.1);
   }
-}
+  .wd-input::placeholder { color: #8c7070; }
 
-/* ─── Request Quote Modal ─── */
-.modal-overlay { background: rgba(0,0,0,.35); }
-.modal-panel { border: 1px solid rgba(0,0,0,.12); }
+  /* Section label / kicker */
+  .wd-kicker {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #570012;
+  }
 
+  /* Divider */
+  .wd-divider {
+    height: 1px;
+    background: rgba(224, 191, 191, 0.2);
+    border: none;
+  }
+
+  /* WhatsApp Float */
+  .wa-float {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 9999;
+    background: #25D366;
+    color: #fff;
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .wa-float:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 14px 32px rgba(37, 211, 102, 0.5);
+  }
 </style>
+
 {% block extra_css %}{% endblock %}
 </head>
-<body>
 
-<header class="site-header sticky top-0 z-[99999]">
-  <div class="site-top-strip">
-    <div class="container">
-      <div>Premium corporate gifting catalog</div>
-      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-        <a href="tel:{{ phone_number_raw|default:whatsapp_number|default:'+918347136985' }}">{{ phone_number|default:'+91 83471 36985' }}</a>
-        <a href="mailto:sales@wrappdelights.com">sales@wrappdelights.com</a>
-      </div>
-    </div>
-  </div>
+<body class="font-body text-on-surface bg-background min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
 
-  <div class="site-header-main">
-    <div class="container">
-      <a href="/" class="brand-link">
-        <img src="/media/logo.svg" alt="Wrapp Delights logo" loading="eager">
-        <div class="brand-copy">
-          <strong>Wrapp Delights</strong>
-          <span>Corporate Catalog</span>
-        </div>
+<!-- ═══════════════════════════════════════════
+     HEADER
+════════════════════════════════════════════ -->
+<header class="bg-[#fcf9f8] dark:bg-slate-950 sticky top-0 z-50 border-b border-[#e0bfbf]/20">
+
+  <!-- Top Nav -->
+  <nav class="flex justify-between items-center w-full px-6 md:px-8 py-3 max-w-full mx-auto">
+
+    <!-- Left: Logo + Primary Nav Links -->
+    <div class="flex items-center gap-8">
+      <a href="{% url 'home' %}" class="text-xl font-black tracking-tighter text-[#570012] dark:text-red-500 flex-shrink-0">
+        WrappDelights
       </a>
 
-      <form action="{% url 'search' %}" method="get" class="site-search">
-        <input type="text" name="q" placeholder="Search by product, category, SKU" value="{{ request.GET.q }}">
-        <button type="submit" aria-label="Search">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </button>
-      </form>
+      <nav class="hidden md:flex items-center gap-6 font-['Inter'] text-sm tracking-tight font-medium" aria-label="Primary navigation">
+        <a href="{% url 'home' %}"
+           class="{% block nav_home %}text-slate-600{% endblock %} hover:text-[#570012] transition-colors duration-200">
+          Home
+        </a>
+        <a href="{% url 'products' %}"
+           class="{% block nav_catalog %}text-slate-600{% endblock %} hover:text-[#570012] transition-colors duration-200">
+          Catalog
+        </a>
+        <a href="{% url 'custom_hamper' %}"
+           class="{% block nav_hamper %}text-slate-600{% endblock %} hover:text-[#570012] transition-colors duration-200">
+          Custom Hamper
+        </a>
+        <a href="{% url 'corporate' %}"
+           class="{% block nav_corporate %}text-slate-600{% endblock %} hover:text-[#570012] transition-colors duration-200">
+          Corporate
+        </a>
+      </nav>
+    </div>
 
-      <div class="site-actions">
-        <a href="{% url 'corporate' %}">Request Quote</a>
-        <a href="{% url 'custom_hamper' %}">Custom Hamper</a>
-        {% if user.is_authenticated %}
-          <a href="{% url 'dashboard' %}">Admin</a>
-          <form method="post" action="{% url 'logout' %}" class="inline" style="margin:0">
-            {% csrf_token %}
-            <button type="submit" style="font-size:.76rem;font-weight:700;color:#475467;background:none;border:none;cursor:pointer">Logout</button>
-          </form>
-        {% endif %}
+    <!-- Center: Search (visible md+) -->
+    <div class="hidden md:flex items-center bg-surface-container-low px-3 py-1.5 border-b border-outline/20 w-64 lg:w-80 mx-4">
+      <span class="material-symbols-outlined text-outline text-lg" aria-hidden="true">search</span>
+      <form action="{% url 'search' %}" method="get" class="w-full">
+        <input
+          type="text"
+          name="q"
+          value="{{ request.GET.q }}"
+          class="bg-transparent border-none focus:ring-0 text-xs w-full text-on-surface placeholder:text-outline ml-2"
+          placeholder="Search catalog by product, SKU…"
+          aria-label="Search catalog"
+        />
+      </form>
+    </div>
+
+    <!-- Right: Actions -->
+    <div class="flex items-center gap-3 flex-shrink-0">
+      <!-- Mobile search icon -->
+      <button
+        type="button"
+        id="mobileSearchToggle"
+        class="md:hidden text-outline hover:text-[#570012] transition-colors"
+        aria-label="Open search"
+      >
+        <span class="material-symbols-outlined">search</span>
+      </button>
+
+      <a href="{% url 'corporate' %}"
+         class="hidden sm:block text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-[#570012] transition-colors">
+        Contact Us
+      </a>
+
+      <a href="{% url 'corporate' %}"
+         class="wd-btn wd-btn-primary px-4 py-2 text-[10px]">
+        Request Quote
+      </a>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}"
+           class="hidden sm:block text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-[#570012] transition-colors">
+          Admin
+        </a>
+        <form method="post" action="{% url 'logout' %}" class="inline m-0">
+          {% csrf_token %}
+          <button type="submit"
+                  class="text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-[#570012] transition-colors bg-transparent border-none cursor-pointer">
+            Logout
+          </button>
+        </form>
+      {% endif %}
+
+      <!-- Mobile menu toggle -->
+      <button
+        type="button"
+        id="mobileMenuToggle"
+        class="md:hidden flex items-center justify-center w-9 h-9 border border-outline-variant hover:border-[#570012] hover:text-[#570012] text-outline transition-colors"
+        aria-expanded="false"
+        aria-controls="mobileMenu"
+        aria-label="Toggle navigation menu"
+      >
+        <span class="material-symbols-outlined text-xl" id="mobileMenuIcon">menu</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Search Bar (hidden by default) -->
+  <div id="mobileSearchBar" class="hidden px-6 pb-3 md:hidden">
+    <form action="{% url 'search' %}" method="get"
+          class="flex items-center bg-surface-container-low px-3 py-1.5 border-b border-outline/20">
+      <span class="material-symbols-outlined text-outline text-lg" aria-hidden="true">search</span>
+      <input
+        type="text"
+        name="q"
+        value="{{ request.GET.q }}"
+        class="bg-transparent border-none focus:ring-0 text-xs w-full text-on-surface placeholder:text-outline ml-2"
+        placeholder="Search catalog…"
+        aria-label="Search catalog"
+        autofocus
+      />
+    </form>
+  </div>
+
+  <!-- Mobile Menu Drawer -->
+  <div id="mobileMenu"
+       class="hidden md:hidden border-t border-outline-variant/20 bg-[#fcf9f8] px-6 pb-5 pt-4"
+       aria-label="Mobile navigation">
+    <nav class="flex flex-col gap-1">
+      <a href="{% url 'home' %}"
+         class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
+        <span class="material-symbols-outlined text-lg text-outline">home</span>
+        Home
+      </a>
+      <a href="{% url 'products' %}"
+         class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
+        <span class="material-symbols-outlined text-lg text-outline">inventory_2</span>
+        Catalog
+      </a>
+      <a href="{% url 'custom_hamper' %}"
+         class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
+        <span class="material-symbols-outlined text-lg text-outline">redeem</span>
+        Custom Hamper
+      </a>
+      <a href="{% url 'corporate' %}"
+         class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
+        <span class="material-symbols-outlined text-lg text-outline">business_center</span>
+        Corporate Inquiry
+      </a>
+      <a href="tel:{{ phone_number_raw|default:'+918347136985' }}"
+         class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] transition-colors">
+        <span class="material-symbols-outlined text-lg text-outline">call</span>
+        {{ phone_number|default:'+91 83471 36985' }}
+      </a>
+    </nav>
+    <div class="mt-4 flex flex-col gap-2">
+      <a href="{% url 'corporate' %}"
+         class="wd-btn wd-btn-primary w-full py-3 text-center">
+        Request Quote
+      </a>
+      <a href="{% url 'custom_hamper' %}"
+         class="wd-btn wd-btn-outline w-full py-3 text-center">
+        Build Custom Hamper
+      </a>
+    </div>
+  </div>
+
+</header>
+<!-- ─── End Header ─── -->
+
+<!-- ═══════════════════════════════════════════
+     PAGE CONTENT
+════════════════════════════════════════════ -->
+<main class="flex-1">
+  {% block content %}{% endblock %}
+</main>
+<!-- ─── End Main ─── -->
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════ -->
+<footer class="w-full border-t border-[#e0bfbf]/20 mt-auto bg-[#fcf9f8] dark:bg-slate-950 font-['Inter'] text-[10px] uppercase tracking-[0.05em]">
+  <div class="flex flex-col md:flex-row justify-between gap-10 px-8 md:px-12 py-12 w-full max-w-7xl mx-auto">
+
+    <!-- Brand -->
+    <div class="flex flex-col gap-4 max-w-xs">
+      <span class="text-lg font-black text-on-surface normal-case tracking-tight">WrappDelights.</span>
+      <p class="text-slate-500 text-xs normal-case tracking-normal leading-relaxed">
+        Architectural procurement excellence for modern enterprises. Premium corporate gifting catalog — Mumbai, India.
+      </p>
+      <div class="flex flex-col gap-1 text-xs normal-case tracking-normal">
+        <a href="tel:{{ phone_number_raw|default:'+918347136985' }}"
+           class="text-slate-500 hover:text-[#570012] transition-colors">
+          {{ phone_number|default:'+91 83471 36985' }}
+        </a>
+        <a href="mailto:sales@wrappdelights.com"
+           class="text-slate-500 hover:text-[#570012] transition-colors">
+          sales@wrappdelights.com
+        </a>
+      </div>
+    </div>
+
+    <!-- Links Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+      <div class="flex flex-col gap-3">
+        <h5 class="font-bold text-on-surface">Catalog</h5>
+        {% for cat in categories|slice:":4" %}
+          <a href="{% url 'products' %}?category={{ cat.slug }}"
+             class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">
+            {{ cat.name }}
+          </a>
+        {% empty %}
+          <a href="{% url 'products' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Browse All</a>
+        {% endfor %}
+      </div>
+      <div class="flex flex-col gap-3">
+        <h5 class="font-bold text-on-surface">Inquiry</h5>
+        <a href="{% url 'corporate' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Request Quote</a>
+        <a href="{% url 'custom_hamper' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Custom Hamper</a>
+        <a href="{% url 'corporate' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Bulk Pricing</a>
+      </div>
+      <div class="flex flex-col gap-3">
+        <h5 class="font-bold text-on-surface">Company</h5>
+        <a href="{% url 'home' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">About Us</a>
+        <a href="{% url 'corporate' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Contact</a>
+        <a href="#" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Case Studies</a>
+      </div>
+      <div class="flex flex-col gap-3">
+        <h5 class="font-bold text-on-surface">Legal</h5>
+        <a href="#" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Privacy Policy</a>
+        <a href="#" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Terms of Service</a>
       </div>
     </div>
   </div>
 
-  <nav class="site-primary-nav" id="primaryNav">
-    <div class="container">
-      <button type="button" class="mobile-nav-toggle" id="mobileNavToggle" aria-controls="primaryNavLinks" aria-expanded="false" aria-label="Toggle navigation menu">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </button>
-      <div class="site-primary-nav-links" id="primaryNavLinks">
-        <a href="/" {% block nav_home %}{% endblock %}>Home</a>
-        <a href="{% url 'products' %}" {% block nav_products %}{% endblock %}>Catalog</a>
-        <a href="{% url 'custom_hamper' %}">Custom Hamper</a>
-        <a href="{% url 'corporate' %}" {% block nav_corporate %}{% endblock %}>Corporate Inquiry</a>
-        <a href="tel:{{ phone_number_raw|default:whatsapp_number|default:'+918347136985' }}">Contact</a>
-      </div>
+  <!-- Bottom Bar -->
+  <div class="px-8 md:px-12 py-4 border-t border-[#e0bfbf]/15 flex flex-col sm:flex-row justify-between items-center gap-2 text-slate-400 normal-case tracking-normal text-[11px]">
+    <span>© {% now "Y" %} WrappDelights. All rights reserved. B2B Catalog.</span>
+    <div class="flex items-center gap-4">
+      <a href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text=Hi%2C%20I%27d%20like%20to%20explore%20bulk%20gifting."
+         target="_blank"
+         rel="noopener"
+         class="text-slate-400 hover:text-[#25D366] transition-colors flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm">chat</span>
+        WhatsApp
+      </a>
+      <a href="mailto:sales@wrappdelights.com"
+         class="text-slate-400 hover:text-[#570012] transition-colors flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm">mail</span>
+        Email
+      </a>
     </div>
-  </nav>
-</header>
-<!-- End old header content -->
+  </div>
+</footer>
+<!-- ─── End Footer ─── -->
 
-<!-- Request Quote Modal (re-used across pages) -->
-<div id="quoteModal" class="fixed inset-0 z-[100] hidden">
-  <div id="quoteModalOverlay" class="absolute inset-0 modal-overlay"></div>
+<!-- ═══════════════════════════════════════════
+     WHATSAPP FLOAT BUTTON
+════════════════════════════════════════════ -->
+<a class="wa-float"
+   href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text=Hi%2C%20I%20want%20to%20explore%20bulk%20gifting%20options."
+   target="_blank"
+   rel="noopener"
+   aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<!-- ═══════════════════════════════════════════
+     QUOTE MODAL (reusable across all pages)
+     Trigger: add data-open-quote on any element
+     Optional attrs: data-hamper-id, data-quantity
+════════════════════════════════════════════ -->
+<div id="quoteModal" class="fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true" aria-labelledby="quoteModalTitle">
+  <div id="quoteModalOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
   <div class="absolute inset-0 flex items-center justify-center p-4">
-    <div class="modal-panel bg-white w-full max-w-lg">
-      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-        <h3 class="text-sm font-extrabold text-gray-900">Request Quote</h3>
-        <button type="button" id="quoteModalClose" class="btn btn-outline" style="padding:6px 10px;">Close</button>
+    <div class="bg-[#fcf9f8] w-full max-w-lg border border-outline-variant/30 shadow-2xl relative">
+
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/20">
+        <div>
+          <p class="wd-kicker mb-0.5">Corporate Inquiry</p>
+          <h3 id="quoteModalTitle" class="text-base font-black tracking-tight text-on-surface">Request a Quote</h3>
+        </div>
+        <button type="button" id="quoteModalClose"
+                class="text-outline hover:text-[#570012] transition-colors p-1"
+                aria-label="Close modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
 
-      <form method="post" action="/corporate/" class="px-4 py-4">
+      <!-- Modal Form -->
+      <form method="post" action="{% url 'corporate' %}" class="px-6 py-5">
         {% csrf_token %}
         <input type="hidden" name="inquiry_type" id="quoteInquiryType" value="quote">
-        <input type="hidden" name="hamper_id" id="quoteHamperId" value="">
+        <input type="hidden" name="hamper_id"    id="quoteHamperId"    value="">
 
-        <div class="grid grid-cols-1 gap-3">
-          <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">Name</label>
-            <input class="form-input" id="quoteName" name="name" placeholder="Priya Sharma" required>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">Company</label>
-            <input class="form-input" id="quoteCompany" name="company" placeholder="ACME Corp" required>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold text-gray-700 mb-1">Phone</label>
-              <input class="form-input" id="quotePhone" name="phone" placeholder="+91 9XXXXXXXXX">
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5" for="quoteName">Name *</label>
+              <input id="quoteName" name="name" type="text" class="wd-input" placeholder="Priya Sharma" required>
             </div>
             <div>
-              <label class="block text-xs font-bold text-gray-700 mb-1">Email</label>
-              <input class="form-input" id="quoteEmail" name="email" type="email" placeholder="name@company.com">
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5" for="quoteCompany">Company *</label>
+              <input id="quoteCompany" name="company" type="text" class="wd-input" placeholder="ACME Corp" required>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5" for="quotePhone">Phone</label>
+              <input id="quotePhone" name="phone" type="tel" class="wd-input" placeholder="+91 9XXXXXXXXX">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5" for="quoteEmail">Email</label>
+              <input id="quoteEmail" name="email" type="email" class="wd-input" placeholder="name@company.com">
             </div>
           </div>
           <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">Quantity</label>
-            <input class="form-input" id="quoteQuantity" name="quantity" type="number" min="1" value="25" required>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5" for="quoteQuantity">Quantity *</label>
+            <input id="quoteQuantity" name="quantity" type="number" min="1" value="25" class="wd-input" required>
           </div>
           <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">Requirement</label>
-            <textarea class="form-input" id="quoteRequirement" name="requirement" rows="3" placeholder="Share your event timeline, product interest, and customization needs…" required style="resize:vertical;"></textarea>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5" for="quoteRequirement">Requirement *</label>
+            <textarea id="quoteRequirement" name="requirement" rows="3" class="wd-input resize-y"
+                      placeholder="Share your event timeline, product interest, and customization needs…"
+                      required></textarea>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary w-full mt-4">Send Request</button>
+        <button type="submit" class="wd-btn wd-btn-primary w-full py-3 mt-5 text-xs">
+          <span class="material-symbols-outlined text-sm" aria-hidden="true">send</span>
+          Send Request
+        </button>
       </form>
     </div>
   </div>
 </div>
+<!-- ─── End Quote Modal ─── -->
 
-<main>{% block content %}{% endblock %}</main>
+<!-- ═══════════════════════════════════════════
+     PAGE-SPECIFIC SCRIPTS SLOT
+════════════════════════════════════════════ -->
+{% block extra_js %}{% endblock %}
 
-  <!-- FOOTER -->
-  <footer class="mt-12 pb-8">
-    <div class="container mx-auto px-4" style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:24px">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-        <div>
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-            <img src="/media/logo.svg" alt="Wrapp Delights logo" style="height:34px;width:auto">
-            <div class="text-base font-extrabold tracking-tight" style="color:var(--ink)">WRAPP DELIGHTS</div>
-          </div>
-          <p class="mb-4 text-xs leading-relaxed" style="color:var(--ash)">
-            Clean, curated, and scalable gifting catalog for corporate orders.
-          </p>
-        </div>
-        <div>
-          <h3 class="font-bold uppercase tracking-wider text-xs mb-4" style="color:var(--ink)">Customer Service</h3>
-          <ul class="space-y-2 text-xs">
-            <li><a href="{% url 'corporate' %}" class="hover:text-brand-red">Contact Us</a></li>
-            <li><a href="{% url 'corporate' %}" class="hover:text-brand-red">Request a Quote</a></li>
-            <li><a href="{% url 'custom_hamper' %}" class="hover:text-brand-red">Custom Hamper</a></li>
-          </ul>
-        </div>
-        <div>
-          <h3 class="font-bold uppercase tracking-wider text-xs mb-4" style="color:var(--ink)">Product Categories</h3>
-          <ul class="space-y-2 text-xs">
-            {% for cat in categories|slice:":5" %}
-              <li><a href="{% url 'products' %}?category={{ cat.slug }}" class="hover:text-brand-red">{{ cat.name }}</a></li>
-            {% endfor %}
-          </ul>
-        </div>
-        <div>
-          <h3 class="font-bold uppercase tracking-wider text-xs mb-4" style="color:var(--ink)">Contact</h3>
-          <ul class="space-y-2 text-xs">
-            <li class="flex items-start gap-2">
-              <span class="text-brand-red font-bold">T:</span> {{ phone_number|default:'+91 83471 36985' }}
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-brand-red font-bold">E:</span> sales@wrappdelights.com
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-brand-red font-bold">A:</span> Mumbai, Maharashtra, India
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="pt-4 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center text-xs" style="color:var(--ash)">
-        <div>&copy; {% now "Y" %} Wrapp Delights. All rights reserved. B2B Catalog.</div>
-        <div class="flex gap-4 mt-2 md:mt-0">
-          <a href="#" class="hover:text-brand-red">Privacy Policy</a>
-          <a href="#" class="hover:text-brand-red">Terms of Use</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
+<!-- ═══════════════════════════════════════════
+     BASE SCRIPTS
+════════════════════════════════════════════ -->
 <script>
-  (function () {
-    var modal = document.getElementById('quoteModal');
-    if (!modal) return;
+(function () {
+  'use strict';
 
-    var overlay = document.getElementById('quoteModalOverlay');
-    var closeBtn = document.getElementById('quoteModalClose');
-    var inquiryTypeEl = document.getElementById('quoteInquiryType');
-    var hamperIdEl = document.getElementById('quoteHamperId');
-    var qtyEl = document.getElementById('quoteQuantity');
+  /* ── Quote Modal ── */
+  var modal      = document.getElementById('quoteModal');
+  var overlay    = document.getElementById('quoteModalOverlay');
+  var closeBtn   = document.getElementById('quoteModalClose');
+  var typeEl     = document.getElementById('quoteInquiryType');
+  var hamperEl   = document.getElementById('quoteHamperId');
+  var qtyEl      = document.getElementById('quoteQuantity');
 
-    function openFromButton(btn) {
-      var inquiryType = btn.getAttribute('data-inquiry-type') || 'quote';
-      var hamperId = btn.getAttribute('data-hamper-id') || '';
-      var quantity = btn.getAttribute('data-quantity') || '';
+  function openModal(btn) {
+    if (typeEl)   typeEl.value   = btn.dataset.inquiryType || 'quote';
+    if (hamperEl) hamperEl.value = btn.dataset.hamperId    || '';
+    if (qtyEl && btn.dataset.quantity) qtyEl.value = btn.dataset.quantity;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
 
-      if (inquiryTypeEl) inquiryTypeEl.value = inquiryType;
-      if (hamperIdEl) hamperIdEl.value = hamperId;
-      if (qtyEl && quantity) qtyEl.value = quantity;
+  function closeModal() {
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
 
-      modal.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-      modal.classList.add('hidden');
-      document.body.style.overflow = '';
-    }
-
-    document.querySelectorAll('[data-open-quote]').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        // Links like "#" should not jump.
-        if (btn.tagName === 'A') e.preventDefault();
-        openFromButton(btn);
+  if (modal) {
+    document.querySelectorAll('[data-open-quote]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        if (el.tagName === 'A') e.preventDefault();
+        openModal(el);
       });
     });
-
     if (overlay) overlay.addEventListener('click', closeModal);
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') closeModal();
     });
-  })();
+  }
 
-  (function () {
-    var nav = document.getElementById('primaryNav');
-    var toggle = document.getElementById('mobileNavToggle');
-    if (!nav || !toggle) return;
+  /* ── Mobile Menu ── */
+  var menuBtn  = document.getElementById('mobileMenuToggle');
+  var menuIcon = document.getElementById('mobileMenuIcon');
+  var menu     = document.getElementById('mobileMenu');
 
-    toggle.addEventListener('click', function () {
-      var isOpen = nav.classList.toggle('is-open');
-      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  if (menuBtn && menu) {
+    menuBtn.addEventListener('click', function () {
+      var isOpen = menu.classList.toggle('hidden') === false;
+      menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      if (menuIcon) menuIcon.textContent = isOpen ? 'close' : 'menu';
     });
-
     window.addEventListener('resize', function () {
-      if (window.innerWidth > 640 && nav.classList.contains('is-open')) {
-        nav.classList.remove('is-open');
-        toggle.setAttribute('aria-expanded', 'false');
+      if (window.innerWidth >= 768 && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+        menuBtn.setAttribute('aria-expanded', 'false');
+        if (menuIcon) menuIcon.textContent = 'menu';
       }
     });
-  })();
+  }
 
+  /* ── Mobile Search Toggle ── */
+  var searchToggle = document.getElementById('mobileSearchToggle');
+  var searchBar    = document.getElementById('mobileSearchBar');
+
+  if (searchToggle && searchBar) {
+    searchToggle.addEventListener('click', function () {
+      var isVisible = searchBar.classList.toggle('hidden') === false;
+      if (isVisible) {
+        var input = searchBar.querySelector('input');
+        if (input) input.focus();
+      }
+    });
+  }
+
+})();
 </script>
-
-<a class="wa-float" href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text=Hi%2C%20I%20want%20to%20explore%20bulk%20gifting%20options." target="_blank" aria-label="WhatsApp">
-  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-  </svg>
-</a>
 
 </body>
 </html>

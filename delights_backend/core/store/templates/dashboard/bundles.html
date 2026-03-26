@@ -1,23 +1,26 @@
-{% extends "base.html" %}
-{% block title %}Bundles — Dashboard{% endblock %}
-
-{% block extra_css %}
-.blist{padding:24px 0}
-.blist h1{font-size:1rem;font-weight:700;color:var(--white);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
-.b-table-img{width:48px;height:48px;border-radius:5px;overflow:hidden;background:var(--surface-2)}
-.b-table-img img{width:100%;height:100%;object-fit:cover}
-.active-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
-{% endblock %}
+{% extends "dashboard/_admin_base.html" %}
+{% block title %}Bundles{% endblock %}
+{% block page_title %}Predefined Bundles{% endblock %}
 
 {% block content %}
-<div class="blist">
-  <div class="container">
-    <h1>
-      <span>Predefined Bundles ({{ bundles|length }})</span>
-      <a href="/dashboard/create-bundle/" class="btn btn-primary btn-sm">+ Create Bundle</a>
-    </h1>
+<div class="page-header">
+  <div>
+    <div class="breadcrumb">
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <span class="material-symbols-outlined" style="font-size:12px">chevron_right</span>
+      Bundles
+    </div>
+    <h1>Predefined Bundles <span style="font-size:.82rem;font-weight:500;color:var(--mist)">({{ bundles|length }})</span></h1>
+  </div>
+  <a href="/dashboard/create-bundle/" class="btn btn-primary">
+    <span class="material-symbols-outlined" style="font-size:15px">add</span>
+    Create Bundle
+  </a>
+</div>
 
-    {% if bundles %}
+{% if bundles %}
+<div class="card">
+  <div class="tbl-wrap">
     <table>
       <thead>
         <tr>
@@ -27,40 +30,45 @@
           <th>Price</th>
           <th>Status</th>
           <th>Featured</th>
-          <th></th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for b in bundles %}
         <tr>
           <td>
-            <div class="b-table-img">
-              {% if b.image %}<img src="{{ b.image.url }}" alt="">{% endif %}
+            <div style="width:44px;height:44px;border-radius:var(--radius);overflow:hidden;background:var(--surface-container);border:1px solid var(--border)">
+              {% if b.image %}<img src="{{ b.image.url }}" alt="" style="width:100%;height:100%;object-fit:cover">{% endif %}
             </div>
           </td>
-          <td style="font-weight:600">{{ b.name }}</td>
+          <td style="font-weight:800">{{ b.name }}</td>
           <td>{{ b.item_count }}</td>
-          <td style="font-weight:600">&#8377;{{ b.display_price }}</td>
+          <td style="font-weight:800">&#8377;{{ b.display_price }}</td>
           <td>
-            {% if b.is_active %}
-            <span class="active-dot" style="background:var(--green)"></span>Active
-            {% else %}
-            <span class="active-dot" style="background:var(--red)"></span>Inactive
-            {% endif %}
+            {% if b.is_active %}<span class="badge badge-green">Active</span>
+            {% else %}<span class="badge badge-red">Inactive</span>{% endif %}
           </td>
-          <td>{% if b.is_featured %}<span class="badge badge-accent">Featured</span>{% else %}—{% endif %}</td>
-          <td><a href="/dashboard/bundles/{{ b.id }}/edit/" style="color:var(--accent);font-size:.78rem">Edit</a></td>
+          <td>
+            {% if b.is_featured %}<span class="badge badge-yellow">Featured</span>
+            {% else %}<span style="color:var(--mist)">—</span>{% endif %}
+          </td>
+          <td>
+            <a href="/dashboard/bundles/{{ b.id }}/edit/" class="btn btn-outline btn-sm btn-icon" title="Edit">
+              <span class="material-symbols-outlined">edit</span>
+            </a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-    {% else %}
-    <div class="empty">
-      <h3>No bundles yet</h3>
-      <p style="margin-bottom:14px">Create your first curated bundle.</p>
-      <a href="/dashboard/create-bundle/" class="btn btn-primary">Create Bundle</a>
-    </div>
-    {% endif %}
   </div>
 </div>
+{% else %}
+<div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:60px;text-align:center">
+  <span class="material-symbols-outlined" style="font-size:36px;color:var(--mist);display:block;margin-bottom:12px">inventory_2</span>
+  <div style="font-weight:800;font-size:.9rem;color:var(--ash);margin-bottom:8px">No bundles yet</div>
+  <div style="font-size:.78rem;color:var(--mist);margin-bottom:16px">Create your first curated bundle for the catalog.</div>
+  <a href="/dashboard/create-bundle/" class="btn btn-primary">Create Bundle</a>
+</div>
+{% endif %}
 {% endblock %}

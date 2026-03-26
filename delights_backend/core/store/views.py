@@ -2,6 +2,7 @@ import re
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q, Prefetch
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -111,15 +112,35 @@ def product_list(request):
     category_slug = request.GET.get("category", "").strip()
     active_category_label = category_slug.replace("-", " ").title() if category_slug else ""
 
+    sort = request.GET.get("sort", "").strip()
+
     if category_slug:
         hampers = hampers.filter(Q(category__slug=category_slug) | Q(category__name__iexact=category_slug))
+
+    if sort == "price":
+        hampers = hampers.order_by("base_price", "id")
+    elif sort == "-price":
+        hampers = hampers.order_by("-base_price", "-id")
+    elif sort == "-id":
+        hampers = hampers.order_by("-id")
+    else:
+        hampers = hampers.order_by("id")
+
+    paginator = Paginator(hampers, 12)
+    page = request.GET.get("page")
+    try:
+        products_page = paginator.page(page)
+    except PageNotAnInteger:
+        products_page = paginator.page(1)
+    except EmptyPage:
+        products_page = paginator.page(paginator.num_pages)
 
     categories = Category.objects.filter(is_active=True)
     return render(
         request,
         "products.html",
         {
-            "products": hampers,
+            "products": products_page,
             "categories": categories,
             "active_category": category_slug,
             "active_category_label": active_category_label,
@@ -249,6 +270,12 @@ def corporate_success(request):
             "inquiry": inquiry,
             "success_whatsapp_raw": SUCCESS_WHATSAPP_RAW,
             "success_whatsapp_text": whatsapp_text,
+            "quick_stats": [
+                ("5K+", "SKUs in Catalog"),
+                ("25+", "Min. Order Qty"),
+                ("4hrs", "Quote Turnaround"),
+                ("PAN", "India Delivery"),
+            ],
         },
     )
 
@@ -266,24 +293,32 @@ def custom_hamper_builder(request):
     )
 
     if request.method == "POST":
-        contact_person = (request.POST.get("contact_person") or "").strip()
-        company_name = (request.POST.get("company_name") or "").strip()
+        # Form fields from the custom hamper template
+        contact_person = (request.POST.get("name") or request.POST.get("contact_person") or "").strip()
+        company_name = (request.POST.get("company") or request.POST.get("company_name") or "").strip()
         email = (request.POST.get("email") or "").strip()
         phone = (request.POST.get("phone") or "").strip()
-        quantity_raw = (request.POST.get("quantity") or "").strip()
-        delivery_address = (request.POST.get("delivery_address") or "").strip()
-        selected_ids = [x for x in (request.POST.get("selected_items") or "").split(",") if x]
-        note = (request.POST.get("message") or "").strip()
+        quantity_raw = (request.POST.get("total_quantity") or request.POST.get("quantity") or "").strip()
+        delivery_address = (request.POST.get("location") or request.POST.get("delivery_address") or "").strip()
+        selected_raw = (request.POST.get("selected_items") or "").strip()
+        note = (request.POST.get("special_requests") or request.POST.get("message") or "").strip()
 
         try:
             quantity = max(1, int(quantity_raw))
         except ValueError:
             quantity = 25
 
-        unique_ids = list(dict.fromkeys(selected_ids))
-        selected_products = list(
-            Hamper.objects.filter(id__in=unique_ids, is_active=True).values_list("name", flat=True)
-        )
+        # The UI sends a human-readable list ("- [Category] Name"). Keep text as-is for the inquiry.
+        selected_products = []
+        for line in selected_raw.splitlines():
+            cleaned = line.strip()
+            if cleaned.startswith("- "):
+                cleaned = cleaned[2:].strip()
+            if cleaned:
+                selected_products.append(cleaned)
+
+        # Keep order while removing duplicates
+        selected_products = list(dict.fromkeys(selected_products))
         item_lines = "\n".join(f"- {name}" for name in selected_products) if selected_products else "- No items selected"
 
         message = (
@@ -312,6 +347,7 @@ def custom_hamper_builder(request):
         "custom_hamper.html",
         {
             "products": products_qs,
+            "individual_items": products_qs,
             "categories": Category.objects.filter(is_active=True),
         },
     )

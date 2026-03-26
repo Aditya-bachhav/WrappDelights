@@ -1,107 +1,790 @@
 {% extends "base.html" %}
-{% block nav_products %}class="active"{% endblock %}
-{% block title %}Products — Wrapp Delights{% endblock %}
 
-{% block extra_css %}{% endblock %}
+{% block nav_catalog %}text-[#570012] border-b-2 border-[#570012] font-bold{% endblock %}
 
-{% block content %}
-  <!-- Catalog Banner -->
-  <section class="bg-gray-50 border-b border-gray-200 py-4">
-    <div class="container mx-auto px-4">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <div class="text-xs font-extrabold text-brand-red uppercase tracking-wider mb-0.5">B2B Catalog</div>
-          <h1 class="text-xl font-extrabold text-gray-900">
-            {% if active_category_label %}{{ active_category_label }}{% else %}All Products{% endif %}
-          </h1>
-          <div class="text-sm text-gray-500 mt-0.5">
-            <span class="font-bold text-gray-900">{{ products|length }}</span> item{% if products|length != 1 %}s{% endif %} available for bulk order
-          </div>
-        </div>
-        <div class="flex gap-2 flex-shrink-0">
-          <a href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text=Hi%2C%20I%20want%20to%20request%20a%20quote%20from%20your%20catalog.%20Please%20share%20available%20options."
-             target="_blank"
-             class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
-            <svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            WhatsApp Quote
-          </a>
-          <a href="/corporate/" class="flex items-center gap-2 bg-brand-red hover:bg-brand-dark text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
-            Submit Inquiry
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
+{% block title %}Catalog — WrappDelights{% endblock %}
 
-  <section class="bg-white">
-    <div class="container py-6">
-      <div class="flex items-end justify-between gap-4 mb-4">
-        <div></div>
-      </div>
+{% block extra_css %}
+<style>
+  /* ─── Layout ─── */
+  .catalog-layout {
+    display: flex;
+    min-height: calc(100vh - 60px);
+    align-items: flex-start;
+  }
 
-      <div class="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start">
-        <!-- Left Filters Sidebar -->
-        <aside class="border border-gray-200 bg-white p-4">
-          <form method="get" action="/products/" class="space-y-4">
-            <div>
-              <label class="block text-xs font-extrabold text-gray-700 mb-1">Category</label>
-              <select name="category" class="form-input">
-                <option value="" {% if not active_category %}selected{% endif %}>All Categories</option>
-                {% for c in categories %}
-                  <option value="{{ c.slug }}" {% if active_category == c.slug %}selected{% endif %}>{{ c.name }}</option>
-                {% endfor %}
-              </select>
-            </div>
+  /* ─── Sidebar ─── */
+  .catalog-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    background: #f6f3f2;
+    border-right: 1px solid rgba(224, 191, 191, 0.2);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    scrollbar-width: none;
+  }
+  .catalog-sidebar::-webkit-scrollbar { display: none; }
 
-            <div class="flex gap-2">
-              <button type="submit" class="btn btn-primary w-full">Apply</button>
-              <a href="/products/" class="btn btn-outline w-full" style="justify-content:center;">Reset</a>
-            </div>
-          </form>
+  .sidebar-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #570012;
+    margin-bottom: 4px;
+    padding: 0 8px;
+  }
+  .sidebar-sub {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #8c7070;
+    padding: 0 8px;
+    margin-bottom: 20px;
+  }
 
-          <!-- Quick Inquiry CTA -->
-          <div class="mt-4 border border-green-200 bg-green-50 rounded-xl p-4">
-            <div class="text-xs font-extrabold text-gray-800 mb-1">Need Help Choosing?</div>
-            <p class="text-xs text-gray-600 mb-3">Our team can suggest the right hamper for your event, budget, and quantity.</p>
-            <a href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text=Hi%2C%20I%20need%20help%20choosing%20a%20hamper%20from%20your%20catalog.%20Can%20you%20suggest%20options%3F"
-               target="_blank"
-               class="flex items-center justify-center gap-2 w-full bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 rounded-lg transition-colors">
-              <svg viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-              </svg>
-              Chat on WhatsApp
-            </a>
-            <a href="/corporate/" class="flex items-center justify-center gap-2 w-full border border-brand-red text-brand-red hover:bg-red-50 text-xs font-bold py-2 rounded-lg transition-colors mt-2">
-              Submit Formal Inquiry
-            </a>
-          </div>
-        </aside>
+  .filter-group {
+    margin-bottom: 4px;
+  }
+  .filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    width: 100%;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: #584141;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover {
+    background: #eae7e7;
+  }
+  .filter-btn.active {
+    background: #ffffff;
+    color: #570012;
+    box-shadow: 0 1px 4px rgba(87,0,18,0.08);
+  }
+  .filter-btn .material-symbols-outlined {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
 
-        <!-- Right Product Grid -->
-        <div>
-          {% if products %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4">
-              {% for product in products %}
-                {% include "partials/product_card.html" %}
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="border border-gray-200 bg-gray-50 p-10 text-center">
-              <div class="text-gray-900 font-extrabold mb-2">No products match your filters.</div>
-              <div class="text-gray-600 text-sm mb-4">Try clearing filters or request a quote for a tailored catalog.</div>
-              <a
-                href="https://wa.me/{{ whatsapp_number|default:'918347136985' }}?text={{ 'Hi, I would like a tailored catalog quote. Please share available SKUs and delivery timeline.'|urlencode }}"
-                target="_blank"
-                rel="noopener"
-                class="btn btn-primary"
-              >
-                Request Quote
-              </a>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  </section>
+  /* Category filter pills in sidebar */
+  .sidebar-cats {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 16px;
+  }
+  .sidebar-cat-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #584141;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .sidebar-cat-link:hover,
+  .sidebar-cat-link.active {
+    background: #ffffff;
+    color: #570012;
+  }
+  .sidebar-cat-link.active {
+    font-weight: 700;
+  }
+  .cat-count {
+    font-size: 9px;
+    font-weight: 700;
+    color: #8c7070;
+    background: #eae7e7;
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+  .sidebar-cat-link.active .cat-count {
+    background: #ffdada;
+    color: #570012;
+  }
+
+  .sidebar-divider {
+    height: 1px;
+    background: rgba(224, 191, 191, 0.25);
+    margin: 16px 0;
+  }
+
+  .clear-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: #570012;
+    background: transparent;
+    border: 1px solid rgba(224, 191, 191, 0.4);
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 2px;
+    margin-top: auto;
+  }
+  .clear-btn:hover {
+    background: #ffdada;
+    border-color: #570012;
+  }
+
+  /* Mobile filter toggle */
+  .mobile-filter-btn {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid rgba(224, 191, 191, 0.5);
+    background: #ffffff;
+    color: #570012;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+
+  /* ─── Main Content ─── */
+  .catalog-main {
+    flex: 1;
+    min-width: 0;
+    padding: 28px 32px;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #8c7070;
+    margin-bottom: 20px;
+  }
+  .breadcrumb a { transition: color 0.2s; }
+  .breadcrumb a:hover { color: #570012; }
+  .breadcrumb .material-symbols-outlined { font-size: 14px; }
+  .breadcrumb .current { color: #1c1b1b; }
+
+  /* Page Header */
+  .catalog-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(224, 191, 191, 0.2);
+  }
+  .catalog-title {
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: #1c1b1b;
+    line-height: 1;
+  }
+  .catalog-desc {
+    font-size: 12px;
+    color: #8c7070;
+    margin-top: 6px;
+    max-width: 560px;
+    line-height: 1.6;
+  }
+
+  .sort-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f6f3f2;
+    padding: 6px 12px;
+    border: 1px solid rgba(224, 191, 191, 0.3);
+    flex-shrink: 0;
+  }
+  .sort-wrap label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #8c7070;
+    white-space: nowrap;
+  }
+  .sort-wrap select {
+    background: transparent;
+    border: none;
+    font-size: 11px;
+    font-weight: 700;
+    color: #570012;
+    cursor: pointer;
+    padding-right: 20px;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Active filter tags */
+  .active-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .active-filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: #ffdada;
+    color: #570012;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: 2px;
+  }
+  .active-filter-tag button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #570012;
+    padding: 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+  }
+  .active-filter-tag .material-symbols-outlined { font-size: 14px; }
+  .result-count {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #8c7070;
+    margin-left: auto;
+  }
+
+  /* ─── Product Grid ─── */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  /* Product Card */
+  .prod-card {
+    background: #ffffff;
+    border: 1px solid transparent;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .prod-card:hover {
+    border-color: rgba(224, 191, 191, 0.35);
+    box-shadow: 0 8px 28px rgba(87, 0, 18, 0.08);
+  }
+  .prod-card-img {
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: #eae7e7;
+    position: relative;
+    display: block;
+  }
+  .prod-card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    display: block;
+  }
+  .prod-card:hover .prod-card-img img { transform: scale(1.05); }
+  .prod-card-img-empty {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #8c7070;
+    background: #f0eded;
+  }
+  .prod-img-badges {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .prod-card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .prod-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .prod-card-name {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #1c1b1b;
+    line-height: 1.3;
+    transition: color 0.2s;
+  }
+  .prod-card:hover .prod-card-name { color: #570012; }
+  .prod-card-price {
+    font-size: 13px;
+    font-weight: 900;
+    color: #570012;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .prod-card-desc {
+    font-size: 11px;
+    color: #8c7070;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 14px;
+    flex: 1;
+  }
+  .prod-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-top: 1px solid rgba(224, 191, 191, 0.2);
+    border-bottom: 1px solid rgba(224, 191, 191, 0.2);
+    margin-bottom: 12px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #8c7070;
+  }
+  .prod-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .prod-meta-item .material-symbols-outlined { font-size: 13px; }
+
+  .prod-card-cta {
+    display: block;
+    width: 100%;
+    padding: 11px;
+    background: #570012;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    border-radius: 2px;
+  }
+  .prod-card-cta:hover { background: #8e1027; }
+  .prod-card-cta:active { transform: scale(0.99); }
+
+  /* Empty state */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+  }
+  .empty-state .material-symbols-outlined {
+    font-size: 48px;
+    color: #e0bfbf;
+    display: block;
+    margin: 0 auto 16px;
+  }
+  .empty-state h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1c1b1b;
+    margin-bottom: 8px;
+  }
+  .empty-state p {
+    font-size: 12px;
+    color: #8c7070;
+  }
+
+  /* ─── Pagination ─── */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+  .page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 8px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: 1px solid rgba(224, 191, 191, 0.4);
+    background: #ffffff;
+    color: #584141;
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+  .page-link:hover {
+    border-color: #570012;
+    color: #570012;
+    background: #ffdada;
+  }
+  .page-link.current {
+    background: #570012;
+    color: #ffffff;
+    border-color: #570012;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 1280px) {
+    .product-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 1024px) {
+    .catalog-sidebar { display: none; }
+    .catalog-sidebar.is-open {
+      display: flex;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 200;
+      width: 280px;
+      padding-top: 20px;
+    }
+    .mobile-filter-btn { display: inline-flex; }
+    .catalog-main { padding: 20px 20px; }
+  }
+  @media (max-width: 640px) {
+    .product-grid { grid-template-columns: 1fr; }
+    .catalog-header { flex-direction: column; align-items: flex-start; }
+    .catalog-main { padding: 16px; }
+  }
+</style>
 {% endblock %}
 
+{% block content %}
+
+<div class="catalog-layout">
+
+  <!-- ══════════════════════════════
+       SIDEBAR
+  ══════════════════════════════ -->
+  <aside class="catalog-sidebar" id="catalogSidebar">
+
+    <p class="sidebar-label">Filters</p>
+    <p class="sidebar-sub">Refine Procurement</p>
+
+    <!-- Categories -->
+    <div class="sidebar-divider" style="margin-top:0;"></div>
+    <p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:#8c7070;padding:0 8px;margin-bottom:8px;">Categories</p>
+    <div class="sidebar-cats">
+      <a href="{% url 'products' %}"
+         class="sidebar-cat-link {% if not request.GET.category %}active{% endif %}">
+        All Products
+        <span class="cat-count">All</span>
+      </a>
+      {% for cat in categories %}
+        <a href="{% url 'products' %}?category={{ cat.slug }}"
+           class="sidebar-cat-link {% if request.GET.category == cat.slug %}active{% endif %}">
+          {{ cat.name }}
+          {% if cat.product_count %}
+            <span class="cat-count">{{ cat.product_count }}</span>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- Filter Buttons -->
+    <p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:#8c7070;padding:0 8px;margin-bottom:8px;">Refine By</p>
+    <div class="filter-group">
+      <button type="button" class="filter-btn active">
+        <span class="material-symbols-outlined">payments</span>
+        Price Range
+      </button>
+      <button type="button" class="filter-btn">
+        <span class="material-symbols-outlined">schedule</span>
+        Lead Time
+      </button>
+      <button type="button" class="filter-btn">
+        <span class="material-symbols-outlined">inventory_2</span>
+        Min Quantity
+      </button>
+      <button type="button" class="filter-btn">
+        <span class="material-symbols-outlined">eco</span>
+        Sustainability
+      </button>
+      <button type="button" class="filter-btn">
+        <span class="material-symbols-outlined">check_circle</span>
+        In-Stock Only
+      </button>
+    </div>
+
+    <div class="sidebar-divider"></div>
+    <button type="button" class="clear-btn">Clear All Filters</button>
+  </aside>
+
+  <!-- Mobile sidebar overlay -->
+  <div id="sidebarOverlay"
+       class="hidden fixed inset-0 bg-black/40 z-[199]"
+       style="backdrop-filter:blur(2px);"
+       aria-hidden="true"></div>
+
+  <!-- ══════════════════════════════
+       MAIN
+  ══════════════════════════════ -->
+  <main class="catalog-main">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="{% url 'home' %}">Home</a>
+      <span class="material-symbols-outlined">chevron_right</span>
+      {% if request.GET.category %}
+        <a href="{% url 'products' %}">Catalog</a>
+        <span class="material-symbols-outlined">chevron_right</span>
+        <span class="current">{{ request.GET.category|capfirst }}</span>
+      {% else %}
+        <span class="current">Catalog</span>
+      {% endif %}
+    </nav>
+
+    <!-- Page Header -->
+    <div class="catalog-header">
+      <div>
+        <p class="wd-kicker" style="margin-bottom:6px;">Corporate Gifting Catalog</p>
+        <h1 class="catalog-title">
+          {% if request.GET.category %}{{ request.GET.category|capfirst }}{% else %}All Products{% endif %}
+        </h1>
+        <p class="catalog-desc">
+          Curated collections for corporate distribution — sustainable packaging,
+          rapid fulfillment, and custom branding on every order.
+        </p>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <!-- Mobile filter toggle -->
+        <button type="button" class="mobile-filter-btn" id="mobileFilterBtn" aria-label="Open filters">
+          <span class="material-symbols-outlined text-sm">tune</span>
+          Filters
+        </button>
+        <!-- Sort -->
+        <form method="get" action="{% url 'products' %}" id="sortForm">
+          {% if request.GET.category %}
+            <input type="hidden" name="category" value="{{ request.GET.category }}">
+          {% endif %}
+          <div class="sort-wrap">
+            <label for="sortSelect">Sort by</label>
+            <select id="sortSelect" name="sort" onchange="document.getElementById('sortForm').submit()">
+              <option value=""       {% if not request.GET.sort %}selected{% endif %}>Lead Time (Shortest)</option>
+              <option value="price"  {% if request.GET.sort == "price" %}selected{% endif %}>Price (Low to High)</option>
+              <option value="-price" {% if request.GET.sort == "-price" %}selected{% endif %}>Price (High to Low)</option>
+              <option value="-id"    {% if request.GET.sort == "-id" %}selected{% endif %}>Newest</option>
+            </select>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Active Filter Tags -->
+    {% if request.GET.category or request.GET.sort %}
+      <div class="active-filters">
+        {% if request.GET.category %}
+          <span class="active-filter-tag">
+            {{ request.GET.category|capfirst }}
+            <a href="{% url 'products' %}{% if request.GET.sort %}?sort={{ request.GET.sort }}{% endif %}" aria-label="Remove category filter">
+              <span class="material-symbols-outlined">close</span>
+            </a>
+          </span>
+        {% endif %}
+        {% if request.GET.sort %}
+          <span class="active-filter-tag">
+            Sorted: {{ request.GET.sort }}
+            <a href="{% url 'products' %}{% if request.GET.category %}?category={{ request.GET.category }}{% endif %}" aria-label="Remove sort">
+              <span class="material-symbols-outlined">close</span>
+            </a>
+          </span>
+        {% endif %}
+        <span class="result-count">{{ products.paginator.count|default:products|length }} results</span>
+      </div>
+    {% endif %}
+
+    <!-- Product Grid -->
+    <div class="product-grid">
+      {% for product in products %}
+        <article class="prod-card">
+          <a href="{% url 'product_detail' product.id %}" class="prod-card-img">
+            {% if product.cover_image %}
+              <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
+            {% else %}
+              <div class="prod-card-img-empty">No Image</div>
+            {% endif %}
+            <div class="prod-img-badges">
+              {% if product.is_featured %}
+                <span class="wd-badge wd-badge-primary">Featured</span>
+              {% endif %}
+              {% if product.is_new %}
+                <span class="wd-badge wd-badge-surface">New</span>
+              {% else %}
+                <span class="wd-badge wd-badge-surface">Bulk Friendly</span>
+              {% endif %}
+            </div>
+          </a>
+          <div class="prod-card-body">
+            <div class="prod-card-top">
+              <a href="{% url 'product_detail' product.id %}" class="prod-card-name">{{ product.name }}</a>
+              {% if product.base_price %}
+                <span class="prod-card-price">₹{{ product.base_price }}</span>
+              {% endif %}
+            </div>
+            <p class="prod-card-desc">{{ product.short_description|default:"Premium corporate gifting option available for bulk orders." }}</p>
+            <div class="prod-card-meta">
+              <div class="prod-meta-item">
+                <span class="material-symbols-outlined">inventory</span>
+                Min: {{ product.min_quantity|default:"50" }} Units
+              </div>
+              <div class="prod-meta-item">
+                <span class="material-symbols-outlined">local_shipping</span>
+                {{ product.lead_time|default:"5–7 Days" }}
+              </div>
+            </div>
+            <a href="{% url 'product_detail' product.id %}" class="prod-card-cta">
+              View & Inquire
+            </a>
+          </div>
+        </article>
+      {% empty %}
+        <div class="empty-state">
+          <span class="material-symbols-outlined">inventory_2</span>
+          <h3>No products found</h3>
+          <p>Try adjusting your filters or <a href="{% url 'products' %}" style="color:#570012;font-weight:700;">browse all products</a>.</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if products.has_other_pages %}
+      <nav class="pagination" aria-label="Pagination">
+        {% if products.has_previous %}
+          <a href="?page=1{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+             class="page-link" aria-label="First page">
+            <span class="material-symbols-outlined" style="font-size:16px;">first_page</span>
+          </a>
+          <a href="?page={{ products.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+             class="page-link" aria-label="Previous page">
+            <span class="material-symbols-outlined" style="font-size:16px;">chevron_left</span>
+          </a>
+        {% endif %}
+
+        {% for num in products.paginator.page_range %}
+          {% if num == products.number %}
+            <span class="page-link current" aria-current="page">{{ num }}</span>
+          {% elif num >= products.number|add:"-2" and num <= products.number|add:"2" %}
+            <a href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+               class="page-link">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% if products.has_next %}
+          <a href="?page={{ products.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+             class="page-link" aria-label="Next page">
+            <span class="material-symbols-outlined" style="font-size:16px;">chevron_right</span>
+          </a>
+          <a href="?page={{ products.paginator.num_pages }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+             class="page-link" aria-label="Last page">
+            <span class="material-symbols-outlined" style="font-size:16px;">last_page</span>
+          </a>
+        {% endif %}
+      </nav>
+    {% endif %}
+
+  </main>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+
+  /* ── Mobile Sidebar Toggle ── */
+  var sidebar  = document.getElementById('catalogSidebar');
+  var overlay  = document.getElementById('sidebarOverlay');
+  var openBtn  = document.getElementById('mobileFilterBtn');
+
+  function openSidebar() {
+    sidebar.classList.add('is-open');
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('is-open');
+    overlay.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  if (openBtn) openBtn.addEventListener('click', openSidebar);
+  if (overlay) overlay.addEventListener('click', closeSidebar);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && sidebar && sidebar.classList.contains('is-open')) closeSidebar();
+  });
+
+  /* ── Sidebar Filter Btn Active State ── */
+  document.querySelectorAll('.filter-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    });
+  });
+
+  /* ── Preserve query params on resize ── */
+  window.addEventListener('resize', function () {
+    if (window.innerWidth >= 1024 && sidebar && sidebar.classList.contains('is-open')) {
+      closeSidebar();
+    }
+  });
+})();
+</script>
+{% endblock %}

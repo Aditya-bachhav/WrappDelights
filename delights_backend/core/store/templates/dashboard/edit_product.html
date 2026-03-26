@@ -2,21 +2,39 @@
 {% block title %}Edit — {{ hamper.name }}{% endblock %}
 {% block page_title %}Edit Hamper{% endblock %}
 
+{% block extra_css %}
+<style>
+.img-thumb input[type=checkbox]:checked ~ .del-overlay,
+.img-thumb:has(input:checked) .del-overlay{opacity:1;background:rgba(87,0,18,.65)}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="page-header">
   <div>
-    <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / <a href="{% url 'dashboard_products' %}">Hampers</a> / Edit</div>
+    <div class="breadcrumb">
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <span class="material-symbols-outlined" style="font-size:12px">chevron_right</span>
+      <a href="{% url 'dashboard_products' %}">Hampers</a>
+      <span class="material-symbols-outlined" style="font-size:12px">chevron_right</span>
+      Edit
+    </div>
     <h1>{{ hamper.name }}</h1>
   </div>
-  <a href="{% url 'dashboard_delete_product' hamper.id %}" class="btn btn-danger">Delete Hamper</a>
+  <a href="{% url 'dashboard_delete_product' hamper.id %}" class="btn btn-danger">
+    <span class="material-symbols-outlined" style="font-size:15px">delete</span>
+    Delete Hamper
+  </a>
 </div>
 
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
-  <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start">
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:14px;align-items:start">
 
-    <div>
-      <div class="card" style="margin-bottom:14px">
+    <!-- LEFT -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <div class="card">
         <div class="form-section">
           <div class="form-section-title">Basic Info</div>
           <div class="form-group" style="margin-bottom:12px">
@@ -28,7 +46,9 @@
               <label class="form-label">Category</label>
               <select class="form-select" name="category">
                 <option value="">No category</option>
-                {% for cat in categories %}<option value="{{ cat.id }}" {% if hamper.category and hamper.category.id == cat.id %}selected{% endif %}>{{ cat.name }}</option>{% endfor %}
+                {% for cat in categories %}
+                  <option value="{{ cat.id }}" {% if hamper.category and hamper.category.id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
               </select>
             </div>
             <div class="form-group">
@@ -37,6 +57,7 @@
             </div>
           </div>
         </div>
+
         <div class="form-section">
           <div class="form-section-title">Description</div>
           <div class="form-group" style="margin-bottom:12px">
@@ -48,10 +69,11 @@
             <textarea class="form-textarea" name="description" rows="5">{{ hamper.description }}</textarea>
           </div>
         </div>
+
         <div class="form-section">
           <div class="form-section-title">Included Items</div>
           <div class="form-group">
-            <label class="form-label">Items List <span style="font-weight:400;color:var(--ash)">(one per line)</span></label>
+            <label class="form-label">Items List <span style="font-weight:500;color:var(--mist)">(one per line)</span></label>
             <textarea class="form-textarea" name="included_items" rows="5">{{ hamper.included_items }}</textarea>
           </div>
         </div>
@@ -60,17 +82,13 @@
       <div class="card">
         <div class="form-section">
           <div class="form-section-title">Cover Image</div>
-          <div class="form-grid">
-            <div class="form-group">
-              {% if hamper.cover_image %}
-                <div style="margin-bottom:8px">
-                  <img src="{{ hamper.cover_image.url }}" style="width:100px;height:100px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">
-                </div>
-                <span class="form-hint" style="margin-bottom:6px;display:block">Upload new to replace current cover</span>
-              {% endif %}
-              <input class="form-input" type="file" name="cover_image" accept="image/*">
+          {% if hamper.cover_image %}
+            <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px">
+              <img src="{{ hamper.cover_image.url }}" style="width:80px;height:80px;object-fit:cover;border-radius:var(--radius);border:1px solid var(--border)">
+              <span class="form-hint">Upload a new file to replace the current cover</span>
             </div>
-          </div>
+          {% endif %}
+          <input class="form-input" type="file" name="cover_image" accept="image/*">
         </div>
 
         <div class="form-section">
@@ -81,25 +99,28 @@
             <div class="img-thumb">
               <img src="{{ img.image.url }}" alt="">
               <div class="del-overlay">
-                <label style="cursor:pointer;color:#fff;font-size:.68rem;text-align:center">
+                <label style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px">
                   <input type="checkbox" name="delete_gallery" value="{{ img.id }}" style="display:none">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-                  Delete
+                  <span class="material-symbols-outlined" style="color:#fff;font-size:16px">delete</span>
+                  <span style="font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#fff">Remove</span>
                 </label>
               </div>
             </div>
             {% endfor %}
           </div>
-          <span class="form-hint" style="display:block;margin-bottom:8px">Hover to mark for deletion</span>
+          <span class="form-hint" style="display:block;margin-bottom:8px">Hover over an image and click to mark it for deletion</span>
           {% endif %}
           <input class="form-input" type="file" name="gallery" multiple accept="image/*">
-          <span class="form-hint">Add more gallery images</span>
+          <span class="form-hint" style="margin-top:4px">Add more gallery images</span>
         </div>
       </div>
+
     </div>
 
-    <div>
-      <div class="card" style="margin-bottom:14px">
+    <!-- RIGHT -->
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <div class="card">
         <div class="form-section">
           <div class="form-section-title">Visibility & Flags</div>
           <div style="display:flex;flex-direction:column;gap:10px">
@@ -120,32 +141,35 @@
       <div class="card">
         <div class="form-section">
           <div class="form-section-title">Homepage Sections</div>
-          <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;flex-direction:column;gap:10px">
             {% for section in homepage_sections %}
             <label class="form-check">
               <input type="checkbox" name="homepage_sections" value="{{ section.id }}" {% if section.id in assigned_section_ids %}checked{% endif %}>
-              <span style="font-size:.78rem">{{ section.title }}<br><span style="color:var(--ash);font-weight:400">{{ section.get_section_type_display }}</span></span>
+              <span style="font-size:.76rem">
+                {{ section.title }}<br>
+                <span style="color:var(--mist);font-weight:500">{{ section.get_section_type_display }}</span>
+              </span>
             </label>
             {% empty %}
-            <span style="font-size:.78rem;color:var(--mist)">No active sections.</span>
+            <span style="font-size:.76rem;color:var(--mist)">No active sections.</span>
             {% endfor %}
           </div>
         </div>
       </div>
-    </div>
 
+    </div>
   </div>
 
-  <div style="display:flex;gap:10px;margin-top:14px">
-    <button type="submit" class="btn btn-primary">Save Changes</button>
+  <div style="display:flex;gap:8px;margin-top:14px">
+    <button type="submit" class="btn btn-primary">
+      <span class="material-symbols-outlined" style="font-size:15px">save</span>
+      Save Changes
+    </button>
     <a href="{% url 'dashboard_products' %}" class="btn btn-outline">Cancel</a>
-    <a href="/products/{{ hamper.id }}/" target="_blank" class="btn btn-outline" style="margin-left:auto">View on Site ↗</a>
+    <a href="/products/{{ hamper.id }}/" target="_blank" class="btn btn-outline" style="margin-left:auto">
+      View on Site
+      <span class="material-symbols-outlined" style="font-size:14px">open_in_new</span>
+    </a>
   </div>
 </form>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-.img-thumb input[type=checkbox]:checked ~ .del-overlay,.img-thumb:has(input:checked) .del-overlay{opacity:1;background:rgba(185,28,28,.7)}
-</style>
 {% endblock %}
