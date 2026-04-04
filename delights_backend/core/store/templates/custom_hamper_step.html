@@ -1,0 +1,848 @@
+{% extends "base.html" %}
+
+{% block title %}Build Your Hamper — Step {{ step.number }} · WrappDelights{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ─── Page Shell ─── */
+  body { background: #f9f9f9; }
+
+  .hamper-shell {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 104px 24px 200px;
+  }
+
+  /* ─── Step Header ─── */
+  .step-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 24px;
+    margin-bottom: 36px;
+  }
+
+  .step-kicker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .step-kicker-text {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #af101a;
+  }
+  .step-kicker-divider {
+    width: 24px; height: 1px;
+    background: #af101a;
+    opacity: 0.4;
+  }
+
+  .step-title {
+    font-family: 'Noto Serif', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1c1c;
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
+    line-height: 1.2;
+  }
+  .step-subtitle {
+    font-size: 13px;
+    color: #546067;
+    margin: 0;
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  /* ─── Progress Track ─── */
+  .progress-track {
+    display: flex;
+    gap: 6px;
+    margin-top: 20px;
+    align-items: center;
+  }
+  .prog-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    position: relative;
+  }
+  .prog-step + .prog-step::before {
+    content: '';
+    position: absolute;
+    left: calc(-50% + 14px);
+    right: calc(50% + 14px);
+    top: 14px;
+    height: 1px;
+    background: #e4beba;
+    z-index: 0;
+  }
+  .prog-step.done::before {
+    background: #af101a;
+  }
+  .prog-dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    position: relative;
+    z-index: 1;
+    border: 2px solid #e4beba;
+    background: #f9f9f9;
+    color: #8f6f6c;
+    transition: all 0.3s ease;
+  }
+  .prog-step.done .prog-dot {
+    background: #af101a;
+    border-color: #af101a;
+    color: #fff;
+  }
+  .prog-step.active .prog-dot {
+    background: #fff;
+    border-color: #af101a;
+    color: #af101a;
+    box-shadow: 0 0 0 4px rgba(175,16,26,0.12);
+  }
+  .prog-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #8f6f6c;
+    white-space: nowrap;
+  }
+  .prog-step.active .prog-label { color: #af101a; }
+  .prog-step.done .prog-label { color: #546067; }
+
+  /* ─── Session note ─── */
+  .session-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid #e4beba;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #546067;
+    font-weight: 600;
+    white-space: nowrap;
+    align-self: flex-start;
+    margin-top: 4px;
+  }
+  .session-note .material-symbols-outlined {
+    font-size: 14px;
+    color: #3b6934;
+  }
+
+  /* ─── Catalog Grid ─── */
+  .catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  /* ─── Product Card ─── */
+  .product-card {
+    background: #fff;
+    border: 1px solid #e4beba;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    box-shadow: 0 4px 16px rgba(175,16,26,0.04);
+  }
+  .product-card:hover {
+    border-color: #D9CDC0;
+    box-shadow: 0 8px 28px rgba(175,16,26,0.08);
+    transform: translateY(-2px);
+  }
+  .product-card.in-kit {
+    border-color: #af101a;
+    box-shadow: 0 0 0 2px rgba(175,16,26,0.15), 0 8px 24px rgba(175,16,26,0.08);
+  }
+
+  .card-img {
+    aspect-ratio: 4/3;
+    background: #F7ECEE;
+    overflow: hidden;
+    position: relative;
+  }
+  .card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .product-card:hover .card-img img { transform: scale(1.04); }
+
+  .card-in-kit-badge {
+    display: none;
+    position: absolute;
+    top: 10px; right: 10px;
+    background: #af101a;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .product-card.in-kit .card-in-kit-badge { display: block; }
+
+  .card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 6px;
+  }
+  .card-category {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #8f6f6c;
+  }
+  .card-name {
+    font-family: 'Noto Serif', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1c1c;
+    line-height: 1.3;
+    flex: 1;
+  }
+  .card-price {
+    font-size: 14px;
+    font-weight: 800;
+    color: #af101a;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .btn-add {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: #af101a;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 10px 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-add:hover { background: #930010; }
+  .btn-add:active { transform: scale(0.97); }
+  .btn-add .material-symbols-outlined { font-size: 14px; }
+
+  .btn-added {
+    background: #f9f9f9;
+    color: #af101a;
+    border: 1px solid #af101a;
+  }
+  .btn-added:hover { background: #FFF0EE; }
+
+  /* ─── Greeting Form ─── */
+  .greeting-wrap {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    padding: 16px 0 32px;
+  }
+  .greeting-card {
+    width: 100%;
+    max-width: 560px;
+    background: #fff;
+    border: 1px solid #e4beba;
+    border-radius: 8px;
+    padding: 48px;
+    box-shadow: 0 8px 32px rgba(175,16,26,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .greeting-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #af101a, #e4beba, #af101a);
+  }
+  .greeting-eyebrow {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #af101a;
+    margin-bottom: 6px;
+  }
+  .greeting-heading {
+    font-family: 'Noto Serif', serif;
+    font-size: 22px;
+    color: #1a1c1c;
+    margin-bottom: 6px;
+    font-style: italic;
+  }
+  .greeting-desc {
+    font-size: 12px;
+    color: #546067;
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #5b403d;
+  }
+  .form-input, .form-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #E7DED6;
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    color: #1a1c1c;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-input:focus, .form-textarea:focus {
+    border-color: #af101a;
+    box-shadow: 0 0 0 3px rgba(175,16,26,0.1);
+  }
+  .form-input::placeholder, .form-textarea::placeholder { color: #aaa; }
+  .form-textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* ─── Empty State ─── */
+  .catalog-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 64px 32px;
+    color: #8f6f6c;
+    font-size: 14px;
+  }
+
+  /* ─── Sticky Kit Bar ─── */
+  .sticky-bar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 50;
+    background: #fff;
+    border-top: 1px solid #e4beba;
+    box-shadow: 0 -4px 32px rgba(175,16,26,0.08);
+  }
+  .bar-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  /* Selected items section */
+  .bar-items-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 260px;
+  }
+  .bar-items-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .bar-items-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #1a1c1c;
+  }
+  .bar-count-pill {
+    background: #F7ECEE;
+    border: 1px solid #e4beba;
+    color: #af101a;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  .bar-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    max-height: 70px;
+    overflow-y: auto;
+  }
+  .bar-chips::-webkit-scrollbar { display: none; }
+
+  .bar-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f9f9f9;
+    border: 1px solid #e4beba;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #1a1c1c;
+    transition: border-color 0.2s;
+  }
+  .bar-chip:hover { border-color: #af101a; }
+  .chip-name { font-weight: 700; color: #1a1c1c; font-size: 11px; }
+  .chip-qty { color: #546067; font-size: 10px; }
+  .chip-price { color: #af101a; font-weight: 800; font-size: 11px; }
+  .chip-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #8f6f6c;
+    font-size: 12px;
+    padding: 0 2px;
+    line-height: 1;
+    transition: color 0.15s;
+    display: flex; align-items: center;
+  }
+  .chip-remove:hover { color: #af101a; }
+  .chip-remove .material-symbols-outlined { font-size: 12px; }
+
+  .bar-empty-note {
+    font-size: 12px;
+    color: #8f6f6c;
+    font-style: italic;
+  }
+
+  /* Totals */
+  .bar-totals {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .bar-total-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: #8f6f6c; }
+  .bar-total-price { font-family: 'Noto Serif', serif; font-size: 22px; font-weight: 700; color: #af101a; letter-spacing: -0.01em; }
+  .bar-total-qty { font-size: 10px; color: #546067; }
+
+  /* Navigation */
+  .bar-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    text-decoration: none;
+  }
+  .nav-btn .material-symbols-outlined { font-size: 14px; }
+
+  .nav-btn-back {
+    background: #f9f9f9;
+    border: 1px solid #e4beba;
+    color: #546067;
+  }
+  .nav-btn-back:hover { background: #f3f3f3; border-color: #D9CDC0; color: #1a1c1c; }
+  .nav-btn-back:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .nav-btn-next {
+    background: #af101a;
+    color: #fff;
+    min-width: 140px;
+  }
+  .nav-btn-next:hover { background: #930010; }
+  .nav-btn-next:active { transform: scale(0.97); }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 1024px) {
+    .catalog-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 768px) {
+    .step-header { grid-template-columns: 1fr; }
+    .session-note { display: none; }
+    .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hamper-shell { padding: 96px 16px 200px; }
+    .greeting-card { padding: 32px 24px; }
+    .form-row { grid-template-columns: 1fr; }
+    .bar-inner { gap: 12px; }
+    .bar-totals { display: none; }
+    .progress-track { display: none; }
+  }
+  @media (max-width: 480px) {
+    .catalog-grid { grid-template-columns: 1fr; }
+    .step-title { font-size: 26px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hamper-shell">
+
+  <!-- ─── Step Header ─── -->
+  <div class="step-header">
+    <div>
+      <div class="step-kicker">
+        <div class="step-kicker-divider"></div>
+        <span class="step-kicker-text">Step {{ step.number }} of {{ step_count }} &nbsp;·&nbsp; Custom Hamper Builder</span>
+      </div>
+      <h1 class="step-title">{{ step.title }}</h1>
+      <p class="step-subtitle">{{ step.subtitle }}</p>
+
+      <!-- Progress track with step dots -->
+      <div class="progress-track" style="margin-top:24px;">
+        {% for idx in step_numbers %}
+          <div class="prog-step {% if idx < step.number %}done{% elif idx == step.number %}active{% endif %}">
+            <div class="prog-dot">
+              {% if idx < step.number %}
+                <span class="material-symbols-outlined" style="font-size:12px;">check</span>
+              {% else %}
+                {{ idx }}
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Session Note -->
+    <div class="session-note">
+      <span class="material-symbols-outlined">cloud_done</span>
+      Session auto-saves
+    </div>
+  </div>
+
+  <!-- ─── Main Content Area ─── -->
+  <div class="catalog-grid">
+
+    {% if step.slug == 'greeting' %}
+      <!-- ── Greeting Card Form ── -->
+      <div class="greeting-wrap">
+        <div class="greeting-card">
+          <p class="greeting-eyebrow">Personal Touch</p>
+          <h2 class="greeting-heading">Write Your Greeting</h2>
+          <p class="greeting-desc">Add a heartfelt message to accompany your hamper. This will be printed on the greeting card inside.</p>
+
+          <form id="greetingForm" autocomplete="off">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="greetingFrom">From</label>
+                <input class="form-input" type="text" id="greetingFrom" name="from"
+                       placeholder="Your name"
+                       value="{{ session_greeting.from|default:'' }}">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="greetingTo">To</label>
+                <input class="form-input" type="text" id="greetingTo" name="to"
+                       placeholder="Recipient's name"
+                       value="{{ session_greeting.to|default:'' }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="greetingMessage">Message</label>
+              <textarea class="form-textarea" id="greetingMessage" name="message"
+                        placeholder="Share your warm wishes, a special memory, or simply let them know you care…">{{ session_greeting.message|default:'' }}</textarea>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    {% else %}
+      <!-- ── Product Catalog ── -->
+      {% for product in catalog %}
+        <article class="product-card" id="card-{{ product.id }}">
+          <div class="card-img">
+            {% if product.cover_image %}
+              <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
+            {% else %}
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                <span class="material-symbols-outlined" style="font-size:36px;color:#e4beba;">image_not_supported</span>
+              </div>
+            {% endif %}
+            <span class="card-in-kit-badge">In box</span>
+          </div>
+          <div class="card-body">
+            <p class="card-category">
+              {% if product.category %}{{ product.category.name }}{% else %}Uncategorized{% endif %}
+            </p>
+            <h3 class="card-name">{{ product.name }}</h3>
+            <p class="card-price">
+              {% if product.base_price %}₹{{ product.base_price|floatformat:0 }}{% elif product.price_label %}{{ product.price_label }}{% else %}Price on request{% endif %}
+            </p>
+            <div class="card-actions">
+              <button class="btn-add" type="button" data-add="{{ product.id }}">
+                <span class="material-symbols-outlined">add</span>
+                Add to box
+              </button>
+            </div>
+          </div>
+        </article>
+      {% empty %}
+        <div class="catalog-empty">
+          <span class="material-symbols-outlined" style="font-size:40px;color:#e4beba;display:block;margin-bottom:12px;">inventory_2</span>
+          No active items available for this step.
+        </div>
+      {% endfor %}
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- ─── Sticky Kit Bar ─── -->
+<div class="sticky-bar" id="kitBar">
+  <div class="bar-inner">
+
+    <!-- Selected items -->
+    <div class="bar-items-section">
+      <div class="bar-items-label">
+        <span class="bar-items-title">Your Box</span>
+        <span class="bar-count-pill" id="kitItemCount">0 items</span>
+      </div>
+      <div class="bar-chips" id="kitChips">
+        <span class="bar-empty-note">Add products above to see them here.</span>
+      </div>
+    </div>
+
+    <!-- Order totals -->
+    <div class="bar-totals">
+      <span class="bar-total-label">Order Total</span>
+      <span class="bar-total-price" id="kitTotalPrice">₹0</span>
+      <span class="bar-total-qty" id="kitTotalQty">0 units</span>
+    </div>
+
+    <!-- Navigation -->
+    <div class="bar-nav">
+      {% if step.prev_url %}
+        <a href="{{ step.prev_url }}" class="nav-btn nav-btn-back">
+          <span class="material-symbols-outlined">arrow_back</span>
+          Back
+        </a>
+      {% else %}
+        <button class="nav-btn nav-btn-back" type="button" disabled>
+          <span class="material-symbols-outlined">arrow_back</span>
+          Back
+        </button>
+      {% endif %}
+
+      <button class="nav-btn nav-btn-next" type="button" id="nextBtn" data-next="{{ step.next_url }}">
+        {% if step.is_last_step %}
+          Review & Confirm
+          <span class="material-symbols-outlined">task_alt</span>
+        {% else %}
+          Next Step
+          <span class="material-symbols-outlined">arrow_forward</span>
+        {% endif %}
+      </button>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+
+  var stepSlug = "{{ step.slug }}";
+  var nextUrl  = "{{ step.next_url }}";
+
+  var routes = {
+    add:     "{% url 'custom_hamper_add_item' %}",
+    remove:  "{% url 'custom_hamper_remove_item' %}",
+    update:  "{% url 'custom_hamper_update_quantity' %}",
+    summary: "{% url 'custom_hamper_summary' %}"
+  };
+
+  var kitState     = { items: [], total_price: 0, total_quantity: 0, item_count: 0 };
+  var chipsEl      = document.getElementById('kitChips');
+  var totalPriceEl = document.getElementById('kitTotalPrice');
+  var totalQtyEl   = document.getElementById('kitTotalQty');
+  var itemCountEl  = document.getElementById('kitItemCount');
+  var nextBtn      = document.getElementById('nextBtn');
+
+  function getCookie(name) {
+    var v = '; ' + document.cookie, p = v.split('; ' + name + '=');
+    if (p.length === 2) return p.pop().split(';').shift();
+    return '';
+  }
+
+  function request(url, options) {
+    var opts = options || {};
+    opts.credentials = 'same-origin';
+    opts.headers = opts.headers || {};
+    opts.headers['X-Requested-With'] = 'XMLHttpRequest';
+    if (opts.method && opts.method.toUpperCase() !== 'GET') {
+      opts.headers['Content-Type'] = 'application/json';
+      opts.headers['X-CSRFToken'] = getCookie('csrftoken');
+    }
+    return fetch(url, opts).then(function (r) { return r.json(); });
+  }
+
+  function refreshKit() {
+    request(routes.summary).then(renderKit).catch(function () {});
+  }
+
+  function addToKit(productId) {
+    return request(routes.add, {
+      method: 'POST',
+      body: JSON.stringify({ product_id: productId, quantity: 1, step: stepSlug })
+    }).then(function (data) {
+      renderKit(data);
+      updateCardState(productId, true);
+    });
+  }
+
+  function removeItem(productId) {
+    return request(routes.remove, {
+      method: 'POST',
+      body: JSON.stringify({ product_id: productId })
+    }).then(function (data) {
+      renderKit(data);
+      updateCardState(productId, false);
+    });
+  }
+
+  function updateCardState(productId, inKit) {
+    var card = document.getElementById('card-' + productId);
+    if (!card) return;
+    var btn = card.querySelector('[data-add]');
+    if (inKit) {
+      card.classList.add('in-kit');
+      if (btn) {
+        btn.innerHTML = '<span class="material-symbols-outlined">check</span> Added';
+        btn.classList.add('btn-added');
+      }
+    } else {
+      card.classList.remove('in-kit');
+      if (btn) {
+        btn.innerHTML = '<span class="material-symbols-outlined">add</span> Add to box';
+        btn.classList.remove('btn-added');
+      }
+    }
+  }
+
+  function renderKit(data) {
+    if (!data || data.error) return;
+    kitState = data;
+
+    var count = data.item_count || 0;
+    itemCountEl.textContent = count + (count === 1 ? ' item' : ' items');
+    totalPriceEl.textContent = '₹' + (data.total_price || 0);
+    totalQtyEl.textContent = (data.total_quantity || 0) + ' units';
+
+    // Sync card states
+    document.querySelectorAll('[data-add]').forEach(function (btn) {
+      var pid = btn.getAttribute('data-add');
+      var inKit = data.items && data.items.some(function (i) { return String(i.product_id) === String(pid); });
+      updateCardState(pid, inKit);
+    });
+
+    if (!data.items || !data.items.length) {
+      chipsEl.innerHTML = '<span class="bar-empty-note">Add products above to see them here.</span>';
+      return;
+    }
+
+    var html = data.items.map(function (item) {
+      var price = typeof item.price === 'number' ? item.price.toFixed(0) : item.price;
+      return (
+        '<div class="bar-chip" data-product="' + item.product_id + '">' +
+          '<span class="chip-name">' + item.name + '</span>' +
+          '<span class="chip-qty">×' + item.quantity + '</span>' +
+          '<span class="chip-price">₹' + price + '</span>' +
+          '<button class="chip-remove" type="button" data-action="remove" aria-label="Remove">' +
+            '<span class="material-symbols-outlined">close</span>' +
+          '</button>' +
+        '</div>'
+      );
+    }).join('');
+    chipsEl.innerHTML = html;
+  }
+
+  // Add buttons
+  document.querySelectorAll('[data-add]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      addToKit(btn.getAttribute('data-add'));
+    });
+  });
+
+  // Chip remove
+  chipsEl.addEventListener('click', function (evt) {
+    var chip = evt.target.closest('[data-product]');
+    if (!chip) return;
+    if (evt.target.closest('[data-action="remove"]')) {
+      removeItem(chip.getAttribute('data-product'));
+    }
+  });
+
+  // Next step
+  if (nextBtn) {
+    nextBtn.addEventListener('click', function () {
+      if (stepSlug !== 'greeting' && (!kitState.item_count || kitState.item_count < 1)) {
+        // Animate bar to draw attention
+        var bar = document.getElementById('kitBar');
+        bar.style.boxShadow = '0 -4px 32px rgba(175,16,26,0.3)';
+        setTimeout(function () { bar.style.boxShadow = ''; }, 800);
+        return;
+      }
+      if (nextUrl) window.location.href = nextUrl;
+    });
+  }
+
+  refreshKit();
+})();
+</script>
+{% endblock %}

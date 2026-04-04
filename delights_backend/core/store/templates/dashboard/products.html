@@ -82,7 +82,11 @@
             {% if p.category %}<span class="badge badge-gray">{{ p.category.name }}</span>
             {% else %}<span style="color:var(--mist)">—</span>{% endif %}
           </td>
-          <td style="font-size:.76rem;color:var(--ash)">{{ p.price_label|default:"Quote-based" }}</td>
+          <td style="font-size:.76rem;color:var(--ash)">
+            {% if p.base_price %}₹ {{ p.base_price|floatformat:0 }}
+            {% elif p.price_label %}{{ p.price_label }}
+            {% else %}Quote-based{% endif %}
+          </td>
           <td style="font-weight:800">{{ p.min_bulk_quantity }}</td>
           <td style="white-space:nowrap">
             {% if p.is_featured %}<span class="badge badge-yellow" style="margin-right:3px">Featured</span>{% endif %}

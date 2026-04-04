@@ -1,1254 +1,398 @@
 {% extends "base.html" %}
-
-{% block nav_home %}text-[#570012] border-b-2 border-[#570012] font-bold{% endblock %}
-
-{% block title %}WrappDelights | Corporate Gifting Catalog{% endblock %}
-
-{% block extra_css %}
-<style>
-  /* ─── Design Tokens (matching reference) ─── */
-  :root {
-    --primary: #570012;
-    --primary-container: #80011f;
-    --primary-fixed: #ffdada;
-    --primary-fixed-dim: #ffb3b4;
-    --on-primary: #ffffff;
-    --surface: #fcf9f8;
-    --surface-bright: #fcf9f8;
-    --surface-container-low: #f6f3f2;
-    --surface-container: #f0eded;
-    --surface-container-high: #eae7e7;
-    --surface-container-lowest: #ffffff;
-    --on-surface: #1c1b1b;
-    --on-surface-variant: #584141;
-    --outline: #8c7070;
-    --outline-variant: #e0bfbf;
-    --secondary-container: #b9eeab;
-    --on-secondary-fixed-variant: #23501e;
-  }
-
-  /* ─── Base ─── */
-  body { background: var(--surface); color: var(--on-surface); font-family: 'Inter', sans-serif; }
-
-  /* ─── Ledger dot-grid background ─── */
-  .ledger-grid {
-    background-image: radial-gradient(circle, #e0bfbf 1px, transparent 1px);
-    background-size: 24px 24px;
-  }
-
-  /* ─── Hero ─── */
-  .hero {
-    position: relative;
-    min-height: 600px;
-    display: flex;
-    align-items: center;
-    background: var(--surface-container-low);
-    overflow: hidden;
-    border-bottom: 1px solid rgba(224,191,191,0.2);
-  }
-  .hero-grid-overlay {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.1;
-  }
-  .hero-inner {
-    position: relative;
-    z-index: 1;
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 64px 32px;
-    display: grid;
-    grid-template-columns: 7fr 5fr;
-    gap: 48px;
-    align-items: center;
-    width: 100%;
-  }
-  .hero-kicker {
-    display: inline-block;
-    padding: 4px 12px;
-    background: var(--secondary-container);
-    color: var(--on-secondary-fixed-variant);
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    border-radius: 2px;
-    margin-bottom: 20px;
-  }
-  .hero-title {
-    font-size: clamp(2.8rem, 6vw, 4.5rem);
-    font-weight: 900;
-    line-height: 0.92;
-    letter-spacing: -0.03em;
-    color: var(--primary);
-    margin-bottom: 24px;
-  }
-  .hero-sub {
-    font-size: 17px;
-    color: var(--on-surface-variant);
-    line-height: 1.65;
-    max-width: 520px;
-    font-weight: 300;
-    margin-bottom: 36px;
-  }
-  .hero-actions {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .hero-img-wrap {
-    position: relative;
-  }
-  .hero-img-box {
-    aspect-ratio: 1;
-    background: var(--surface-container-lowest);
-    border: 1px solid rgba(224,191,191,0.3);
-    padding: 16px;
-    box-shadow: 0 20px 60px rgba(28,27,27,0.05);
-    overflow: hidden;
-  }
-  .hero-img-box img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    filter: grayscale(20%);
-    transition: transform 2s ease;
-  }
-  .hero-img-box:hover img { transform: scale(1.04); }
-  .hero-stat-badge {
-    position: absolute;
-    bottom: -24px;
-    left: -24px;
-    background: white;
-    border: 1px solid rgba(224,191,191,0.3);
-    padding: 20px 24px;
-  }
-  .hero-stat-badge .num {
-    font-size: 24px;
-    font-weight: 900;
-    color: var(--primary);
-    letter-spacing: -0.04em;
-    line-height: 1;
-  }
-  .hero-stat-badge .lbl {
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: #8c7070;
-    margin-top: 4px;
-  }
-
-  /* ─── Trust Strip ─── */
-  .trust-strip {
-    background: var(--surface);
-    border-bottom: 1px solid rgba(224,191,191,0.2);
-    padding: 28px 0;
-  }
-  .trust-inner {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 0 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 24px;
-  }
-  .trust-label {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
-    color: #aaa;
-  }
-  .trust-items {
-    display: flex;
-    gap: 48px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .trust-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--on-surface);
-  }
-  .trust-item .material-symbols-outlined {
-    color: var(--primary);
-    font-size: 20px;
-    font-variation-settings: 'FILL' 1;
-    transition: transform 0.2s;
-  }
-  .trust-item:hover .material-symbols-outlined { transform: scale(1.15); }
-
-  /* ─── Process Section ─── */
-  .process-section {
-    padding: 80px 0;
-    background: var(--surface);
-  }
-  .section-head {
-    margin-bottom: 56px;
-  }
-  .section-head h2 {
-    font-size: clamp(1.6rem, 3vw, 2rem);
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-    color: var(--primary);
-    margin-bottom: 8px;
-  }
-  .section-head-bar {
-    height: 4px;
-    width: 64px;
-    background: var(--primary);
-  }
-  .process-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0;
-    position: relative;
-  }
-  .process-connector {
-    position: absolute;
-    top: 48px;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    background: rgba(224,191,191,0.3);
-  }
-  .process-step {
-    position: relative;
-    z-index: 1;
-  }
-  .process-step-icon {
-    width: 96px;
-    height: 96px;
-    background: var(--surface-container-low);
-    border: 1px solid rgba(224,191,191,0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    font-size: 2.2rem;
-    font-weight: 900;
-    color: var(--on-surface);
-    transition: background 0.3s, color 0.3s;
-  }
-  .process-step:hover .process-step-icon {
-    background: var(--primary);
-    color: white;
-  }
-  .process-step h3 {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-bottom: 8px;
-    color: var(--on-surface);
-  }
-  .process-step p {
-    font-size: 11px;
-    color: var(--on-surface-variant);
-    line-height: 1.6;
-  }
-
-  /* ─── Value Bento ─── */
-  .value-section {
-    padding: 80px 0;
-    background: var(--surface-container-low);
-  }
-  .bento-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-  .bento-cell {
-    background: var(--surface-container-lowest);
-    border: 1px solid rgba(224,191,191,0.3);
-    padding: 36px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    transition: box-shadow 0.3s;
-  }
-  .bento-cell:hover { box-shadow: 0 8px 32px rgba(87,0,18,0.06); }
-  .bento-cell.tall { grid-row: span 2; justify-content: space-between; }
-  .bento-cell .material-symbols-outlined {
-    font-size: 36px;
-    color: var(--primary);
-    font-variation-settings: 'FILL' 0;
-    margin-bottom: 8px;
-  }
-  .bento-cell h3 {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    color: var(--primary);
-  }
-  .bento-cell.small h3 {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-weight: 700;
-  }
-  .bento-cell p {
-    font-size: 13px;
-    color: var(--on-surface-variant);
-    line-height: 1.65;
-  }
-  .bento-cell.small p { font-size: 11px; }
-  .bento-progress {
-    height: 6px;
-    width: 100%;
-    background: var(--surface-container);
-    border-radius: 1px;
-  }
-  .bento-progress-fill {
-    height: 100%;
-    background: var(--primary);
-    width: 100%;
-    transition: width 1s ease;
-  }
-
-  /* ─── Kit Builder Feature ─── */
-  .builder-section {
-    padding: 80px 0;
-    background: var(--primary);
-    color: var(--on-primary);
-    overflow: hidden;
-  }
-  .builder-inner {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 0 32px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 64px;
-    align-items: center;
-  }
-  .builder-kicker {
-    display: inline-block;
-    padding: 4px 12px;
-    background: rgba(255,255,255,0.1);
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    border-radius: 2px;
-    margin-bottom: 20px;
-  }
-  .builder-title {
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 900;
-    letter-spacing: -0.03em;
-    line-height: 0.95;
-    color: white;
-    margin-bottom: 24px;
-  }
-  .builder-sub {
-    font-size: 17px;
-    color: var(--primary-fixed-dim);
-    line-height: 1.65;
-    font-weight: 300;
-    margin-bottom: 32px;
-    max-width: 440px;
-  }
-  .builder-features {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 36px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .builder-features li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: white;
-  }
-  .builder-features li .material-symbols-outlined {
-    font-size: 18px;
-    color: #3b6934;
-    font-variation-settings: 'FILL' 1;
-  }
-  .builder-img-wrap {
-    position: relative;
-  }
-  .builder-img-wrap::before {
-    content: '';
-    position: absolute;
-    inset: -16px;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 2px;
-  }
-  .builder-img-wrap img {
-    width: 100%;
-    filter: grayscale(1) brightness(0.75);
-    transition: filter 0.7s ease;
-  }
-  .builder-img-wrap:hover img { filter: grayscale(0) brightness(1); }
-
-  /* ─── Categories Pill Row ─── */
-  .pill-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 32px;
-  }
-  .cat-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 7px 16px;
-    border: 1px solid rgba(224,191,191,0.5);
-    background: white;
-    color: var(--on-surface-variant);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    transition: all 0.2s;
-    border-radius: 2px;
-    cursor: pointer;
-    text-decoration: none;
-  }
-  .cat-pill:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-    background: var(--primary-fixed);
-  }
-
-  /* ─── Product Carousel ─── */
-  .carousel-section {
-    padding: 80px 0;
-    background: var(--surface);
-  }
-  .carousel-section-alt {
-    background: var(--surface-container-low);
-  }
-  .carousel-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(224,191,191,0.3);
-    padding-bottom: 16px;
-    margin-bottom: 32px;
-  }
-  .carousel-header h2 {
-    font-size: clamp(1.4rem, 2.5vw, 1.8rem);
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-    color: var(--primary);
-  }
-  .section-link {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--on-surface-variant);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    transition: color 0.2s, gap 0.2s;
-    text-decoration: none;
-  }
-  .section-link:hover { color: var(--primary); gap: 8px; }
-
-  .product-scroll {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    padding-bottom: 12px;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .product-scroll::-webkit-scrollbar { display: none; }
-
-  /* ─── Product Card ─── */
-  .p-card {
-    flex: 0 0 320px;
-    scroll-snap-align: start;
-    background: white;
-    border: 1px solid rgba(224,191,191,0.3);
-    display: flex;
-    flex-direction: column;
-    transition: box-shadow 0.3s;
-  }
-  .p-card:hover { box-shadow: 0 8px 32px rgba(87,0,18,0.08); }
-  .p-card-img {
-    aspect-ratio: 1;
-    overflow: hidden;
-    background: var(--surface-container-low);
-    position: relative;
-  }
-  .p-card-img img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-  }
-  .p-card:hover .p-card-img img { transform: scale(1.05); }
-  .p-card-img-placeholder {
-    width: 100%; height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--outline);
-  }
-  .p-card-tags {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    display: flex;
-    gap: 4px;
-  }
-  .p-card-body {
-    padding: 20px 24px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    gap: 8px;
-  }
-  .p-card-category {
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: #8c7070;
-  }
-  .p-card-name {
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    color: var(--primary);
-    line-height: 1.3;
-    text-decoration: none;
-  }
-  .p-card-name:hover { color: var(--primary-container); }
-  .p-card-meta-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    border-top: 1px solid rgba(224,191,191,0.15);
-    border-bottom: 1px solid rgba(224,191,191,0.15);
-    padding: 12px 0;
-    margin: 4px 0;
-  }
-  .p-card-meta-item { display: flex; flex-direction: column; gap: 2px; }
-  .p-card-meta-item .meta-label {
-    font-size: 8px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #aaa;
-  }
-  .p-card-meta-item .meta-val {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--on-surface);
-  }
-  .p-card-cta {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    font-size: 10px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    text-align: center;
-    background: var(--surface-container);
-    color: var(--primary);
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-    text-decoration: none;
-    margin-top: auto;
-  }
-  .p-card-cta:hover { background: var(--primary); color: white; }
-
-  /* ─── Festive Grid ─── */
-  .festive-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-  }
-  .festive-card {
-    background: var(--surface-container-lowest);
-    border: 1px solid rgba(224,191,191,0.2);
-    padding: 16px;
-    text-decoration: none;
-    display: block;
-    transition: box-shadow 0.2s;
-  }
-  .festive-card:hover { box-shadow: 0 4px 20px rgba(87,0,18,0.08); }
-  .festive-img {
-    aspect-ratio: 16/9;
-    background: var(--surface-container-low);
-    overflow: hidden;
-    margin-bottom: 16px;
-  }
-  .festive-img img { width: 100%; height: 100%; object-fit: cover; }
-  .festive-img-placeholder {
-    width: 100%; height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--outline);
-  }
-  .festive-name {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--primary);
-    margin-bottom: 4px;
-  }
-  .festive-price {
-    font-size: 10px;
-    color: #8c7070;
-  }
-
-  /* ─── Stats Section ─── */
-  .stats-section {
-    padding: 80px 0;
-    background: var(--surface-container-high);
-    border-top: 1px solid rgba(224,191,191,0.3);
-    border-bottom: 1px solid rgba(224,191,191,0.3);
-  }
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    text-align: center;
-  }
-  .stat-cell {
-    padding: 0 32px;
-    border-right: 1px solid rgba(224,191,191,0.3);
-  }
-  .stat-cell:last-child { border-right: none; }
-  .stat-num {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    font-weight: 900;
-    color: var(--primary);
-    letter-spacing: -0.04em;
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-  .stat-lbl {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: var(--on-surface-variant);
-  }
-
-  /* ─── CTA Banner ─── */
-  .cta-section {
-    padding: 100px 0;
-    background: var(--surface);
-    text-align: center;
-  }
-  .cta-title {
-    font-size: clamp(2rem, 5vw, 4rem);
-    font-weight: 900;
-    letter-spacing: -0.03em;
-    color: var(--primary);
-    line-height: 0.95;
-    margin-bottom: 40px;
-  }
-  .cta-btns {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-
-  /* ─── Shared Buttons ─── */
-  .wd-btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--primary);
-    color: white;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    padding: 14px 28px;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s;
-    text-decoration: none;
-    border-radius: 2px;
-  }
-  .wd-btn-primary:hover { background: var(--primary-container); color: white; }
-  .wd-btn-outline {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: transparent;
-    color: var(--primary);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    padding: 14px 28px;
-    border: 1px solid var(--outline);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    border-radius: 2px;
-  }
-  .wd-btn-outline:hover { background: var(--surface-container); }
-  .wd-btn-ghost-text {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--on-surface-variant);
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  .wd-btn-ghost-text:hover { color: var(--primary); }
-  .wd-btn-ghost-text:hover .material-symbols-outlined { transform: translateX(4px); }
-  .wd-btn-ghost-text .material-symbols-outlined { transition: transform 0.2s; }
-  .wd-btn-cta-lg {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--primary);
-    color: white;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    padding: 20px 48px;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s;
-    text-decoration: none;
-    border-radius: 2px;
-  }
-  .wd-btn-cta-lg:hover { transform: scale(1.03); color: white; }
-  .wd-btn-outline-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: transparent;
-    color: var(--primary);
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    padding: 20px 48px;
-    border: 2px solid var(--primary);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    border-radius: 2px;
-  }
-  .wd-btn-outline-cta:hover { background: var(--primary); color: white; }
-
-  /* ─── Badges ─── */
-  .wd-badge-bulk {
-    background: var(--secondary-container);
-    color: var(--on-secondary-fixed-variant);
-    font-size: 8px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    padding: 3px 8px;
-    border-radius: 2px;
-  }
-  .wd-badge-featured {
-    background: var(--primary);
-    color: white;
-    font-size: 8px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    padding: 3px 8px;
-    border-radius: 2px;
-  }
-
-  /* ─── Container ─── */
-  .wd-container {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 0 32px;
-  }
-
-  /* ─── Responsive ─── */
-  @media (max-width: 1100px) {
-    .hero-inner { grid-template-columns: 1fr; }
-    .hero-img-wrap { display: none; }
-    .bento-grid { grid-template-columns: repeat(2, 1fr); }
-    .bento-cell.tall { grid-row: span 1; }
-    .process-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .process-connector { display: none; }
-    .festive-grid { grid-template-columns: repeat(2, 1fr); }
-    .stats-grid { grid-template-columns: repeat(3, 1fr); }
-    .builder-inner { grid-template-columns: 1fr; }
-    .builder-img-wrap { display: none; }
-  }
-
-  @media (max-width: 768px) {
-    .trust-inner { flex-direction: column; align-items: flex-start; }
-    .bento-grid { grid-template-columns: 1fr; }
-    .process-grid { grid-template-columns: repeat(2, 1fr); }
-    .festive-grid { grid-template-columns: 1fr; }
-    .stats-grid { grid-template-columns: 1fr; gap: 40px; }
-    .stat-cell { border-right: none; border-bottom: 1px solid rgba(224,191,191,0.3); padding-bottom: 40px; }
-    .stat-cell:last-child { border-bottom: none; }
-    .cta-btns { flex-direction: column; align-items: center; }
-  }
-
-  @media (max-width: 480px) {
-    .wd-container { padding: 0 16px; }
-    .p-card { flex-basis: 280px; }
-    .process-grid { grid-template-columns: 1fr; }
-  }
-</style>
-{% endblock %}
+{% block title %}WrappDelights | Curated Gifts, Made Effortless{% endblock %}
+{% block nav_catalog %}text-red-700 border-b-2 border-red-700 font-bold{% endblock %}
 
 {% block content %}
+<main class="pt-24">
 
-<!-- ═══════════════════════════════════════════════
-     HERO
-════════════════════════════════════════════════ -->
-<section class="hero">
-  <div class="hero-grid-overlay ledger-grid"></div>
-  <div class="hero-inner">
-    <!-- Left: Copy -->
-    <div>
-      <span class="hero-kicker">Enterprise Procurement</span>
-      <h1 class="hero-title">
-        Simplify Corporate<br>Gifting at Scale
-      </h1>
-      <p class="hero-sub">
-        High-performance procurement for corporate teams. Discover, customize, and procure premium gift kits in bulk — we handle the sourcing, branding, and logistics.
-      </p>
-      <div class="hero-actions">
-        <a href="{% url 'products' %}" class="wd-btn-primary">
-          Request Quote
-        </a>
-        <a href="{% url 'custom_hamper' %}" class="wd-btn-outline">
-          Build Custom Hamper
-        </a>
-        <a href="{% url 'products' %}" class="wd-btn-ghost-text">
-          Browse Catalog
-          <span class="material-symbols-outlined" style="font-size:18px;">arrow_forward</span>
-        </a>
-      </div>
-    </div>
+  <!-- ═══════════════════════════════════════════
+       HERO
+  ════════════════════════════════════════════ -->
+  <section class="relative w-full min-h-[880px] flex items-center px-8 md:px-20 bg-surface-container-low overflow-hidden">
 
-    <!-- Right: Image -->
-    <div class="hero-img-wrap">
-      <div class="hero-img-box">
-        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJZxYxWWbU7GaPlnWl0VILxubzUld8XhuYZdTcjQteLhFURLG4XxF1Icq2_6cS8ifgqjxXd8Jeglm_F8XQhsNScAdYa5TE6iE1Hz7whzmZSRymHaIRiRhGwfIAuFGkU93B68GJ3WFN44bhyXd8n2OhGUMUFk6TLMtfX0I3bQUlM3Yty_gAqv5J9ZscCXQ4f0GM0hjVz7fhiEzpjVc8lKVEk70AG2_dm0Sq9NU-NJqj8k8pR_HGGJ8vnrgoq2YaQUAezvhmpxwySQ" alt="Premium corporate gift box">
-      </div>
-      <div class="hero-stat-badge">
-        <div class="num">10,000+</div>
-        <div class="lbl">Units Fulfilled Monthly</div>
-      </div>
-    </div>
-  </div>
-</section>
+    <!-- Decorative blobs -->
+    <div class="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full bg-primary-fixed-dim/20 blur-3xl -z-0"></div>
+    <div class="pointer-events-none absolute bottom-0 left-0 w-72 h-72 rounded-full bg-secondary-container/30 blur-3xl -z-0"></div>
 
-<!-- ═══════════════════════════════════════════════
-     TRUST STRIP
-════════════════════════════════════════════════ -->
-<div class="trust-strip">
-  <div class="trust-inner">
-    <p class="trust-label">Trusted By Professionals</p>
-    <div class="trust-items">
-      <div class="trust-item">
-        <span class="material-symbols-outlined">groups</span>
-        HR Teams
-      </div>
-      <div class="trust-item">
-        <span class="material-symbols-outlined">admin_panel_settings</span>
-        Admin Teams
-      </div>
-      <div class="trust-item">
-        <span class="material-symbols-outlined">event</span>
-        Event Planners
-      </div>
-    </div>
-  </div>
-</div>
+    <div class="grid md:grid-cols-2 gap-12 items-center w-full max-w-7xl mx-auto relative z-10">
 
-<!-- ═══════════════════════════════════════════════
-     HOW IT WORKS
-════════════════════════════════════════════════ -->
-<section class="process-section">
-  <div class="wd-container">
-    <div class="section-head">
-      <h2>Our Procurement Workflow</h2>
-      <div class="section-head-bar"></div>
-    </div>
-    <div class="process-grid">
-      <div class="process-connector"></div>
-      <div class="process-step">
-        <div class="process-step-icon">01</div>
-        <h3>Browse</h3>
-        <p>Systematic SKU discovery across categories curated for bulk professional gifting.</p>
-      </div>
-      <div class="process-step">
-        <div class="process-step-icon">02</div>
-        <h3>Shortlist / Build</h3>
-        <p>Utilize our digital workspace to compare kits or build unique hampers.</p>
-      </div>
-      <div class="process-step">
-        <div class="process-step-icon">03</div>
-        <h3>Submit Inquiry</h3>
-        <p>Specify volume requirements and timelines to initiate the formal bidding process.</p>
-      </div>
-      <div class="process-step">
-        <div class="process-step-icon">04</div>
-        <h3>Customization</h3>
-        <p>Direct access to our sourcing expertise and white-label branding capabilities.</p>
-      </div>
-      <div class="process-step">
-        <div class="process-step-icon">05</div>
-        <h3>Reliable Delivery</h3>
-        <p>Precision Pan-India logistics handling diverse multi-location distribution.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════
-     VALUE PROPOSITION BENTO
-════════════════════════════════════════════════ -->
-<section class="value-section">
-  <div class="wd-container">
-    <div class="bento-grid">
-
-      <!-- Tall primary card -->
-      <div class="bento-cell tall">
-        <div>
-          <span class="material-symbols-outlined">verified</span>
-          <h3>No Vendor Chasing</h3>
-          <p>We act as your single point of contact, managing over 200+ micro-vendors to ensure quality consistency across every unit.</p>
+      <!-- Copy -->
+      <div class="order-2 md:order-1">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-6 h-px bg-primary opacity-60"></div>
+          <span class="uppercase tracking-[0.3em] text-xs font-bold text-primary">The Art of Gifting</span>
         </div>
-        <div class="bento-progress">
-          <div class="bento-progress-fill"></div>
+
+        <h1 class="text-5xl md:text-6xl lg:text-7xl font-serif leading-[1.1] mb-6 text-on-surface">
+          Curated Gifts,<br>
+          <span class="italic text-primary">Made Effortless</span>
+        </h1>
+
+        <p class="text-base md:text-lg text-secondary max-w-md mb-10 leading-relaxed font-body">
+          Discover a premium gifting experience tailored to your celebrations. Hand-picked, beautifully wrapped, and delivered with love.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="{% url 'products' %}"
+             class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-on-primary rounded-xl font-bold text-sm tracking-wide hover:bg-on-primary-fixed-variant transition-all active:scale-95 shadow-lg shadow-primary/20">
+            <span class="material-symbols-outlined text-base">auto_awesome</span>
+            Browse Catalog
+          </a>
+          <a href="{% url 'custom_hamper' %}"
+             class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white border border-outline-variant text-on-surface rounded-xl font-bold text-sm tracking-wide hover:border-primary hover:text-primary transition-all active:scale-95">
+            <span class="material-symbols-outlined text-base">inventory_2</span>
+            Build Custom Hamper
+          </a>
+        </div>
+
+        <!-- Slideshow dots -->
+        <div class="mt-16 flex items-center gap-3" id="heroDots" aria-label="Hero image selector">
+          <button data-hero-dot="0" class="h-2 w-10 rounded-full bg-primary transition-all duration-300"></button>
+          <button data-hero-dot="1" class="h-2 w-6 rounded-full bg-outline-variant transition-all duration-300"></button>
+          <button data-hero-dot="2" class="h-2 w-6 rounded-full bg-outline-variant transition-all duration-300"></button>
         </div>
       </div>
 
-      <!-- 2×2 small cards -->
-      <div class="bento-cell small">
-        <span class="material-symbols-outlined" style="font-size:24px;">inventory_2</span>
-        <h3>Bulk-Ready SKUs</h3>
-        <p>Inventory locked and secured for high-volume requirements without lead-time surprises.</p>
+      <!-- Image slideshow -->
+      <div class="relative order-1 md:order-2">
+        <div class="relative z-10 rounded-xl overflow-hidden shadow-2xl -rotate-2 hover:rotate-0 transition-transform duration-700 ease-out">
+          <div class="hero-slide" data-hero="0">
+            <img src="https://images.pexels.com/photos/18886885/pexels-photo-18886885.jpeg"
+                 alt="Curated hamper" class="w-full aspect-[4/5] object-cover">
+          </div>
+          <div class="hero-slide hidden" data-hero="1">
+            <img src="https://images.pexels.com/photos/7764463/pexels-photo-7764463.jpeg"
+                 alt="Greeting card with gift" class="w-full aspect-[4/5] object-cover">
+          </div>
+          <div class="hero-slide hidden" data-hero="2">
+            <img src="https://images.pexels.com/photos/34958125/pexels-photo-34958125.jpeg"
+                 alt="Premium wrap and ribbon" class="w-full aspect-[4/5] object-cover">
+          </div>
+
+          <!-- Floating badge -->
+          <div class="absolute bottom-6 left-6 bg-white/90 backdrop-blur-sm border border-outline-variant/40 rounded-xl px-4 py-3 shadow-lg">
+            <p class="text-[9px] font-bold uppercase tracking-[0.18em] text-secondary mb-0.5">Pan-India Delivery</p>
+            <p class="text-sm font-bold text-on-surface font-serif">5,000+ Hampers Delivered</p>
+          </div>
+        </div>
       </div>
-      <div class="bento-cell small">
-        <span class="material-symbols-outlined" style="font-size:24px;">speed</span>
-        <h3>Fast Quotes</h3>
-        <p>Turnaround reduced to under 4 hours for standard catalog items.</p>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       VALUE STRIP
+  ════════════════════════════════════════════ -->
+  <section class="bg-primary py-4">
+    <div class="max-w-7xl mx-auto px-8">
+      <div class="flex flex-col md:flex-row justify-around items-center gap-3 md:gap-0 text-on-primary text-[11px] font-bold tracking-[0.18em] uppercase">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">local_shipping</span>
+          Free delivery above ₹999
+        </div>
+        <div class="hidden md:block w-px h-4 bg-white/20"></div>
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">verified</span>
+          Custom branding available
+        </div>
+        <div class="hidden md:block w-px h-4 bg-white/20"></div>
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">support_agent</span>
+          Bulk gifting support
+        </div>
       </div>
-      <div class="bento-cell small">
-        <span class="material-symbols-outlined" style="font-size:24px;">branding_watermark</span>
-        <h3>Custom Branding</h3>
-        <p>Laser engraving, embroidery, and premium packaging customization available.</p>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       CATEGORY HIGHLIGHTS
+  ════════════════════════════════════════════ -->
+  <section class="py-20 bg-surface">
+    <div class="max-w-7xl mx-auto px-8">
+
+      <div class="flex items-center gap-4 mb-12">
+        <div class="w-6 h-px bg-primary opacity-40"></div>
+        <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">What We Do</span>
       </div>
-      <div class="bento-cell small">
-        <span class="material-symbols-outlined" style="font-size:24px;">local_shipping</span>
-        <h3>Reliable Logistics</h3>
-        <p>Real-time tracking for bulk shipments across tier 1, 2, and 3 cities in India.</p>
-      </div>
 
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════
-     CUSTOM KIT BUILDER
-════════════════════════════════════════════════ -->
-<section class="builder-section">
-  <div class="builder-inner">
-    <div>
-      <span class="builder-kicker">Proprietary Tool</span>
-      <h2 class="builder-title">The Custom Kit Builder™</h2>
-      <p class="builder-sub">
-        Move beyond off-the-shelf options. Our digital builder lets you select individual SKUs, define custom branding placements, and get real-time price estimates for unique bulk bundles.
-      </p>
-      <ul class="builder-features">
-        <li>
-          <span class="material-symbols-outlined">check_circle</span>
-          500+ Mix-and-match SKUs
-        </li>
-        <li>
-          <span class="material-symbols-outlined">check_circle</span>
-          Automated MOQ validation
-        </li>
-        <li>
-          <span class="material-symbols-outlined">check_circle</span>
-          PDF Proposal Generator
-        </li>
-      </ul>
-      <a href="{% url 'custom_hamper' %}" style="display:inline-flex;align-items:center;gap:6px;background:white;color:var(--primary);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;padding:18px 40px;border:none;cursor:pointer;transition:background 0.2s;text-decoration:none;border-radius:2px;">
-        Launch Builder
-      </a>
-    </div>
-    <div class="builder-img-wrap">
-      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKWCzjrxNpSr6KRH_T14D0ehmR7NBMiDgHKfRgJVuGP2gD3B13ugqQnpjPc-NgDFJrQr19YjhZaswIIeih5WSZTZKRANMLi4dJ3zOEvjxDpcYYWDrEWSQV9_ZETVZEJX4PZtbDU_a2lEm7mrWV0o9SIfe5OPYp8v89bb-R2r7lW5mwhkPcU6rLpKLkO9hn341yoz-mTDSdlLGxmlt9nuPasj4TNVK0b50DCJpu61KiRxkoMW0Fi-2708J5DXBEs-BG0PRo6qMFyA" alt="Custom kit builder workspace">
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════
-     CATEGORY PILLS
-════════════════════════════════════════════════ -->
-<section class="carousel-section">
-  <div class="wd-container">
-    <div class="carousel-header" style="margin-bottom:24px;">
-      <h2>Browse By Category</h2>
-    </div>
-    <div class="pill-row">
-      {% for cat in categories|slice:":10" %}
-        <a href="{% url 'products' %}?category={{ cat.slug }}" class="cat-pill">{{ cat.name }}</a>
-      {% empty %}
-        <a href="{% url 'products' %}" class="cat-pill">All Products</a>
-        <a href="{% url 'products' %}?category=corporate" class="cat-pill">Corporate</a>
-        <a href="{% url 'products' %}?category=festive" class="cat-pill">Festive</a>
-        <a href="{% url 'products' %}?category=wellness" class="cat-pill">Wellness</a>
-        <a href="{% url 'products' %}?category=custom" class="cat-pill">Custom Hampers</a>
-        <a href="{% url 'products' %}?category=eco" class="cat-pill">Eco-Friendly</a>
-        <a href="{% url 'products' %}?category=tech" class="cat-pill">Tech & Productivity</a>
-        <a href="{% url 'products' %}?category=gourmet" class="cat-pill">Gourmet Food</a>
-      {% endfor %}
-    </div>
-
-    <!-- Featured Hampers Carousel -->
-    <div class="carousel-header">
-      <h2>Featured Hampers</h2>
-      <a href="{% url 'products' %}" class="section-link">
-        View All Catalog
-        <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
-      </a>
-    </div>
-
-    <div class="product-scroll" id="productScroll">
-      {% for product in featured_hampers|slice:":10" %}
-        <article class="p-card">
-          <a href="{% url 'product_detail' product.id %}" class="p-card-img">
-            {% if product.cover_image %}
-              <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {% for cat in categories_display|default:"" %}
+          <a href="{% url 'products' %}?category={{ cat.slug }}"
+             class="group flex flex-col items-center text-center p-6 rounded-xl border border-outline-variant/50 bg-white hover:border-primary hover:shadow-md transition-all duration-300 cursor-pointer">
+            <span class="material-symbols-outlined text-3xl text-primary mb-3 group-hover:scale-110 transition-transform">{{ cat.icon|default:'redeem' }}</span>
+            <h3 class="text-base font-serif text-on-surface mb-1 leading-tight">{{ cat.name }}</h3>
+            <p class="text-xs text-secondary leading-relaxed">{{ cat.tagline }}</p>
+          </a>
+        {% empty %}
+          {% for item in "12345" %}
+          {% with forloop.counter as n %}
+          <div class="group flex flex-col items-center text-center p-6 rounded-xl border border-outline-variant/50 bg-white hover:border-primary hover:shadow-md transition-all duration-300 cursor-pointer">
+            {% if n == 1 %}
+              <span class="material-symbols-outlined text-3xl text-primary mb-3 group-hover:scale-110 transition-transform">business_center</span>
+              <h3 class="text-base font-serif text-on-surface mb-1">Corporate Gifts</h3>
+              <p class="text-xs text-secondary leading-relaxed">Perfect for team celebrations and office moments.</p>
+            {% elif n == 2 %}
+              <span class="material-symbols-outlined text-3xl text-primary mb-3 group-hover:scale-110 transition-transform">favorite</span>
+              <h3 class="text-base font-serif text-on-surface mb-1">Wedding & Events</h3>
+              <p class="text-xs text-secondary leading-relaxed">Timeless gifts for life's special occasions.</p>
+            {% elif n == 3 %}
+              <span class="material-symbols-outlined text-3xl text-primary mb-3 group-hover:scale-110 transition-transform">celebration</span>
+              <h3 class="text-base font-serif text-on-surface mb-1">Festive Hampers</h3>
+              <p class="text-xs text-secondary leading-relaxed">Celebrate every festival with curated collections.</p>
+            {% elif n == 4 %}
+              <span class="material-symbols-outlined text-3xl text-primary mb-3 group-hover:scale-110 transition-transform">inventory_2</span>
+              <h3 class="text-base font-serif text-on-surface mb-1">Custom Hampers</h3>
+              <p class="text-xs text-secondary leading-relaxed">Build exactly what you imagine, your way.</p>
             {% else %}
-              <div class="p-card-img-placeholder">No Image</div>
+              <span class="material-symbols-outlined text-3xl text-primary mb-3 group-hover:scale-110 transition-transform">star</span>
+              <h3 class="text-base font-serif text-on-surface mb-1">Best Sellers</h3>
+              <p class="text-xs text-secondary leading-relaxed">Tried, tested, and loved by our community.</p>
             {% endif %}
-            <div class="p-card-tags">
-              {% if product.is_featured %}<span class="wd-badge-featured">Featured</span>{% endif %}
-              {% if product.is_new %}<span class="wd-badge-bulk">New</span>{% endif %}
-            </div>
-          </a>
-          <div class="p-card-body">
-            <span class="p-card-category">{{ product.category|default:"Corporate" }}</span>
-            <a href="{% url 'product_detail' product.id %}" class="p-card-name">{{ product.name }}</a>
-            <div class="p-card-meta-row">
-              <div class="p-card-meta-item">
-                <span class="meta-label">MOQ</span>
-                <span class="meta-val">{{ product.min_quantity|default:"25" }} Units</span>
-              </div>
-              <div class="p-card-meta-item">
-                <span class="meta-label">Lead Time</span>
-                <span class="meta-val">{{ product.lead_time|default:"7-10 Days" }}</span>
-              </div>
-            </div>
-            <a href="{% url 'corporate' %}?hamper={{ product.id }}&type=quote" class="p-card-cta">
-              Shortlist For Inquiry
-            </a>
           </div>
-        </article>
+          {% endwith %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       FEATURED COLLECTIONS
+  ════════════════════════════════════════════ -->
+  <section class="py-24 px-8 max-w-7xl mx-auto">
+
+    <div class="flex items-center gap-4 mb-12">
+      <div class="w-6 h-px bg-primary opacity-40"></div>
+      <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Collections</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+      <!-- Large card -->
+      <div class="md:col-span-8 group relative overflow-hidden rounded-xl bg-surface-container-low h-[500px]">
+        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+             src="https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=1170&auto=format&fit=crop"
+             alt="Wedding collection" loading="lazy">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-10 md:p-12">
+          <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-white/60 mb-2">Featured Collection</span>
+          <h2 class="text-white text-3xl md:text-4xl font-serif mb-3 leading-tight">The Wedding Collective</h2>
+          <p class="text-white/75 mb-6 font-body text-sm max-w-sm leading-relaxed">Timeless treasures for the couple starting their forever journey.</p>
+          <a href="{% url 'products' %}"
+             class="inline-flex items-center gap-2 text-white font-bold uppercase text-[10px] tracking-widest group-hover:gap-4 transition-all border-b border-white/40 pb-1 w-fit">
+            Explore Collection
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Small card -->
+      <div class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container-low h-[500px]">
+        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+             src="https://images.pexels.com/photos/5486837/pexels-photo-5486837.jpeg"
+             alt="Office gifting" loading="lazy">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-8">
+          <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-white/60 mb-2">For Teams</span>
+          <h2 class="text-white text-2xl md:text-3xl font-serif mb-3 leading-tight">Office Gifting</h2>
+          <a href="{% url 'products' %}"
+             class="inline-flex items-center gap-2 text-white font-bold uppercase text-[10px] tracking-widest group-hover:gap-4 transition-all border-b border-white/40 pb-1 w-fit">
+            Shop Gifts
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       BEST SELLERS CAROUSEL
+  ════════════════════════════════════════════ -->
+  <section class="py-24 bg-surface-container-low">
+    <div class="max-w-7xl mx-auto px-8 mb-10 flex justify-between items-end">
+      <div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-6 h-px bg-primary opacity-40"></div>
+          <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Most Loved</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-serif text-on-surface">Best Sellers</h2>
+        <p class="text-secondary mt-1 text-sm">The most loved hampers by our community.</p>
+      </div>
+      <div class="flex gap-2">
+        <button id="carouselPrev" class="w-10 h-10 rounded-full border border-outline-variant hover:bg-white hover:border-primary hover:text-primary transition-all flex items-center justify-center">
+          <span class="material-symbols-outlined text-base">chevron_left</span>
+        </button>
+        <button id="carouselNext" class="w-10 h-10 rounded-full border border-outline-variant hover:bg-white hover:border-primary hover:text-primary transition-all flex items-center justify-center">
+          <span class="material-symbols-outlined text-base">chevron_right</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="carouselTrack" class="flex gap-6 overflow-x-auto no-scrollbar px-8 md:px-[calc((100vw-80rem)/2+2rem)] pb-4">
+      {% for hamper in featured_hampers|slice:":6" %}
+      <div class="min-w-[300px] bg-white rounded-xl overflow-hidden group hover:shadow-xl border border-outline-variant/40 hover:border-primary/30 transition-all duration-500 flex flex-col">
+        <div class="relative overflow-hidden aspect-square">
+          {% if hamper.cover_image %}
+          <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+               src="{{ hamper.cover_image.url }}" alt="{{ hamper.name }}" loading="lazy">
+          {% else %}
+          <div class="w-full h-full bg-surface-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-4xl text-outline">image_not_supported</span>
+          </div>
+          {% endif %}
+          <span class="absolute top-4 left-4 bg-secondary-container text-on-secondary-container text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+            {% if hamper.is_featured %}Featured{% else %}Popular{% endif %}
+          </span>
+        </div>
+        <div class="p-5 flex flex-col flex-1">
+          <h3 class="text-lg font-serif text-on-surface mb-1 flex-1">{{ hamper.name }}</h3>
+          <p class="text-primary font-bold text-base mb-4">₹{{ hamper.base_price|default:"On Request" }}</p>
+          <a href="{% url 'custom_hamper' %}"
+             class="w-full block text-center py-2.5 border border-outline-variant text-on-surface font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-primary hover:text-white hover:border-primary transition-all duration-300">
+            Add to Box
+          </a>
+        </div>
+      </div>
       {% empty %}
-        <!-- Placeholder cards -->
-        <article class="p-card">
-          <a href="{% url 'products' %}" class="p-card-img">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGk4kqNI1PgJdIKEPtHSpb4ZRi3ZDFNegjKEIqYyCkb0NTLb35TPVzLz0cUQUelIwLG6Yhe602IOrCBlsKRJfo-vsREM2SjtQ-UuIMonme086A84GL7fHc4FMq0ioaORgiUB0Ov0vVB-EmzIZ-GZi8bbsTbJfhwwCDiydb1Hf3u8t_sXE7GVMdHCVpoe2TAQgyiYLwotwHH7GfVGoE5Dpd84I4Z91E_quSgSa4_B3tqV7klPMJ5jmbWzku2pkFTfyz_9brod7DnQ" alt="Executive Zen Suite" loading="lazy">
-            <div class="p-card-tags"><span class="wd-badge-bulk">Bulk Friendly</span></div>
-          </a>
-          <div class="p-card-body">
-            <span class="p-card-category">Wellness &amp; Lifestyle</span>
-            <a href="{% url 'products' %}" class="p-card-name">Executive Zen Suite</a>
-            <div class="p-card-meta-row">
-              <div class="p-card-meta-item"><span class="meta-label">MOQ</span><span class="meta-val">50 Units</span></div>
-              <div class="p-card-meta-item"><span class="meta-label">Lead Time</span><span class="meta-val">7-10 Days</span></div>
-            </div>
-            <a href="{% url 'corporate' %}" class="p-card-cta">Shortlist For Inquiry</a>
-          </div>
-        </article>
-        <article class="p-card">
-          <a href="{% url 'products' %}" class="p-card-img">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwsbC9Skc5GOcEqUQ2S8bRJdAEF-DvpMLI4FCAlYAhd5PYmdq8lG0hyQUJlNxwsXNHKV2oDKqfQ7HLWiEUfAaHJuZiIJO-SrkxTBdt6HNGYTF7Wz7Oib1ZBD13YdJp30Pitgn06KNTKQTxCxp6LyvkcKyJhrqdt0v-QKsgzWhnQROs7iKfi7H7Dl9tGPE24v8EdqD2obbJVYumBjNh-KMPRSA7RQcsBTFwniMcPQn35AChz-cMPS0nost4fZInkMBBDOWuWPnesw" alt="Digital Nomad Kit" loading="lazy">
-            <div class="p-card-tags"><span class="wd-badge-bulk">Bulk Friendly</span></div>
-          </a>
-          <div class="p-card-body">
-            <span class="p-card-category">Tech &amp; Productivity</span>
-            <a href="{% url 'products' %}" class="p-card-name">Digital Nomad Kit</a>
-            <div class="p-card-meta-row">
-              <div class="p-card-meta-item"><span class="meta-label">MOQ</span><span class="meta-val">25 Units</span></div>
-              <div class="p-card-meta-item"><span class="meta-label">Lead Time</span><span class="meta-val">12-15 Days</span></div>
-            </div>
-            <a href="{% url 'corporate' %}" class="p-card-cta">Shortlist For Inquiry</a>
-          </div>
-        </article>
-        <article class="p-card">
-          <a href="{% url 'products' %}" class="p-card-img">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1FStIw2PkeHosUS-sDC1d5J73BXxbY-eELNQm2LnWppBVlk9N8R1T61m5DfxFhq6BvbIszuNqtqA9BKURlKvB7_U08Xpc_wOSYnUN-Myww2wy3Sx-HXjK-PIyIVhA4NF4N5V9ya4_rAKaM6baCS7-xx9ZLT1hOVqzUyNqDnrnXo-PR-P1us71O7U7TH_iMuhqOxI8UIaR_TS8LOMzkuA-eKrihaA_wb5sb8WwzXzkKpJG1Bi9SnBECQ7WOFWB-KjMp3kYTemD4g" alt="Green Office Box" loading="lazy">
-            <div class="p-card-tags"><span class="wd-badge-bulk">Bulk Friendly</span></div>
-          </a>
-          <div class="p-card-body">
-            <span class="p-card-category">Eco-Sustainability</span>
-            <a href="{% url 'products' %}" class="p-card-name">Green Office Box</a>
-            <div class="p-card-meta-row">
-              <div class="p-card-meta-item"><span class="meta-label">MOQ</span><span class="meta-val">100 Units</span></div>
-              <div class="p-card-meta-item"><span class="meta-label">Lead Time</span><span class="meta-val">15 Days</span></div>
-            </div>
-            <a href="{% url 'corporate' %}" class="p-card-cta">Shortlist For Inquiry</a>
-          </div>
-        </article>
-        <article class="p-card">
-          <a href="{% url 'products' %}" class="p-card-img">
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq3BPrrD2GFxjX3EyhtNXagSvxLvVkHeDOIkozyQFkvUuORr21vVLX_UdxoiZ2CYReCrbtOPt_P0OjHdMOA6p6YOoa-GiStboU0cELetC87c858H-i5KEVzaVpidpu6b6OlTpGZWHJjKAU6N1eKAm3BB8WZYFaYTm0cZdlBR83_wB8F1N_TuhIRdNh2ioajTvTl7Z_MDjK6Rt0pSSWnGwHIBHjqJtjy_5KMcsLUixbOkKncn9DyBqFEnP_nDEeEJCt5NDiVixFiA" alt="Barista's Choice" loading="lazy">
-            <div class="p-card-tags"><span class="wd-badge-bulk">Bulk Friendly</span></div>
-          </a>
-          <div class="p-card-body">
-            <span class="p-card-category">Gourmet Food</span>
-            <a href="{% url 'products' %}" class="p-card-name">Barista's Choice</a>
-            <div class="p-card-meta-row">
-              <div class="p-card-meta-item"><span class="meta-label">MOQ</span><span class="meta-val">30 Units</span></div>
-              <div class="p-card-meta-item"><span class="meta-label">Lead Time</span><span class="meta-val">5-7 Days</span></div>
-            </div>
-            <a href="{% url 'corporate' %}" class="p-card-cta">Shortlist For Inquiry</a>
-          </div>
-        </article>
+      <p class="text-secondary text-sm">No featured hampers yet.</p>
       {% endfor %}
     </div>
+  </section>
 
-  </div>
-</section>
 
-<!-- ═══════════════════════════════════════════════
-     FESTIVE HAMPERS
-════════════════════════════════════════════════ -->
-<section class="carousel-section carousel-section-alt">
-  <div class="wd-container">
-    <div class="carousel-header">
-      <h2>Festive Hampers</h2>
-      <a href="{% url 'products' %}?category=festive" class="section-link">
-        Seasonal Collection
-        <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
-      </a>
-    </div>
-    <div class="festive-grid">
-      <a href="{% url 'products' %}?category=diwali" class="festive-card">
-        <div class="festive-img">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQN-BXUc0Dl8NdkZNMiTV1tyd301jMyhMJ1cDwFidPSsnRrpl5ct9vGIIfKi1HhEZKqf3ZG2WNdesWxR6IHNCieIig9g2pcgBSDyx2OLcYkcqUfEhJviZio0lQvLhDcPYT5CduABe9GqwCiGWFWq62BSubbO13gpOhmQBThJcZ_oy0Q4fNt-ow96xdg7cTeqT1eTB28DE_sRAZ1jMmFiw5aLJDswoAPboeg19uut6Zvge_I4sDg7n1_h57gqpzuLCDLJYUuasu0g" alt="Diwali Grandeur">
-        </div>
-        <div class="festive-name">Diwali Grandeur</div>
-        <div class="festive-price">From ₹2,450 / Unit</div>
-      </a>
-      <a href="{% url 'products' %}?category=christmas" class="festive-card">
-        <div class="festive-img">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbPrR0WXCbbna3moxk9Jg-4UDBrSOBv3lQwv16Mn7RxTGN-RzILqHgLdR-ug0gfANF0qFd-61Hc59CnrcwUCby9O00JHyqCXEXNNkclYhkaMJqsOVqXZJTgkixyBfHr7v468UV4ql_UvASYt5UBnUlK_79gG_x-HWxcRIcIoqSa78rC-yfiog68PFuo2C3EQr_h-WXwI8DTr1DjzgoYCohUAyoXUhfcnYlcpW6Ar6ACm9o0ojaHlcCBVyuIkjmSlNae-qKzsqcgw" alt="Yuletide Spirit">
-        </div>
-        <div class="festive-name">Yuletide Spirit</div>
-        <div class="festive-price">From ₹1,800 / Unit</div>
-      </a>
-      <a href="{% url 'products' %}?category=celebration" class="festive-card">
-        <div class="festive-img">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtkcu1tLE-HlJoM9AnZ2IayIpRMx-v4CUQwZJQiiTAlDamI2Rl5bZSwuZ8Amm6Rn6mCe20tZahDyivxA2NXpiD6c9eUQXOpr41BE35-bIFhswe6X8ulEa9hhsXtmt36qpSU4vG8vQ8th6evaM_-pP1QHVYHnpEl-NbvgGnIw9SKbnI5-eMd0RbpWVnLpLbHEX7eKTI3evKo00mIvnBSEMnTSNy4uPTvWYmyaDvogV3o7E3XJPMkVCh1rRm783xQ8r_KnRdeoMqgg" alt="Achievement Gala">
-        </div>
-        <div class="festive-name">Achievement Gala</div>
-        <div class="festive-price">From ₹3,200 / Unit</div>
-      </a>
-      <a href="{% url 'products' %}?category=rewards" class="festive-card">
-        <div class="festive-img">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_GB9kUZ1_vK0lYrWvw70qjrJ1DBbgxiqWpzbWeqxqsYZ5zZbqFU4dr-GzDXNNN9qVAb9Je4aWC7t9ECeUthGEXfgV4qL_Zx3Pembpyjf4juAkolErPsQu-_emugxQHQHRyzMH1sICCjfuxoonB7Lg3BrEszohcbkT5TazUZv2CX_-tVaBBbdhVoycez-ZYI8KWgwLNmrHCHqmwggiOLO3wIfVT7U2H0D46RpYOyV9lmg_8bajlo3MsUBipTC73ZzMgSvt9FvnmQ" alt="Annual Rewards">
-        </div>
-        <div class="festive-name">Annual Rewards</div>
-        <div class="festive-price">From ₹1,200 / Unit</div>
-      </a>
-    </div>
-  </div>
-</section>
+  <!-- ═══════════════════════════════════════════
+       BUILD YOUR OWN CTA
+  ════════════════════════════════════════════ -->
+  <section class="py-24 px-8">
+    <div class="max-w-7xl mx-auto bg-neutral-900 rounded-2xl overflow-hidden flex flex-col md:flex-row items-stretch">
 
-<!-- ═══════════════════════════════════════════════
-     TRUST METRICS
-════════════════════════════════════════════════ -->
-<section class="stats-section">
-  <div class="wd-container">
-    <div class="stats-grid">
-      <div class="stat-cell">
-        <div class="stat-num">50+</div>
-        <div class="stat-lbl">Global Fortune Clients</div>
+      <!-- Copy -->
+      <div class="flex-1 p-10 md:p-16 lg:p-20 flex flex-col justify-center">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-6 h-px bg-primary-fixed-dim opacity-60"></div>
+          <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-primary-fixed-dim">Personalization Studio</span>
+        </div>
+        <h2 class="text-3xl md:text-5xl lg:text-6xl text-white font-serif mb-6 leading-tight">
+          Create a Gift as Unique as
+          <span class="italic text-primary-fixed-dim"> Your Story</span>
+        </h2>
+        <p class="text-neutral-400 text-base mb-10 max-w-lg leading-relaxed">
+          Choose the box, hand-pick the contents, and write a heartfelt note. We'll wrap it with precision and care.
+        </p>
+        <div>
+          <a href="{% url 'custom_hamper' %}"
+             class="inline-flex items-center gap-3 px-8 py-4 bg-primary text-white rounded-xl font-bold text-sm tracking-widest uppercase hover:bg-on-primary-fixed-variant transition-all active:scale-95">
+            Start Building
+            <span class="material-symbols-outlined">auto_fix_high</span>
+          </a>
+        </div>
       </div>
-      <div class="stat-cell">
-        <div class="stat-num">5,000+</div>
-        <div class="stat-lbl">Kits Delivered Monthly</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-num">100%</div>
-        <div class="stat-lbl">Verified Supply Chain</div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- ═══════════════════════════════════════════════
-     FINAL CTA
-════════════════════════════════════════════════ -->
-<section class="cta-section">
-  <div class="wd-container">
-    <h2 class="cta-title">Ready to start your<br>procurement?</h2>
-    <div class="cta-btns">
-      <a href="{% url 'corporate' %}" class="wd-btn-cta-lg">
-        Request Quote
-      </a>
-      <a href="{% url 'corporate' %}#contact" class="wd-btn-outline-cta">
-        Contact Us
+      <!-- Image -->
+      <div class="flex-1 relative min-h-[320px] md:min-h-[480px]">
+        <img class="absolute inset-0 w-full h-full object-cover"
+             src="https://images.pexels.com/photos/6833311/pexels-photo-6833311.jpeg"
+             alt="Gifting process" loading="lazy">
+        <div class="absolute inset-0 bg-black/25"></div>
+        <!-- Floating stat -->
+        <div class="absolute bottom-6 right-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 text-white text-right">
+          <p class="text-2xl font-serif font-bold">500+</p>
+          <p class="text-[10px] uppercase tracking-[0.16em] text-white/70 mt-0.5">Products to choose from</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       NEW ARRIVALS
+  ════════════════════════════════════════════ -->
+  <section class="py-24 px-8 max-w-7xl mx-auto">
+    <div class="flex justify-between items-end mb-12">
+      <div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-6 h-px bg-primary opacity-40"></div>
+          <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Just In</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-serif text-on-surface">New Arrivals</h2>
+      </div>
+      <a href="{% url 'products' %}"
+         class="inline-flex items-center gap-1 text-primary font-bold uppercase tracking-widest text-[10px] border-b border-primary pb-0.5 hover:opacity-75 transition-opacity">
+        View All
+        <span class="material-symbols-outlined text-xs">arrow_forward</span>
       </a>
     </div>
-  </div>
-</section>
 
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {% for hamper in featured_hampers %}
+      <div class="group cursor-pointer">
+        <div class="bg-surface-container rounded-xl overflow-hidden mb-4 relative aspect-[3/4] border border-outline-variant/30 hover:border-primary/30 transition-colors">
+          {% if hamper.cover_image %}
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
+               src="{{ hamper.cover_image.url }}" alt="{{ hamper.name }}" loading="lazy">
+          {% else %}
+          <div class="w-full h-full bg-surface-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-4xl text-outline">image_not_supported</span>
+          </div>
+          {% endif %}
+          <a href="{% url 'custom_hamper' %}"
+             class="absolute bottom-4 left-4 right-4 translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 bg-white text-on-surface py-2.5 rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-lg text-center border border-outline-variant">
+            Quick Add
+          </a>
+        </div>
+        <h4 class="font-serif text-base text-on-surface mb-1">{{ hamper.name }}</h4>
+        <p class="text-primary font-bold text-sm">₹{{ hamper.base_price|default:"On Request" }}</p>
+      </div>
+      {% empty %}
+      <p class="col-span-4 text-secondary text-sm text-center py-8">No new arrivals yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+</main>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-(function () {
-  var track = document.getElementById('productScroll');
-  if (!track) return;
-  var STEP = 340;
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'ArrowRight') track.scrollBy({ left: STEP, behavior: 'smooth' });
-    if (e.key === 'ArrowLeft')  track.scrollBy({ left: -STEP, behavior: 'smooth' });
-  });
-})();
+  (() => {
+    /* ── Hero slideshow ── */
+    const slides = Array.from(document.querySelectorAll('[data-hero]'));
+    const dots   = Array.from(document.querySelectorAll('[data-hero-dot]'));
+    if (slides.length && dots.length) {
+      let current = 0, timer;
+      const activate = (i) => {
+        current = i;
+        slides.forEach((s, idx) => {
+          s.classList.toggle('hidden', idx !== current);
+        });
+        dots.forEach((d, idx) => {
+          d.classList.toggle('bg-primary',         idx === current);
+          d.classList.toggle('bg-outline-variant', idx !== current);
+          d.classList.toggle('w-10', idx === current);
+          d.classList.toggle('w-6',  idx !== current);
+        });
+      };
+      const next  = () => activate((current + 1) % slides.length);
+      const start = () => { timer = setInterval(next, 4500); };
+      const stop  = () => { clearInterval(timer); };
+      dots.forEach((d, i) => d.addEventListener('click', () => { stop(); activate(i); start(); }));
+      activate(0);
+      start();
+    }
+
+    /* ── Best Sellers carousel arrows ── */
+    const track = document.getElementById('carouselTrack');
+    const prev  = document.getElementById('carouselPrev');
+    const next2 = document.getElementById('carouselNext');
+    if (track && prev && next2) {
+      const STEP = 324; // card width + gap
+      prev.addEventListener('click', () => track.scrollBy({ left: -STEP, behavior: 'smooth' }));
+      next2.addEventListener('click', () => track.scrollBy({ left:  STEP, behavior: 'smooth' }));
+    }
+  })();
 </script>
 {% endblock %}

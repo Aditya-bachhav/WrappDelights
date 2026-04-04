@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block nav_catalog %}text-[#570012] border-b-2 border-[#570012] font-bold{% endblock %}
+{% block nav_catalog %}text-primary font-bold{% endblock %}
 
 {% block title %}Catalog — WrappDelights{% endblock %}
 
@@ -9,8 +9,10 @@
   /* ─── Layout ─── */
   .catalog-layout {
     display: flex;
-    min-height: calc(100vh - 60px);
+    min-height: calc(100vh - 96px);
     align-items: flex-start;
+    width: 100%;
+    margin-top: 96px;
   }
 
   /* ─── Sidebar ─── */
@@ -18,8 +20,8 @@
     width: 240px;
     flex-shrink: 0;
     position: sticky;
-    top: 60px;
-    height: calc(100vh - 60px);
+    top: 96px;
+    height: calc(100vh - 96px);
     overflow-y: auto;
     background: #f6f3f2;
     border-right: 1px solid rgba(224, 191, 191, 0.2);
@@ -288,7 +290,7 @@
   /* ─── Product Grid ─── */
   .product-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
   }
 
@@ -379,27 +381,6 @@
     margin-bottom: 14px;
     flex: 1;
   }
-  .prod-card-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-top: 1px solid rgba(224, 191, 191, 0.2);
-    border-bottom: 1px solid rgba(224, 191, 191, 0.2);
-    margin-bottom: 12px;
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #8c7070;
-  }
-  .prod-meta-item {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .prod-meta-item .material-symbols-outlined { font-size: 13px; }
-
   .prod-card-cta {
     display: block;
     width: 100%;
@@ -442,61 +423,28 @@
     color: #8c7070;
   }
 
-  /* ─── Pagination ─── */
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    margin-top: 40px;
-    flex-wrap: wrap;
-  }
-  .page-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 34px;
-    height: 34px;
-    padding: 0 8px;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border: 1px solid rgba(224, 191, 191, 0.4);
-    background: #ffffff;
-    color: #584141;
-    transition: all 0.2s;
-    border-radius: 2px;
-  }
-  .page-link:hover {
-    border-color: #570012;
-    color: #570012;
-    background: #ffdada;
-  }
-  .page-link.current {
-    background: #570012;
-    color: #ffffff;
-    border-color: #570012;
-  }
-
   /* ─── Responsive ─── */
-  @media (max-width: 1280px) {
-    .product-grid { grid-template-columns: repeat(2, 1fr); }
-  }
   @media (max-width: 1024px) {
+    .product-grid { grid-template-columns: repeat(4, 1fr); }
     .catalog-sidebar { display: none; }
     .catalog-sidebar.is-open {
       display: flex;
       position: fixed;
-      top: 0; left: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      bottom: 0;
       z-index: 200;
       width: 280px;
-      padding-top: 20px;
+      overflow-y: auto;
+      padding-top: 80px;
     }
     .mobile-filter-btn { display: inline-flex; }
     .catalog-main { padding: 20px 20px; }
   }
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
+    .product-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
     .product-grid { grid-template-columns: 1fr; }
     .catalog-header { flex-direction: column; align-items: flex-start; }
     .catalog-main { padding: 16px; }
@@ -534,33 +482,6 @@
           {% endif %}
         </a>
       {% endfor %}
-    </div>
-
-    <div class="sidebar-divider"></div>
-
-    <!-- Filter Buttons -->
-    <p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:#8c7070;padding:0 8px;margin-bottom:8px;">Refine By</p>
-    <div class="filter-group">
-      <button type="button" class="filter-btn active">
-        <span class="material-symbols-outlined">payments</span>
-        Price Range
-      </button>
-      <button type="button" class="filter-btn">
-        <span class="material-symbols-outlined">schedule</span>
-        Lead Time
-      </button>
-      <button type="button" class="filter-btn">
-        <span class="material-symbols-outlined">inventory_2</span>
-        Min Quantity
-      </button>
-      <button type="button" class="filter-btn">
-        <span class="material-symbols-outlined">eco</span>
-        Sustainability
-      </button>
-      <button type="button" class="filter-btn">
-        <span class="material-symbols-outlined">check_circle</span>
-        In-Stock Only
-      </button>
     </div>
 
     <div class="sidebar-divider"></div>
@@ -674,21 +595,17 @@
           <div class="prod-card-body">
             <div class="prod-card-top">
               <a href="{% url 'product_detail' product.id %}" class="prod-card-name">{{ product.name }}</a>
-              {% if product.base_price %}
-                <span class="prod-card-price">₹{{ product.base_price }}</span>
-              {% endif %}
+              <span class="prod-card-price">
+                {% if product.base_price %}
+                  ₹ {{ product.base_price|floatformat:0 }}
+                {% elif product.price_label %}
+                  {{ product.price_label }}
+                {% else %}
+                  On Request
+                {% endif %}
+              </span>
             </div>
             <p class="prod-card-desc">{{ product.short_description|default:"Premium corporate gifting option available for bulk orders." }}</p>
-            <div class="prod-card-meta">
-              <div class="prod-meta-item">
-                <span class="material-symbols-outlined">inventory</span>
-                Min: {{ product.min_quantity|default:"50" }} Units
-              </div>
-              <div class="prod-meta-item">
-                <span class="material-symbols-outlined">local_shipping</span>
-                {{ product.lead_time|default:"5–7 Days" }}
-              </div>
-            </div>
             <a href="{% url 'product_detail' product.id %}" class="prod-card-cta">
               View & Inquire
             </a>
@@ -702,42 +619,6 @@
         </div>
       {% endfor %}
     </div>
-
-    <!-- Pagination -->
-    {% if products.has_other_pages %}
-      <nav class="pagination" aria-label="Pagination">
-        {% if products.has_previous %}
-          <a href="?page=1{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
-             class="page-link" aria-label="First page">
-            <span class="material-symbols-outlined" style="font-size:16px;">first_page</span>
-          </a>
-          <a href="?page={{ products.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
-             class="page-link" aria-label="Previous page">
-            <span class="material-symbols-outlined" style="font-size:16px;">chevron_left</span>
-          </a>
-        {% endif %}
-
-        {% for num in products.paginator.page_range %}
-          {% if num == products.number %}
-            <span class="page-link current" aria-current="page">{{ num }}</span>
-          {% elif num >= products.number|add:"-2" and num <= products.number|add:"2" %}
-            <a href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
-               class="page-link">{{ num }}</a>
-          {% endif %}
-        {% endfor %}
-
-        {% if products.has_next %}
-          <a href="?page={{ products.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
-             class="page-link" aria-label="Next page">
-            <span class="material-symbols-outlined" style="font-size:16px;">chevron_right</span>
-          </a>
-          <a href="?page={{ products.paginator.num_pages }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
-             class="page-link" aria-label="Last page">
-            <span class="material-symbols-outlined" style="font-size:16px;">last_page</span>
-          </a>
-        {% endif %}
-      </nav>
-    {% endif %}
 
   </main>
 </div>

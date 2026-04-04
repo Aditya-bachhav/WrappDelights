@@ -26,6 +26,7 @@
     justify-content: space-between;
     gap: 16px;
     flex-wrap: wrap;
+    margin-top: 96px;
   }
   .builder-hero h1 { margin: 0; font-weight: 900; letter-spacing: -0.02em; color: var(--text); }
   .badge-row { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -111,7 +112,7 @@
   .ch-kit-chip-price { font-size: 12px; color: var(--primary); font-weight: 700; }
 
   .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
-  @media (min-width: 1024px) { .products-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .products-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   .catalog-item {
     background: #fff;
     border: 1px solid transparent;
@@ -264,14 +265,15 @@
 
     <div class="products-grid" id="itemsGrid">
       {% for product in individual_items %}
-        <div class="catalog-item"
-             onclick="addToKit(this, '{{ product.name }}', {{ product.base_price|default:0 }}, '{{ product.category.slug|default_if_none:"" }}', '{{ product.category.name|default_if_none:"" }}')"
+           <div class="catalog-item"
+             data-display-name="{{ product.name }}"
+             data-price="{{ product.base_price|default:0 }}"
              data-name="{{ product.name|lower }}"
              data-category="{% if product.category %}{{ product.category.slug }}{% else %}{% endif %}"
              data-category-name="{% if product.category %}{{ product.category.name }}{% else %}{% endif %}">
           <div class="catalog-img">
             {% if product.cover_image %}
-              <img src="{{ product.cover_image.url }}" alt="{{ product.name }}">
+              <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
             {% else %}
               <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;">No Image</div>
             {% endif %}
@@ -280,7 +282,7 @@
             <div class="catalog-name">{{ product.name }}</div>
             <div class="catalog-meta">MOQ: {{ product.min_bulk_quantity|default:25 }}</div>
             <div class="catalog-footer">
-              <span class="catalog-price">{% if product.base_price %}₹{{ product.base_price }}{% else %}Price on request{% endif %}</span>
+              <span class="catalog-price">{% if product.base_price %}₹ {{ product.base_price|floatformat:0 }}{% else %}Price on request{% endif %}</span>
               <button class="catalog-btn" type="button">Add to Kit</button>
             </div>
           </div>
@@ -316,7 +318,7 @@
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;">
           <span>Est. Total</span>
-          <span id="totalPrice">₹0</span>
+          <span id="totalPrice">₹ 0</span>
         </div>
       </div>
 
@@ -404,6 +406,17 @@
   var currentPage = 1;
   var pageSize = 9;
 
+  catalogItems.forEach(function (card) {
+    card.addEventListener('click', function (evt) {
+      var name = card.getAttribute('data-display-name') || card.getAttribute('data-name') || '';
+      var price = parseFloat(card.getAttribute('data-price')) || 0;
+      var catSlug = card.getAttribute('data-category') || 'uncategorized';
+      var catName = card.getAttribute('data-category-name') || catSlug;
+      if (evt && evt.preventDefault) { evt.preventDefault(); }
+      addToKit(card, name, price, catSlug, catName);
+    });
+  });
+
   /* ── Add to kit ── */
   window.addToKit = function (element, name, price, category, categoryName) {
     var catKey = (category || 'uncategorized').toString().toLowerCase();
@@ -451,7 +464,7 @@
             escHtml(item.categoryLabel || item.category || 'Category') +
           '</div>' +
           '<div class="ch-kit-chip-name">' + escHtml(item.name) + '</div>' +
-          '<div class="ch-kit-chip-price">₹' + item.price.toFixed(0) + '</div>' +
+          '<div class="ch-kit-chip-price">₹ ' + item.price.toFixed(0) + '</div>' +
         '</div>';
       }).join('');
     }
@@ -478,7 +491,7 @@
               '<span style="font-size:9px;color:#8c7070;text-transform:uppercase;letter-spacing:0.08em;">' + escHtml(key) + '</span>' +
               '<span>' + escHtml(entry.item.name) + '</span>' +
             '</span>' +
-            '<span class="ch-item-row-price">₹' + entry.item.price.toFixed(0) + '</span>' +
+            '<span class="ch-item-row-price">₹ ' + entry.item.price.toFixed(0) + '</span>' +
             '<button class="ch-item-row-remove" type="button" onclick="removeFromKit(' + entry.idx + ')">' +
               '<span class="material-symbols-outlined">close</span>' +
             '</button>' +
@@ -490,7 +503,7 @@
     }
 
     countEl.textContent = selectedKitItems.length;
-    totalEl.textContent = '₹' + total.toFixed(0);
+    totalEl.textContent = '₹ ' + total.toFixed(0);
     input.value = selectedKitItems.map(function (i) {
       return '- [' + (i.categoryLabel || i.category || 'Category') + '] ' + i.name;
     }).join('\n');

@@ -8,6 +8,7 @@
     background: #f6f3f2;
     border-bottom: 1px solid rgba(224,191,191,0.25);
     padding: 40px 0 32px;
+    margin-top: 96px;
   }
   .search-kicker {
     font-size: 9px; font-weight: 700;
@@ -357,10 +358,6 @@
                       </div>
                     {% endif %}
                   </div>
-                  <a href="{% url 'corporate' %}?hamper={{ product.id }}&type=quote"
-                     class="wd-btn wd-btn-primary px-4 py-2 text-[9px]">
-                    Inquire
-                  </a>
                 </div>
               </div>
             </article>
@@ -385,10 +382,6 @@
             <a href="{% url 'products' %}?category=corporate" class="suggestion-pill">Corporate</a>
             <a href="{% url 'products' %}?category=festive" class="suggestion-pill">Festive</a>
             <a href="{% url 'products' %}?category=wellness" class="suggestion-pill">Wellness</a>
-            <a href="{% url 'corporate' %}" class="suggestion-pill">
-              <span class="material-symbols-outlined">mail</span>
-              Request Custom
-            </a>
           </div>
         </div>
       {% endif %}

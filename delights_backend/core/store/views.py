@@ -1,4 +1,6 @@
+import json
 import re
+from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -9,7 +11,8 @@ from django.urls import reverse
 from delights_backend.core.store import models
 from .models import Category, CorporateInquiry, Hamper, HamperImage, HomepageSection
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_POST
 
 CATALOG_NAV_CATEGORIES = [
     "Corporate Gifting",
@@ -20,6 +23,168 @@ CATALOG_NAV_CATEGORIES = [
 ]
 
 SUCCESS_WHATSAPP_RAW = "918347136985"
+
+SESSION_KIT_KEY = "kit"
+STEP_CONFIG = {
+    1: {
+        "slug": "base",
+        "title": "Select Base",
+        "subtitle": "Pick the box or hamper base you want to build on.",
+        "category_hints": ["box", "hamper", "packaging"],
+    },
+    2: {
+        "slug": "core",
+        "title": "Select Core Products",
+        "subtitle": "Add the primary products that define your hamper.",
+        "category_hints": ["individual", "core", "snack", "gifting"],
+    },
+    3: {
+        "slug": "addons",
+        "title": "Select Add-ons",
+        "subtitle": "Add extras and accessories to elevate the kit.",
+        "category_hints": ["add", "extra", "accessory"],
+    },
+    4: {
+        "slug": "branding",
+        "title": "Branding & Customization",
+        "subtitle": "Choose branding, custom cards, and finishing touches.",
+        "category_hints": ["branding", "custom", "stationery"],
+    },
+    5: {
+        "slug": "greeting",
+        "title": "Greeting Card",
+        "subtitle": "Personalize with a custom greeting message.",
+        "category_hints": [],
+    },
+}
+
+
+PRICE_PATTERN = re.compile(r"[0-9][0-9,]*(?:\.[0-9]+)?")
+
+
+def _get_session_kit(request):
+    return request.session.get(SESSION_KIT_KEY, [])
+
+
+def _save_session_kit(request, kit):
+    request.session[SESSION_KIT_KEY] = kit
+    request.session.modified = True
+
+
+def _clear_session_kit(request):
+    if SESSION_KIT_KEY in request.session:
+        del request.session[SESSION_KIT_KEY]
+        request.session.modified = True
+
+
+def _serialize_hamper_for_kit(hamper, quantity=1, step_slug=""):
+    raw_price = getattr(hamper, "base_price", None)
+    price = float(raw_price or 0)
+    return {
+        "product_id": hamper.id,
+        "name": hamper.name,
+        "price": price,
+        "quantity": max(1, int(quantity or 1)),
+        "category": hamper.category.name if hamper.category else "",
+        "image": hamper.cover_image.url if hamper.cover_image else "",
+        "step": step_slug,
+    }
+
+
+def _kit_totals(kit):
+    total_price = 0
+    total_quantity = 0
+    for item in kit:
+        qty = int(item.get("quantity") or 0)
+        total_quantity += qty
+        total_price += (float(item.get("price") or 0) * qty)
+    return {
+        "total_price": round(total_price, 2),
+        "total_quantity": total_quantity,
+        "item_count": len(kit),
+    }
+
+
+def _kit_response(kit, status=200):
+    payload = {"items": kit}
+    payload.update(_kit_totals(kit))
+    return JsonResponse(payload, status=status)
+
+
+def _get_step_config(step_number):
+    step = STEP_CONFIG.get(step_number)
+    if not step:
+        return None
+
+    prev_step = step_number - 1 if step_number > 1 else None
+    next_step = step_number + 1 if step_number < 5 else None
+    last_step_number = max(STEP_CONFIG.keys())
+
+    return {
+        **step,
+        "number": step_number,
+        "prev_url": reverse("custom_hamper_step", args=[prev_step]) if prev_step else None,
+        "next_url": reverse("custom_hamper_step", args=[next_step]) if next_step else reverse("custom_hamper_review_alias"),
+        "is_last_step": step_number == last_step_number,
+    }
+
+
+def _get_catalog_for_step(step_number):
+    base_qs = (
+        Hamper.objects.filter(is_active=True, category__is_active=True)
+        .select_related("category")
+        .order_by("name")
+    )
+    step = STEP_CONFIG.get(step_number)
+    if not step:
+        return base_qs
+
+    hints = step.get("category_hints") or []
+    query = Q()
+    for hint in hints:
+        query |= Q(category__slug__icontains=hint)
+        query |= Q(category__name__icontains=hint)
+        query |= Q(name__icontains=hint)
+
+    filtered = base_qs.filter(query).distinct() if hints else base_qs
+    if hints and filtered.exists():
+        return filtered
+    return base_qs
+
+
+def _json_body(request):
+    try:
+        return json.loads(request.body.decode("utf-8"))
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return {}
+
+
+def _parse_price(raw):
+    """Extract a numeric price (Decimal) from user input like '₹ 1,380'."""
+    match = PRICE_PATTERN.search(raw or "")
+    if not match:
+        return None
+    cleaned = match.group(0).replace(",", "")
+    try:
+        return Decimal(cleaned)
+    except (InvalidOperation, ValueError):
+        return None
+
+def health(request):
+    """Health check endpoint."""
+    try:
+        Hamper.objects.count()
+        return JsonResponse({
+            "status": "healthy",
+            "service": "wrapp-delights",
+            "version": "1.0.0"
+        }, status=200)
+    except Exception as e:
+        return JsonResponse({
+            "status": "unhealthy",
+            "service": "wrapp-delights",
+            "error": str(e)
+        }, status=503)
 
 def create_admin(request):
     if not User.objects.filter(username="admin").exists():
@@ -121,26 +286,17 @@ def product_list(request):
         hampers = hampers.order_by("base_price", "id")
     elif sort == "-price":
         hampers = hampers.order_by("-base_price", "-id")
-    elif sort == "-id":
-        hampers = hampers.order_by("-id")
+    elif sort == "newest":
+        hampers = hampers.order_by("-created_at", "-id")
     else:
         hampers = hampers.order_by("id")
-
-    paginator = Paginator(hampers, 12)
-    page = request.GET.get("page")
-    try:
-        products_page = paginator.page(page)
-    except PageNotAnInteger:
-        products_page = paginator.page(1)
-    except EmptyPage:
-        products_page = paginator.page(paginator.num_pages)
 
     categories = Category.objects.filter(is_active=True)
     return render(
         request,
         "products.html",
         {
-            "products": products_page,
+            "products": hampers,
             "categories": categories,
             "active_category": category_slug,
             "active_category_label": active_category_label,
@@ -215,42 +371,6 @@ def product_detail(request, product_id):
     )
 
 
-def corporate_page(request):
-    if request.method == "POST":
-        hamper_id = request.POST.get("hamper_id")
-        hamper = Hamper.objects.filter(id=hamper_id, is_active=True).first() if hamper_id else None
-
-        inquiry = CorporateInquiry.objects.create(
-            inquiry_type=request.POST.get("inquiry_type", "quote"),
-            hamper=hamper,
-            company_name=(request.POST.get("company_name") or request.POST.get("company") or "").strip(),
-            contact_person=(request.POST.get("contact_person") or request.POST.get("name") or "").strip(),
-            email=request.POST.get("email", "").strip(),
-            phone=request.POST.get("phone", "").strip(),
-            quantity=int(request.POST.get("quantity") or 25),
-            delivery_address=(request.POST.get("delivery_address") or request.POST.get("address") or "").strip(),
-            customization_details=(request.POST.get("customization_details") or request.POST.get("requirement") or "").strip(),
-            message=(request.POST.get("message") or request.POST.get("requirement") or "").strip(),
-        )
-        return redirect(f"{reverse('corporate_success')}?inquiry={inquiry.id}")
-
-    inquiry_type = request.GET.get("type", "quote")
-    hamper_id = request.GET.get("hamper")
-    selected_hamper = None
-    if hamper_id:
-        selected_hamper = Hamper.objects.filter(id=hamper_id, is_active=True).first()
-
-    return render(
-        request,
-        "corporate.html",
-        {
-            "products": Hamper.objects.filter(is_active=True)[:12],
-            "selected_hamper": selected_hamper,
-            "selected_type": inquiry_type,
-        },
-    )
-
-
 def corporate_success(request):
     inquiry_id = (request.GET.get("inquiry") or "").strip()
     inquiry = None
@@ -270,87 +390,183 @@ def corporate_success(request):
             "inquiry": inquiry,
             "success_whatsapp_raw": SUCCESS_WHATSAPP_RAW,
             "success_whatsapp_text": whatsapp_text,
-            "quick_stats": [
-                ("5K+", "SKUs in Catalog"),
-                ("25+", "Min. Order Qty"),
-                ("4hrs", "Quote Turnaround"),
-                ("PAN", "India Delivery"),
-            ],
         },
     )
 
 
-def custom_hamper_builder(request):
-    products_qs = (
-        Hamper.objects.filter(
-            is_active=True,
-            category__is_active=True,
-        ).filter(
-            Q(category__slug="individual-products") | Q(category__name__iexact="Individual Products")
-        )
-        .select_related("category")
-        .order_by("name")
+def custom_hamper_step(request, step_number):
+    if step_number not in STEP_CONFIG:
+        # If user reaches the review step number via the generic matcher, send them to review
+        if step_number == 5:
+            return redirect(reverse("custom_hamper_review"))
+        return redirect(reverse("custom_hamper_step", args=[1]))
+
+    step = _get_step_config(step_number)
+    catalog = _get_catalog_for_step(step_number)
+    kit = _get_session_kit(request)
+
+    return render(
+        request,
+        "custom_hamper_step.html",
+        {
+            "step": step,
+            "catalog": catalog,
+            "kit": kit,
+            "totals": _kit_totals(kit),
+            "step_count": 5,
+            "step_numbers": sorted(STEP_CONFIG.keys()),
+        },
     )
 
+
+def custom_hamper_review(request):
+    kit = _get_session_kit(request)
+    totals = _kit_totals(kit)
+
     if request.method == "POST":
-        # Form fields from the custom hamper template
-        contact_person = (request.POST.get("name") or request.POST.get("contact_person") or "").strip()
-        company_name = (request.POST.get("company") or request.POST.get("company_name") or "").strip()
+        if not kit:
+            messages.error(request, "Add at least one item before submitting an inquiry.")
+            return redirect(reverse("custom_hamper_step", args=[1]))
+
+        contact_person = (
+            (request.POST.get("name") or request.POST.get("contact_person") or "").strip()
+            or "Website Visitor"
+        )
+        company_name = (
+            (request.POST.get("company") or request.POST.get("company_name") or "").strip()
+            or "Individual Customer"
+        )
         email = (request.POST.get("email") or "").strip()
         phone = (request.POST.get("phone") or "").strip()
-        quantity_raw = (request.POST.get("total_quantity") or request.POST.get("quantity") or "").strip()
-        delivery_address = (request.POST.get("location") or request.POST.get("delivery_address") or "").strip()
-        selected_raw = (request.POST.get("selected_items") or "").strip()
-        note = (request.POST.get("special_requests") or request.POST.get("message") or "").strip()
+        notes = (request.POST.get("notes") or request.POST.get("message") or "").strip()
+        quantity_raw = (request.POST.get("quantity") or totals.get("total_quantity") or 1)
 
         try:
             quantity = max(1, int(quantity_raw))
         except ValueError:
-            quantity = 25
+            quantity = max(1, totals.get("total_quantity") or 1)
 
-        # The UI sends a human-readable list ("- [Category] Name"). Keep text as-is for the inquiry.
-        selected_products = []
-        for line in selected_raw.splitlines():
-            cleaned = line.strip()
-            if cleaned.startswith("- "):
-                cleaned = cleaned[2:].strip()
-            if cleaned:
-                selected_products.append(cleaned)
-
-        # Keep order while removing duplicates
-        selected_products = list(dict.fromkeys(selected_products))
-        item_lines = "\n".join(f"- {name}" for name in selected_products) if selected_products else "- No items selected"
+        item_lines = "\n".join(
+            f"- {item.get('name')} x {item.get('quantity')} (₹{item.get('price')})" for item in kit
+        ) or "- No items selected"
 
         message = (
-            "Custom hamper request from builder.\n"
-            f"Selected items:\n{item_lines}\n\n"
-            f"Additional notes: {note or 'N/A'}"
+            "Custom hamper builder inquiry.\n\n"
+            f"Items:\n{item_lines}\n\n"
+            f"Total Quantity: {totals.get('total_quantity')}\n"
+            f"Estimated Total: ₹{totals.get('total_price')}\n\n"
+            f"Notes: {notes or 'N/A'}"
         )
 
         inquiry = CorporateInquiry.objects.create(
             inquiry_type="customize",
-            company_name=company_name or "Individual Customer",
-            contact_person=contact_person or "Website Visitor",
+            company_name=company_name,
+            contact_person=contact_person,
             email=email,
             phone=phone,
             quantity=quantity,
-            delivery_address=delivery_address,
             message=message,
             customization_details=message,
         )
 
-        messages.success(request, "Custom hamper inquiry submitted successfully.")
+        _clear_session_kit(request)
         return redirect(f"{reverse('corporate_success')}?inquiry={inquiry.id}")
 
     return render(
         request,
-        "custom_hamper.html",
+        "custom_hamper_review.html",
         {
-            "products": products_qs,
-            "individual_items": products_qs,
-            "categories": Category.objects.filter(is_active=True),
+            "kit": kit,
+            "totals": totals,
+            "step": {"number": 5, "title": "Review & Submit Inquiry"},
+            "step_count": 5,
         },
     )
+
+
+@require_POST
+def custom_hamper_add_item(request):
+    data = _json_body(request)
+    product_id = data.get("product_id")
+    step_slug = (data.get("step") or "").strip()
+    quantity_raw = data.get("quantity") or 1
+
+    try:
+        product_id = int(product_id)
+        quantity = max(1, int(quantity_raw))
+    except (TypeError, ValueError):
+        return JsonResponse({"error": "Invalid payload."}, status=400)
+
+    hamper = Hamper.objects.filter(id=product_id, is_active=True).select_related("category").first()
+    if not hamper:
+        return JsonResponse({"error": "Product not found."}, status=404)
+
+    kit = _get_session_kit(request)
+    for item in kit:
+        if item.get("product_id") == hamper.id:
+            item["quantity"] = int(item.get("quantity") or 1) + quantity
+            break
+    else:
+        kit.append(_serialize_hamper_for_kit(hamper, quantity, step_slug))
+
+    _save_session_kit(request, kit)
+    return _kit_response(kit)
+
+
+@require_POST
+def custom_hamper_remove_item(request):
+    data = _json_body(request)
+    product_id = data.get("product_id")
+    try:
+        product_id = int(product_id)
+    except (TypeError, ValueError):
+        return JsonResponse({"error": "Invalid product id."}, status=400)
+
+    kit = [item for item in _get_session_kit(request) if item.get("product_id") != product_id]
+    _save_session_kit(request, kit)
+    return _kit_response(kit)
+
+
+@require_POST
+def custom_hamper_update_quantity(request):
+    data = _json_body(request)
+    try:
+        product_id = int(data.get("product_id"))
+        quantity = int(data.get("quantity"))
+    except (TypeError, ValueError):
+        return JsonResponse({"error": "Invalid payload."}, status=400)
+
+    kit = _get_session_kit(request)
+    updated = False
+
+    if quantity < 1:
+        kit = [item for item in kit if item.get("product_id") != product_id]
+        updated = True
+    else:
+        for item in kit:
+            if item.get("product_id") == product_id:
+                item["quantity"] = quantity
+                updated = True
+                break
+
+    if updated:
+        _save_session_kit(request, kit)
+    return _kit_response(kit)
+
+
+def custom_hamper_summary(request):
+    kit = _get_session_kit(request)
+    return _kit_response(kit)
+
+
+@require_POST
+def custom_hamper_clear(request):
+    _clear_session_kit(request)
+    return _kit_response([])
+
+
+def custom_hamper_builder(request):
+    return redirect(reverse("custom_hamper_step", args=[1]))
 
 
 def search_view(request):
@@ -442,6 +658,7 @@ def dashboard_create_product(request):
             description=request.POST.get("description", "").strip(),
             included_items=request.POST.get("included_items", "").strip(),
             cover_image=request.FILES.get("cover_image"),
+            base_price=_parse_price(request.POST.get("base_price")),
             price_label=request.POST.get("price_label", "").strip(),
             min_bulk_quantity=int(request.POST.get("min_bulk_quantity") or 25),
             is_featured=request.POST.get("is_featured") == "on",
@@ -484,6 +701,7 @@ def dashboard_edit_product(request, product_id):
         hamper.short_description = request.POST.get("short_description", "").strip()
         hamper.description = request.POST.get("description", "").strip()
         hamper.included_items = request.POST.get("included_items", "").strip()
+        hamper.base_price = _parse_price(request.POST.get("base_price"))
         hamper.price_label = request.POST.get("price_label", "").strip()
         hamper.min_bulk_quantity = int(request.POST.get("min_bulk_quantity") or 25)
         hamper.is_featured = request.POST.get("is_featured") == "on"

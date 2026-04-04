@@ -1,95 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>{% block title %}WrappDelights | Corporate Gifting{% endblock %}</title>
+<title>{% block title %}WrappDelights | Curated Gifts{% endblock %}</title>
 
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
-<!-- Tailwind CDN -->
+<!-- Tailwind CDN with forms + container queries -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-<!-- Design System Tokens -->
+<!-- Tailwind theme tokens aligned to the provided mock -->
 <script id="tailwind-config">
   tailwind.config = {
     darkMode: "class",
     theme: {
       extend: {
         colors: {
-          /* ─── Primary (Burgundy/Crimson) ─── */
-          "primary":                    "#570012",
-          "on-primary":                 "#ffffff",
-          "primary-container":          "#80011f",
-          "on-primary-container":       "#ff8389",
-          "primary-fixed":              "#ffdada",
-          "primary-fixed-dim":          "#ffb3b4",
-          "on-primary-fixed":           "#40000b",
-          "on-primary-fixed-variant":   "#8e1027",
-          "inverse-primary":            "#ffb3b4",
-          "surface-tint":               "#af2c3c",
-
-          /* ─── Secondary (Forest Green) ─── */
-          "secondary":                  "#3b6934",
-          "on-secondary":               "#ffffff",
-          "secondary-container":        "#b9eeab",
-          "on-secondary-container":     "#3f6d38",
-          "secondary-fixed":            "#bcf0ae",
-          "secondary-fixed-dim":        "#a1d494",
-          "on-secondary-fixed":         "#002201",
-          "on-secondary-fixed-variant": "#23501e",
-
-          /* ─── Tertiary (Teal) ─── */
-          "tertiary":                   "#002c37",
-          "on-tertiary":                "#ffffff",
-          "tertiary-container":         "#004453",
-          "on-tertiary-container":      "#7db1c2",
-          "tertiary-fixed":             "#b6ebfd",
-          "tertiary-fixed-dim":         "#9acfe1",
-          "on-tertiary-fixed":          "#001f27",
-          "on-tertiary-fixed-variant":  "#114d5c",
-
-          /* ─── Error ─── */
-          "error":                      "#ba1a1a",
-          "on-error":                   "#ffffff",
-          "error-container":            "#ffdad6",
-          "on-error-container":         "#93000a",
-
-          /* ─── Surfaces ─── */
-          "background":                 "#fcf9f8",
-          "on-background":              "#1c1b1b",
-          "surface":                    "#fcf9f8",
-          "on-surface":                 "#1c1b1b",
-          "surface-variant":            "#e5e2e1",
-          "on-surface-variant":         "#584141",
-          "surface-bright":             "#fcf9f8",
-          "surface-dim":                "#dcd9d9",
-          "surface-container-lowest":   "#ffffff",
-          "surface-container-low":      "#f6f3f2",
-          "surface-container":          "#f0eded",
-          "surface-container-high":     "#eae7e7",
-          "surface-container-highest":  "#e5e2e1",
-          "inverse-surface":            "#313030",
-          "inverse-on-surface":         "#f3f0ef",
-
-          /* ─── Outline ─── */
-          "outline":                    "#8c7070",
-          "outline-variant":            "#e0bfbf",
+          "primary": "#af101a",
+          "primary-fixed": "#ffdad6",
+          "primary-fixed-dim": "#ffb3ac",
+          "on-primary": "#ffffff",
+          "on-primary-fixed": "#410003",
+          "on-primary-fixed-variant": "#930010",
+          "inverse-primary": "#ffb3ac",
+          "secondary": "#546067",
+          "on-secondary": "#ffffff",
+          "secondary-container": "#d7e4ec",
+          "on-secondary-container": "#5a666d",
+          "tertiary": "#005f7b",
+          "on-tertiary": "#ffffff",
+          "tertiary-container": "#00799c",
+          "on-tertiary-container": "#e9f7ff",
+          "background": "#f9f9f9",
+          "surface": "#f9f9f9",
+          "surface-container": "#eeeeee",
+          "surface-container-low": "#f3f3f3",
+          "surface-container-high": "#e8e8e8",
+          "surface-container-highest": "#e2e2e2",
+          "surface-variant": "#e2e2e2",
+          "surface-dim": "#dadada",
+          "surface-bright": "#f9f9f9",
+          "outline": "#8f6f6c",
+          "outline-variant": "#e4beba",
+          "on-surface": "#1a1c1c",
+          "on-surface-variant": "#5b403d",
+          "inverse-surface": "#2f3131",
+          "inverse-on-surface": "#f1f1f1",
+          "error": "#ba1a1a",
+          "on-error": "#ffffff",
+          "error-container": "#ffdad6",
+          "on-error-container": "#93000a",
         },
         fontFamily: {
-          "headline": ["Inter"],
-          "body":     ["Inter"],
-          "label":    ["Inter"],
+          headline: ["Noto Serif", "serif"],
+          body: ["Manrope", "sans-serif"],
+          label: ["Manrope", "sans-serif"],
         },
-        /* Architectural sharp-to-soft radius scale */
-        borderRadius: {
-          "DEFAULT": "0.125rem",
-          "lg":      "0.25rem",
-          "xl":      "0.5rem",
-          "full":    "0.75rem",
-        },
+        borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
       },
     },
   };
@@ -110,11 +80,8 @@
   }
 
   /* ─── Base ─── */
-  body {
-    background-color: #fcf9f8;
-    color: #1c1b1b;
-    font-family: 'Inter', sans-serif;
-  }
+  body { font-family: 'Manrope', sans-serif; background: #f9f9f9; color: #1a1c1c; }
+  h1, h2, h3, .font-serif { font-family: 'Noto Serif', serif; }
 
   /* ─── Scrollbar ─── */
   .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -127,22 +94,24 @@
 
   /* Product Card */
   .wd-card {
-    background: #ffffff;
-    border: 1px solid transparent;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background: #FFFFFF;
+    border: 1px solid #E7DED6;
+    border-radius: 12px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
   }
   .wd-card:hover {
-    border-color: rgba(224, 191, 191, 0.3);
-    box-shadow: 0 4px 24px rgba(87, 0, 18, 0.08);
+    border-color: #D9CDC0;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.06);
   }
   .wd-card:hover .wd-card-img img {
-    transform: scale(1.05);
+    transform: scale(1.02);
   }
   .wd-card-img {
     overflow: hidden;
-    background: #eae7e7;
+    background: #F7ECEE;
     position: relative;
   }
   .wd-card-img img {
@@ -162,8 +131,8 @@
     border-radius: 2px;
   }
   .wd-badge-primary {
-    border: 1px solid #570012;
-    color: #570012;
+    border: 1px solid #80011F;
+    color: #80011F;
   }
   .wd-badge-secondary {
     border: 1px solid #3b6934;
@@ -192,50 +161,50 @@
   .wd-btn:active { transform: scale(0.98); }
 
   .wd-btn-primary {
-    background: #570012;
+    background: #80011F;
     color: #fff;
   }
-  .wd-btn-primary:hover { background: #8e1027; }
+  .wd-btn-primary:hover { background: #9d0d2a; }
 
   .wd-btn-outline {
-    background: transparent;
-    border: 1px solid rgba(140, 112, 112, 0.35);
-    color: #570012;
+    background: #FFFFFF;
+    border: 1px solid #80011F;
+    color: #80011F;
   }
-  .wd-btn-outline:hover { background: #f6f3f2; }
+  .wd-btn-outline:hover { background: #F7ECEE; }
 
   /* Form Inputs */
   .wd-input {
     width: 100%;
-    background: #ffffff;
-    border: 1px solid rgba(224, 191, 191, 0.5);
-    color: #1c1b1b;
+    background: #FFFFFF;
+    border: 1px solid #E7DED6;
+    color: #191919;
     font-family: 'Inter', sans-serif;
     font-size: 13px;
     padding: 10px 12px;
     transition: border-color 0.2s, box-shadow 0.2s;
     outline: none;
-    border-radius: 2px;
+    border-radius: 8px;
   }
   .wd-input:focus {
-    border-color: #570012;
-    box-shadow: 0 0 0 3px rgba(87, 0, 18, 0.1);
+    border-color: #80011F;
+    box-shadow: 0 0 0 3px rgba(128, 1, 31, 0.12);
   }
-  .wd-input::placeholder { color: #8c7070; }
+  .wd-input::placeholder { color: #6B6460; }
 
   /* Section label / kicker */
   .wd-kicker {
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: #570012;
+    letter-spacing: 0.16em;
+    color: #80011F;
   }
 
   /* Divider */
   .wd-divider {
     height: 1px;
-    background: rgba(224, 191, 191, 0.2);
+    background: #E7DED6;
     border: none;
   }
 
@@ -265,148 +234,94 @@
 {% block extra_css %}{% endblock %}
 </head>
 
-<body class="font-body text-on-surface bg-background min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<body class="min-h-screen flex flex-col bg-surface text-on-surface selection:bg-primary selection:text-on-primary">
 
 <!-- ═══════════════════════════════════════════
      HEADER
 ════════════════════════════════════════════ -->
-<header class="bg-[#fcf9f8] dark:bg-slate-950 sticky top-0 z-50 border-b border-[#e0bfbf]/20">
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border-b border-outline-variant">
 
   <!-- Top Nav -->
-  <nav class="flex justify-between items-center w-full px-6 md:px-8 py-3 max-w-full mx-auto">
+  <nav class="flex items-center w-full px-8 py-6 max-w-none mx-auto gap-6">
 
-    <!-- Left: Logo + Primary Nav Links -->
-    <div class="flex items-center gap-8">
-      <a href="{% url 'home' %}" class="text-xl font-black tracking-tighter text-[#570012] dark:text-red-500 flex-shrink-0">
-        WrappDelights
-      </a>
+    <!-- Left: Logo -->
+    <a href="{% url 'home' %}" class="text-2xl font-serif italic text-neutral-900 dark:text-neutral-50 flex-shrink-0">WrappDelights</a>
 
-      <nav class="hidden md:flex items-center gap-6 font-['Inter'] text-sm tracking-tight font-medium" aria-label="Primary navigation">
-        <a href="{% url 'home' %}"
-           class="{% block nav_home %}text-slate-600{% endblock %} hover:text-[#570012] transition-colors duration-200">
-          Home
+    <!-- Center: Primary CTAs as buttons -->
+    <div class="flex-1 flex justify-center">
+      <nav class="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-widest" aria-label="Primary navigation">
+        <a href="{% url 'products' %}?category=wedding-events"
+           class="{% block nav_wedding %}text-neutral-700{% endblock %} hover:text-primary transition-colors">
+          Wedding Return Gifts
         </a>
-        <a href="{% url 'products' %}"
-           class="{% block nav_catalog %}text-slate-600{% endblock %} hover:text-[#570012] transition-colors duration-200">
-          Catalog
+        <a href="{% url 'products' %}?category=individual-products"
+           class="{% block nav_shop %}text-neutral-700{% endblock %} hover:text-primary transition-colors">
+          Shop Gifts
         </a>
         <a href="{% url 'custom_hamper' %}"
-           class="{% block nav_hamper %}text-slate-600{% endblock %} hover:text-[#570012] transition-colors duration-200">
-          Custom Hamper
+           class="{% block nav_hamper %}text-neutral-700{% endblock %} hover:text-primary transition-colors">
+          Make Your Own Hamper
         </a>
-        <a href="{% url 'corporate' %}"
-           class="{% block nav_corporate %}text-slate-600{% endblock %} hover:text-[#570012] transition-colors duration-200">
-          Corporate
+        <a href="{% url 'products' %}?sort=newest"
+           class="{% block nav_new %}text-neutral-700{% endblock %} hover:text-primary transition-colors">
+          New Arrivals
+        </a>
+        <a href="{% url 'products' %}"
+           class="{% block nav_all %}text-neutral-700{% endblock %} hover:text-primary transition-colors">
+          All Gifts
         </a>
       </nav>
     </div>
 
-    <!-- Center: Search (visible md+) -->
-    <div class="hidden md:flex items-center bg-surface-container-low px-3 py-1.5 border-b border-outline/20 w-64 lg:w-80 mx-4">
-      <span class="material-symbols-outlined text-outline text-lg" aria-hidden="true">search</span>
-      <form action="{% url 'search' %}" method="get" class="w-full">
-        <input
-          type="text"
-          name="q"
-          value="{{ request.GET.q }}"
-          class="bg-transparent border-none focus:ring-0 text-xs w-full text-on-surface placeholder:text-outline ml-2"
-          placeholder="Search catalog by product, SKU…"
-          aria-label="Search catalog"
-        />
-      </form>
-    </div>
-
-    <!-- Right: Actions -->
-    <div class="flex items-center gap-3 flex-shrink-0">
-      <!-- Mobile search icon -->
-      <button
-        type="button"
-        id="mobileSearchToggle"
-        class="md:hidden text-outline hover:text-[#570012] transition-colors"
-        aria-label="Open search"
-      >
-        <span class="material-symbols-outlined">search</span>
-      </button>
-
-      <a href="{% url 'corporate' %}"
-         class="hidden sm:block text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-[#570012] transition-colors">
-        Contact Us
-      </a>
-
-      <a href="{% url 'corporate' %}"
-         class="wd-btn wd-btn-primary px-4 py-2 text-[10px]">
-        Request Quote
-      </a>
-
-      {% if user.is_authenticated %}
-        <a href="{% url 'dashboard' %}"
-           class="hidden sm:block text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-[#570012] transition-colors">
-          Admin
+    <!-- Right: Cart + Mobile Menu Toggle -->
+    <div class="flex items-center gap-4 flex-shrink-0">
+      {% with kit_count=request.session.kit|length %}
+        <a href="{% url 'custom_hamper_review' %}"
+           class="relative flex items-center justify-center text-outline hover:text-primary transition-colors"
+           aria-label="View recent items">
+          <span class="material-symbols-outlined text-xl">shopping_bag</span>
+          {% if kit_count %}
+            <span class="absolute -top-1 -right-2 min-w-[18px] h-[18px] px-[6px] rounded-full bg-primary text-on-primary text-[10px] font-bold flex items-center justify-center leading-none">{{ kit_count }}</span>
+          {% endif %}
         </a>
-        <form method="post" action="{% url 'logout' %}" class="inline m-0">
-          {% csrf_token %}
-          <button type="submit"
-                  class="text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-[#570012] transition-colors bg-transparent border-none cursor-pointer">
-            Logout
-          </button>
-        </form>
-      {% endif %}
+      {% endwith %}
 
       <!-- Mobile menu toggle -->
-      <button
-        type="button"
-        id="mobileMenuToggle"
-        class="md:hidden flex items-center justify-center w-9 h-9 border border-outline-variant hover:border-[#570012] hover:text-[#570012] text-outline transition-colors"
-        aria-expanded="false"
-        aria-controls="mobileMenu"
-        aria-label="Toggle navigation menu"
-      >
+      <button type="button" id="mobileMenuToggle" class="md:hidden flex items-center justify-center w-9 h-9 border border-outline-variant hover:border-primary hover:text-primary text-outline transition-colors" aria-expanded="false" aria-controls="mobileMenu" aria-label="Toggle navigation menu">
         <span class="material-symbols-outlined text-xl" id="mobileMenuIcon">menu</span>
       </button>
     </div>
   </nav>
-
-  <!-- Mobile Search Bar (hidden by default) -->
-  <div id="mobileSearchBar" class="hidden px-6 pb-3 md:hidden">
-    <form action="{% url 'search' %}" method="get"
-          class="flex items-center bg-surface-container-low px-3 py-1.5 border-b border-outline/20">
-      <span class="material-symbols-outlined text-outline text-lg" aria-hidden="true">search</span>
-      <input
-        type="text"
-        name="q"
-        value="{{ request.GET.q }}"
-        class="bg-transparent border-none focus:ring-0 text-xs w-full text-on-surface placeholder:text-outline ml-2"
-        placeholder="Search catalog…"
-        aria-label="Search catalog"
-        autofocus
-      />
-    </form>
-  </div>
 
   <!-- Mobile Menu Drawer -->
   <div id="mobileMenu"
        class="hidden md:hidden border-t border-outline-variant/20 bg-[#fcf9f8] px-6 pb-5 pt-4"
        aria-label="Mobile navigation">
     <nav class="flex flex-col gap-1">
-      <a href="{% url 'home' %}"
+      <a href="{% url 'products' %}?category=wedding-events"
          class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
-        <span class="material-symbols-outlined text-lg text-outline">home</span>
-        Home
+        <span class="material-symbols-outlined text-lg text-outline">favorite</span>
+        Wedding Return Gifts
       </a>
-      <a href="{% url 'products' %}"
+      <a href="{% url 'products' %}?category=individual-products"
          class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
-        <span class="material-symbols-outlined text-lg text-outline">inventory_2</span>
-        Catalog
+        <span class="material-symbols-outlined text-lg text-outline">shopping_bag</span>
+        Shop Gifts
       </a>
       <a href="{% url 'custom_hamper' %}"
          class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
         <span class="material-symbols-outlined text-lg text-outline">redeem</span>
-        Custom Hamper
+        Make Your Own Hamper
       </a>
-      <a href="{% url 'corporate' %}"
+      <a href="{% url 'products' %}?sort=newest"
          class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
-        <span class="material-symbols-outlined text-lg text-outline">business_center</span>
-        Corporate Inquiry
+        <span class="material-symbols-outlined text-lg text-outline">new_releases</span>
+        New Arrivals
+      </a>
+      <a href="{% url 'products' %}"
+         class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
+        <span class="material-symbols-outlined text-lg text-outline">inventory_2</span>
+        All Gifts
       </a>
       <a href="tel:{{ phone_number_raw|default:'+918347136985' }}"
          class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] transition-colors">
@@ -414,16 +329,6 @@
         {{ phone_number|default:'+91 83471 36985' }}
       </a>
     </nav>
-    <div class="mt-4 flex flex-col gap-2">
-      <a href="{% url 'corporate' %}"
-         class="wd-btn wd-btn-primary w-full py-3 text-center">
-        Request Quote
-      </a>
-      <a href="{% url 'custom_hamper' %}"
-         class="wd-btn wd-btn-outline w-full py-3 text-center">
-        Build Custom Hamper
-      </a>
-    </div>
   </div>
 
 </header>
@@ -476,14 +381,11 @@
       </div>
       <div class="flex flex-col gap-3">
         <h5 class="font-bold text-on-surface">Inquiry</h5>
-        <a href="{% url 'corporate' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Request Quote</a>
         <a href="{% url 'custom_hamper' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Custom Hamper</a>
-        <a href="{% url 'corporate' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Bulk Pricing</a>
       </div>
       <div class="flex flex-col gap-3">
         <h5 class="font-bold text-on-surface">Company</h5>
         <a href="{% url 'home' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">About Us</a>
-        <a href="{% url 'corporate' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Contact</a>
         <a href="#" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Case Studies</a>
       </div>
       <div class="flex flex-col gap-3">
@@ -529,78 +431,6 @@
 </a>
 
 <!-- ═══════════════════════════════════════════
-     QUOTE MODAL (reusable across all pages)
-     Trigger: add data-open-quote on any element
-     Optional attrs: data-hamper-id, data-quantity
-════════════════════════════════════════════ -->
-<div id="quoteModal" class="fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true" aria-labelledby="quoteModalTitle">
-  <div id="quoteModalOverlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-  <div class="absolute inset-0 flex items-center justify-center p-4">
-    <div class="bg-[#fcf9f8] w-full max-w-lg border border-outline-variant/30 shadow-2xl relative">
-
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/20">
-        <div>
-          <p class="wd-kicker mb-0.5">Corporate Inquiry</p>
-          <h3 id="quoteModalTitle" class="text-base font-black tracking-tight text-on-surface">Request a Quote</h3>
-        </div>
-        <button type="button" id="quoteModalClose"
-                class="text-outline hover:text-[#570012] transition-colors p-1"
-                aria-label="Close modal">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-
-      <!-- Modal Form -->
-      <form method="post" action="{% url 'corporate' %}" class="px-6 py-5">
-        {% csrf_token %}
-        <input type="hidden" name="inquiry_type" id="quoteInquiryType" value="quote">
-        <input type="hidden" name="hamper_id"    id="quoteHamperId"    value="">
-
-        <div class="grid grid-cols-1 gap-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5" for="quoteName">Name *</label>
-              <input id="quoteName" name="name" type="text" class="wd-input" placeholder="Priya Sharma" required>
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5" for="quoteCompany">Company *</label>
-              <input id="quoteCompany" name="company" type="text" class="wd-input" placeholder="ACME Corp" required>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5" for="quotePhone">Phone</label>
-              <input id="quotePhone" name="phone" type="tel" class="wd-input" placeholder="+91 9XXXXXXXXX">
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5" for="quoteEmail">Email</label>
-              <input id="quoteEmail" name="email" type="email" class="wd-input" placeholder="name@company.com">
-            </div>
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5" for="quoteQuantity">Quantity *</label>
-            <input id="quoteQuantity" name="quantity" type="number" min="1" value="25" class="wd-input" required>
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5" for="quoteRequirement">Requirement *</label>
-            <textarea id="quoteRequirement" name="requirement" rows="3" class="wd-input resize-y"
-                      placeholder="Share your event timeline, product interest, and customization needs…"
-                      required></textarea>
-          </div>
-        </div>
-
-        <button type="submit" class="wd-btn wd-btn-primary w-full py-3 mt-5 text-xs">
-          <span class="material-symbols-outlined text-sm" aria-hidden="true">send</span>
-          Send Request
-        </button>
-      </form>
-    </div>
-  </div>
-</div>
-<!-- ─── End Quote Modal ─── -->
-
-<!-- ═══════════════════════════════════════════
      PAGE-SPECIFIC SCRIPTS SLOT
 ════════════════════════════════════════════ -->
 {% block extra_js %}{% endblock %}
@@ -611,41 +441,6 @@
 <script>
 (function () {
   'use strict';
-
-  /* ── Quote Modal ── */
-  var modal      = document.getElementById('quoteModal');
-  var overlay    = document.getElementById('quoteModalOverlay');
-  var closeBtn   = document.getElementById('quoteModalClose');
-  var typeEl     = document.getElementById('quoteInquiryType');
-  var hamperEl   = document.getElementById('quoteHamperId');
-  var qtyEl      = document.getElementById('quoteQuantity');
-
-  function openModal(btn) {
-    if (typeEl)   typeEl.value   = btn.dataset.inquiryType || 'quote';
-    if (hamperEl) hamperEl.value = btn.dataset.hamperId    || '';
-    if (qtyEl && btn.dataset.quantity) qtyEl.value = btn.dataset.quantity;
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeModal() {
-    modal.classList.add('hidden');
-    document.body.style.overflow = '';
-  }
-
-  if (modal) {
-    document.querySelectorAll('[data-open-quote]').forEach(function (el) {
-      el.addEventListener('click', function (e) {
-        if (el.tagName === 'A') e.preventDefault();
-        openModal(el);
-      });
-    });
-    if (overlay) overlay.addEventListener('click', closeModal);
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeModal();
-    });
-  }
 
   /* ── Mobile Menu ── */
   var menuBtn  = document.getElementById('mobileMenuToggle');

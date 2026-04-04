@@ -68,11 +68,18 @@ class Hamper(models.Model):
         help_text="One item per line for hamper contents list",
     )
     cover_image = models.ImageField(upload_to="products/", null=True, blank=True)
+    base_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Numeric price used for display and totals (₹)",
+    )
     price_label = models.CharField(
         max_length=80,
         blank=True,
         default="",
-        help_text="Optional display-only text like 'Starts at INR 1499'",
+        help_text="Optional display-only text like 'Price on request'",
     )
     min_bulk_quantity = models.PositiveIntegerField(default=25)
     is_active = models.BooleanField(default=True)

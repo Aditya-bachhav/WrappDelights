@@ -115,13 +115,19 @@
   </div>
 </div>
 
+{{ selected_ids|json_script:"selected-qtys-data" }}
+
 <script>
 // Pre-populate qty values for selected products
-var selectedQtys = {
-  {% for pid, qty in selected_ids.items %}
-  "{{ pid }}": {{ qty }},
-  {% endfor %}
-};
+var selectedQtys = {};
+var selectedQtysEl = document.getElementById('selected-qtys-data');
+if (selectedQtysEl) {
+  try {
+    selectedQtys = JSON.parse(selectedQtysEl.textContent);
+  } catch (err) {
+    selectedQtys = {};
+  }
+}
 document.querySelectorAll('.qty-input').forEach(function(inp) {
   var pid = inp.getAttribute('data-pid');
   if (selectedQtys[pid]) inp.value = selectedQtys[pid];

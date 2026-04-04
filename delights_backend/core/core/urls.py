@@ -6,9 +6,14 @@ from django.urls import path
 
 from delights_backend.core.store import views
 from delights_backend.core.store.views import (
-    corporate_page,
-    corporate_success,
     custom_hamper_builder,
+    custom_hamper_step,
+    custom_hamper_review,
+    custom_hamper_add_item,
+    custom_hamper_remove_item,
+    custom_hamper_update_quantity,
+    custom_hamper_summary,
+    custom_hamper_clear,
     dashboard,
     dashboard_categories,
     dashboard_corporate,
@@ -26,22 +31,33 @@ from delights_backend.core.store.views import (
     dashboard_products,
     dashboard_sections,
     dashboard_toggle_product,
+    health,
     home,
     product_detail,
     product_list,
+    corporate_success,
     search_view,
 )
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("health/", health, name="health"),
 
     # Public catalog flow
     path("", home, name="home"),
     path("home/", home, name="home_alt"),
     path("products/", product_list, name="products"),
     path("products/<int:product_id>/", product_detail, name="product_detail"),
-    path("corporate/", corporate_page, name="corporate"),
     path("custom-hamper/", custom_hamper_builder, name="custom_hamper"),
-    path("corporate-success/", corporate_success, name="corporate_success"),
+    # Generic step matcher - handles steps 1-5
+    path("custom-hamper/step-<int:step_number>/", custom_hamper_step, name="custom_hamper_step"),
+    path("custom-hamper/review/", custom_hamper_review, name="custom_hamper_review"),
+    path("custom-hamper/review/", custom_hamper_review, name="custom_hamper_review_alias"),
+    path("custom-hamper/api/kit/", custom_hamper_summary, name="custom_hamper_summary"),
+    path("custom-hamper/api/kit/add/", custom_hamper_add_item, name="custom_hamper_add_item"),
+    path("custom-hamper/api/kit/remove/", custom_hamper_remove_item, name="custom_hamper_remove_item"),
+    path("custom-hamper/api/kit/update/", custom_hamper_update_quantity, name="custom_hamper_update_quantity"),
+    path("custom-hamper/api/kit/clear/", custom_hamper_clear, name="custom_hamper_clear"),
+    path("custom-hamper/success/", corporate_success, name="corporate_success"),
     path("search/", search_view, name="search"),
 
     # Dashboard — overview

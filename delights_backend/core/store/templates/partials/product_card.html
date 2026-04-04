@@ -25,7 +25,11 @@
         </div>
         <div class="text-[11px] text-slate-400 mb-3">
             Min. order: <span class="font-bold text-slate-600">{{ product.min_bulk_quantity }} units</span>
-            {% if product.price_label %} · <span class="text-brand-red font-bold">{{ product.price_label }}</span>{% endif %}
+                        {% if product.base_price %}
+                            · <span class="text-brand-red font-bold">₹ {{ product.base_price|floatformat:0 }}</span>
+                        {% elif product.price_label %}
+                            · <span class="text-brand-red font-bold">{{ product.price_label }}</span>
+                        {% endif %}
         </div>
 
         <div class="mt-auto pt-3 border-t border-slate-100 flex gap-2">

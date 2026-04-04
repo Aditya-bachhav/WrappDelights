@@ -52,8 +52,14 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Price Label</label>
-              <input class="form-input" name="price_label" value="{{ hamper.price_label }}" placeholder="Starts at INR 1,499">
+              <label class="form-label">Base Price (₹)</label>
+              <input class="form-input" type="number" step="0.01" min="0" name="base_price" value="{{ hamper.base_price }}" placeholder="1380">
+              <span class="form-hint">Used on cards and for combo totals</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Price Label (optional)</label>
+              <input class="form-input" name="price_label" value="{{ hamper.price_label }}" placeholder="Price on request">
+              <span class="form-hint">Override label when no numeric price</span>
             </div>
           </div>
         </div>
