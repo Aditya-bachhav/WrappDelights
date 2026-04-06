@@ -164,7 +164,12 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = Path(
+    os.getenv(
+        "MEDIA_ROOT",
+        "/var/data/media" if RUNNING_ON_RENDER else str(BASE_DIR / "media"),
+    )
+)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -174,10 +179,10 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Contact info for catalog CTA buttons
-WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "918347136985")  # country code + number, no plus sign
+WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "9309810348")
 WHATSAPP_MESSAGE = os.getenv("WHATSAPP_MESSAGE", "Hi, I'm interested in a product from Wrapp Delights!")
-PHONE_NUMBER = os.getenv("PHONE_NUMBER", "+91 83471 36985")  # display-friendly format
-PHONE_NUMBER_RAW = os.getenv("PHONE_NUMBER_RAW", "+918347136985")  # tel: link format
+PHONE_NUMBER = os.getenv("PHONE_NUMBER", "+91 93098 10348")  # display-friendly format
+PHONE_NUMBER_RAW = os.getenv("PHONE_NUMBER_RAW", "+919309810348")  # tel: link format
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

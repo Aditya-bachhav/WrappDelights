@@ -2,6 +2,7 @@ import json
 import re
 from decimal import Decimal, InvalidOperation
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -22,7 +23,11 @@ CATALOG_NAV_CATEGORIES = [
     "Packaging Solutions",
 ]
 
-SUCCESS_WHATSAPP_RAW = "918347136985"
+_success_whatsapp_digits = ''.join(ch for ch in getattr(settings, "WHATSAPP_NUMBER", "9309810348") if ch.isdigit())
+if len(_success_whatsapp_digits) == 10:
+    SUCCESS_WHATSAPP_RAW = f"91{_success_whatsapp_digits}"
+else:
+    SUCCESS_WHATSAPP_RAW = _success_whatsapp_digits
 
 SESSION_KIT_KEY = "kit"
 STEP_CONFIG = {
@@ -187,14 +192,21 @@ def health(request):
         }, status=503)
 
 def create_admin(request):
-    if not User.objects.filter(username="admin").exists():
-        User.objects.create_superuser(
-            username="admin",
-            password="admin123",
-            email="admin@example.com"
-        )
-        return HttpResponse("Admin created")
-    return HttpResponse("Admin already exists")
+    bootstrap_username = getattr(settings, "ADMIN_BOOTSTRAP_USERNAME", "Admin")
+    bootstrap_password = getattr(settings, "ADMIN_BOOTSTRAP_PASSWORD", "D^L!G#t$0@dm/7404")
+    bootstrap_email = getattr(settings, "ADMIN_BOOTSTRAP_EMAIL", "admin@example.com")
+
+    user = User.objects.filter(username__iexact=bootstrap_username).first()
+    if not user:
+        user = User(username=bootstrap_username)
+
+    user.username = bootstrap_username
+    user.email = bootstrap_email
+    user.is_staff = True
+    user.is_superuser = True
+    user.set_password(bootstrap_password)
+    user.save()
+    return HttpResponse(f"Admin credentials ensured for '{bootstrap_username}'")
 
 def _selected_products_from_inquiry(inquiry):
     combined = "\n".join(
@@ -305,8 +317,8 @@ def corporate(request):
             "selected_type": selected_type,
             "products": Hamper.objects.filter(is_active=True).order_by("-created_at")[:8],
             "whatsapp_number": SUCCESS_WHATSAPP_RAW,
-            "phone_number": "+91 83471 36985",
-            "phone_number_raw": "+918347136985",
+            "phone_number": getattr(settings, "PHONE_NUMBER", "+91 93098 10348"),
+            "phone_number_raw": getattr(settings, "PHONE_NUMBER_RAW", "+919309810348"),
         },
     )
 

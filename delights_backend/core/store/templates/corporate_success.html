@@ -316,18 +316,18 @@
                 </div>
                 <div>
                   <div class="contact-label">WhatsApp Us</div>
-                  <div class="contact-value">+91 83471 36985 · Typically replies in minutes</div>
+                  <div class="contact-value">{{ phone_number|default:'+91 93098 10348' }} · Typically replies in minutes</div>
                 </div>
                 <span class="material-symbols-outlined" style="font-size:16px;color:#8c7070;margin-left:auto;">open_in_new</span>
               </a>
 
-              <a href="tel:+918347136985" class="contact-option phone">
+              <a href="tel:{{ phone_number_raw|default:'+919309810348' }}" class="contact-option phone">
                 <div class="contact-icon">
                   <span class="material-symbols-outlined" style="font-size:20px;color:#4285f4;">call</span>
                 </div>
                 <div>
                   <div class="contact-label">Call Sales</div>
-                  <div class="contact-value">+91 83471 36985 · Mon–Sat, 10am–7pm</div>
+                  <div class="contact-value">{{ phone_number|default:'+91 93098 10348' }} · Mon–Sat, 10am–7pm</div>
                 </div>
                 <span class="material-symbols-outlined" style="font-size:16px;color:#8c7070;margin-left:auto;">chevron_right</span>
               </a>
