@@ -164,12 +164,20 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = "/media/"
-MEDIA_ROOT = Path(
+_configured_media_root = Path(
     os.getenv(
         "MEDIA_ROOT",
         "/var/data/media" if RUNNING_ON_RENDER else str(BASE_DIR / "media"),
     )
 )
+
+# On Render, fall back to local media when /var/data is unavailable or not writable.
+if str(_configured_media_root).startswith("/var/data") and not (
+    Path("/var/data").exists() and os.access("/var/data", os.W_OK)
+):
+    MEDIA_ROOT = BASE_DIR / "media"
+else:
+    MEDIA_ROOT = _configured_media_root
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

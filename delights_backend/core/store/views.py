@@ -49,13 +49,6 @@ def _media_storage_state():
     }
 
 
-def _ensure_media_root_ready():
-    media_root = Path(settings.MEDIA_ROOT)
-    media_root.mkdir(parents=True, exist_ok=True)
-    if not os.access(media_root, os.W_OK):
-        raise PermissionError(f"MEDIA_ROOT is not writable: {media_root}")
-
-
 CATALOG_NAV_CATEGORIES = [
     "Corporate Gifting",
     "Wedding & Events",
@@ -754,9 +747,6 @@ def dashboard_products(request):
 def dashboard_create_product(request):
     if request.method == "POST":
         try:
-            if request.FILES:
-                _ensure_media_root_ready()
-
             with transaction.atomic():
                 category = None
                 category_id = request.POST.get("category")
@@ -816,9 +806,6 @@ def dashboard_edit_product(request, product_id):
 
     if request.method == "POST":
         try:
-            if request.FILES:
-                _ensure_media_root_ready()
-
             with transaction.atomic():
                 category_id = request.POST.get("category")
                 category = Category.objects.filter(id=category_id).first() if category_id else None
