@@ -170,6 +170,8 @@ MEDIA_ROOT = Path(
         "/var/data/media" if RUNNING_ON_RENDER else str(BASE_DIR / "media"),
     )
 )
+# Ensure media root exists before handling upload requests.
+MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -224,12 +226,17 @@ LOGGING = {
         },
         'django.request': {
             'handlers': ['console'],
-            'level': 'ERROR',
-            'propagate': False,
+            'level': 'WARNING',
+            'propagate': True,
         },
         'django.db.backends': {
             'handlers': ['console'],
             'level': 'ERROR',
+            'propagate': False,
+        },
+        'delights_backend': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
             'propagate': False,
         },
     },

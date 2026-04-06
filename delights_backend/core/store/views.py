@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db import transaction
 from django.db.models import Q, Prefetch
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -715,36 +716,46 @@ def dashboard_products(request):
 @user_passes_test(admin_check)
 def dashboard_create_product(request):
     if request.method == "POST":
-        category = None
-        category_id = request.POST.get("category")
-        if category_id:
-            category = Category.objects.filter(id=category_id).first()
+        try:
+            with transaction.atomic():
+                category = None
+                category_id = request.POST.get("category")
+                if category_id:
+                    category = Category.objects.filter(id=category_id).first()
 
-        hamper = Hamper.objects.create(
-            name=request.POST.get("name", "").strip(),
-            category=category,
-            short_description=request.POST.get("short_description", "").strip(),
-            description=request.POST.get("description", "").strip(),
-            included_items=request.POST.get("included_items", "").strip(),
-            cover_image=request.FILES.get("cover_image"),
-            base_price=_parse_price(request.POST.get("base_price")),
-            price_label=request.POST.get("price_label", "").strip(),
-            min_bulk_quantity=int(request.POST.get("min_bulk_quantity") or 25),
-            is_featured=request.POST.get("is_featured") == "on",
-            is_event_special=request.POST.get("is_event_special") == "on",
-            is_active=request.POST.get("is_active") == "on",
-        )
+                hamper = Hamper.objects.create(
+                    name=request.POST.get("name", "").strip(),
+                    category=category,
+                    short_description=request.POST.get("short_description", "").strip(),
+                    description=request.POST.get("description", "").strip(),
+                    included_items=request.POST.get("included_items", "").strip(),
+                    cover_image=request.FILES.get("cover_image"),
+                    base_price=_parse_price(request.POST.get("base_price")),
+                    price_label=request.POST.get("price_label", "").strip(),
+                    min_bulk_quantity=int(request.POST.get("min_bulk_quantity") or 25),
+                    is_featured=request.POST.get("is_featured") == "on",
+                    is_event_special=request.POST.get("is_event_special") == "on",
+                    is_active=request.POST.get("is_active") == "on",
+                )
 
-        section_ids = request.POST.getlist("homepage_sections")
-        if section_ids:
-            hamper.homepage_sections.set(HomepageSection.objects.filter(id__in=section_ids))
+                section_ids = request.POST.getlist("homepage_sections")
+                if section_ids:
+                    hamper.homepage_sections.set(HomepageSection.objects.filter(id__in=section_ids))
 
-        gallery_images = request.FILES.getlist("gallery")
-        for idx, image in enumerate(gallery_images):
-            HamperImage.objects.create(hamper=hamper, image=image, position=idx)
+                gallery_images = request.FILES.getlist("gallery")
+                for idx, image in enumerate(gallery_images):
+                    HamperImage.objects.create(hamper=hamper, image=image, position=idx)
 
-        messages.success(request, f'Hamper "{hamper.name}" created successfully.')
-        return redirect("dashboard_products")
+            messages.success(request, f'Hamper "{hamper.name}" created successfully.')
+            return redirect("dashboard_products")
+        except Exception:
+            logger.exception(
+                "Product create failed. POST keys=%s FILE keys=%s",
+                list(request.POST.keys()),
+                list(request.FILES.keys()),
+            )
+            messages.error(request, "Image upload failed. Check server logs.")
+            return redirect("dashboard_create_product")
 
     return render(
         request,
@@ -762,42 +773,53 @@ def dashboard_edit_product(request, product_id):
     hamper = get_object_or_404(Hamper, id=product_id)
 
     if request.method == "POST":
-        category_id = request.POST.get("category")
-        category = Category.objects.filter(id=category_id).first() if category_id else None
+        try:
+            with transaction.atomic():
+                category_id = request.POST.get("category")
+                category = Category.objects.filter(id=category_id).first() if category_id else None
 
-        hamper.name = request.POST.get("name", "").strip()
-        hamper.category = category
-        hamper.short_description = request.POST.get("short_description", "").strip()
-        hamper.description = request.POST.get("description", "").strip()
-        hamper.included_items = request.POST.get("included_items", "").strip()
-        hamper.base_price = _parse_price(request.POST.get("base_price"))
-        hamper.price_label = request.POST.get("price_label", "").strip()
-        hamper.min_bulk_quantity = int(request.POST.get("min_bulk_quantity") or 25)
-        hamper.is_featured = request.POST.get("is_featured") == "on"
-        hamper.is_event_special = request.POST.get("is_event_special") == "on"
-        hamper.is_active = request.POST.get("is_active") == "on"
+                hamper.name = request.POST.get("name", "").strip()
+                hamper.category = category
+                hamper.short_description = request.POST.get("short_description", "").strip()
+                hamper.description = request.POST.get("description", "").strip()
+                hamper.included_items = request.POST.get("included_items", "").strip()
+                hamper.base_price = _parse_price(request.POST.get("base_price"))
+                hamper.price_label = request.POST.get("price_label", "").strip()
+                hamper.min_bulk_quantity = int(request.POST.get("min_bulk_quantity") or 25)
+                hamper.is_featured = request.POST.get("is_featured") == "on"
+                hamper.is_event_special = request.POST.get("is_event_special") == "on"
+                hamper.is_active = request.POST.get("is_active") == "on"
 
-        if request.FILES.get("cover_image"):
-            hamper.cover_image = request.FILES.get("cover_image")
+                if request.FILES.get("cover_image"):
+                    hamper.cover_image = request.FILES.get("cover_image")
 
-        hamper.save()
+                hamper.save()
 
-        section_ids = request.POST.getlist("homepage_sections")
-        hamper.homepage_sections.set(HomepageSection.objects.filter(id__in=section_ids))
+                section_ids = request.POST.getlist("homepage_sections")
+                hamper.homepage_sections.set(HomepageSection.objects.filter(id__in=section_ids))
 
-        # Handle gallery deletions
-        delete_ids = request.POST.getlist("delete_gallery")
-        if delete_ids:
-            HamperImage.objects.filter(id__in=delete_ids, hamper=hamper).delete()
+                # Handle gallery deletions
+                delete_ids = request.POST.getlist("delete_gallery")
+                if delete_ids:
+                    HamperImage.objects.filter(id__in=delete_ids, hamper=hamper).delete()
 
-        # Add new gallery images
-        gallery_images = request.FILES.getlist("gallery")
-        existing_count = hamper.images.count()
-        for idx, image in enumerate(gallery_images):
-            HamperImage.objects.create(hamper=hamper, image=image, position=existing_count + idx)
+                # Add new gallery images
+                gallery_images = request.FILES.getlist("gallery")
+                existing_count = hamper.images.count()
+                for idx, image in enumerate(gallery_images):
+                    HamperImage.objects.create(hamper=hamper, image=image, position=existing_count + idx)
 
-        messages.success(request, f'Hamper "{hamper.name}" updated successfully.')
-        return redirect("dashboard_products")
+            messages.success(request, f'Hamper "{hamper.name}" updated successfully.')
+            return redirect("dashboard_products")
+        except Exception:
+            logger.exception(
+                "Product edit failed. product_id=%s POST keys=%s FILE keys=%s",
+                product_id,
+                list(request.POST.keys()),
+                list(request.FILES.keys()),
+            )
+            messages.error(request, "Image upload failed. Check server logs.")
+            return redirect("dashboard_edit_product", product_id=product_id)
 
     return render(
         request,
