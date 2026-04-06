@@ -1,7 +1,7 @@
 import os
 
 from django.contrib.auth import get_user_model
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
@@ -25,12 +25,9 @@ class Command(BaseCommand):
         ).strip()
 
         if not username or not password:
-            self.stdout.write(
-                self.style.WARNING(
-                    "Skipping superuser bootstrap: set ADMIN_BOOTSTRAP_USERNAME and ADMIN_BOOTSTRAP_PASSWORD."
-                )
+            raise CommandError(
+                "ADMIN_BOOTSTRAP_USERNAME and ADMIN_BOOTSTRAP_PASSWORD must be set on the Render service."
             )
-            return
 
         user_model = get_user_model()
         user = user_model.objects.filter(username__iexact=username).first()
