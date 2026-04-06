@@ -676,7 +676,7 @@ def search_view(request):
 
 
 def admin_check(user):
-    return user.is_staff
+    return user.is_superuser
 
 
 # ─── DASHBOARD ────────────────────────────────────────────────────────────────

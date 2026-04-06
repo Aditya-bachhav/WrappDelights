@@ -178,6 +178,8 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
+ADMIN_PANEL_PATH = os.getenv("ADMIN_PANEL_PATH", "control-room-admin/").strip("/") + "/"
+
 # Contact info for catalog CTA buttons
 WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "9309810348")
 WHATSAPP_MESSAGE = os.getenv("WHATSAPP_MESSAGE", "Hi, I'm interested in a product from Wrapp Delights!")

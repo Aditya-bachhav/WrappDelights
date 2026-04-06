@@ -40,8 +40,13 @@ from delights_backend.core.store.views import (
     corporate_success,
     search_view,
 )
+
+admin.site.has_permission = lambda request: bool(
+    request.user.is_active and request.user.is_superuser
+)
+
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path(settings.ADMIN_PANEL_PATH, admin.site.urls),
     path("health/", health, name="health"),
 
     # Public catalog flow
@@ -94,7 +99,6 @@ urlpatterns = [
     path("login/", auth_views.LoginView.as_view(template_name="login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(next_page="/"), name="logout"),
     path("account/", dashboard, name="account"),
-    path('create-admin/', views.create_admin),
 ]
 
 if settings.DEBUG:
