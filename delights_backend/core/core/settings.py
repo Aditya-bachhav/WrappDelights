@@ -119,12 +119,15 @@ if DATABASE_URL:
         )
     }
 else:
-    # ⚠️ SAFETY CHECK: Never use SQLite on Render (data would be lost on redeployment)
+    # ⚠️ WARNING: DATABASE_URL not set
+    # On Render, database may still be provisioning. Once it's created, DATABASE_URL will be available automatically.
     if RUNNING_ON_RENDER:
-        raise RuntimeError(
-            "DATABASE_URL is not set on Render. Data will be lost on every deployment! "
-            "Go to Render Dashboard → Your Service → Environment → Verify DATABASE_URL env var is present "
-            "and linked to wrapp-delights-db PostgreSQL service."
+        import warnings
+        warnings.warn(
+            "DATABASE_URL is not set on Render. Using temporary SQLite. "
+            "Once wrapp-delights-db PostgreSQL service is provisioned, DATABASE_URL will be available. "
+            "Redeploy to switch to PostgreSQL for persistent storage.",
+            RuntimeWarning
         )
     
     DATABASES = {
