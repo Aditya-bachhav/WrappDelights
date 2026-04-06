@@ -88,7 +88,7 @@
       <div class="card">
         <div class="form-section">
           <div class="form-section-title">Cover Image</div>
-          {% if hamper.cover_image %}
+          {% if hamper.cover_image and hamper.cover_image.name %}
             <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px">
               <img src="{{ hamper.cover_image.url }}" style="width:80px;height:80px;object-fit:cover;border-radius:var(--radius);border:1px solid var(--border)">
               <span class="form-hint">Upload a new file to replace the current cover</span>
@@ -102,6 +102,7 @@
           {% if gallery_images %}
           <div class="img-grid" style="margin-bottom:12px">
             {% for img in gallery_images %}
+            {% if img.image and img.image.name %}
             <div class="img-thumb">
               <img src="{{ img.image.url }}" alt="">
               <div class="del-overlay">
@@ -112,6 +113,7 @@
                 </label>
               </div>
             </div>
+            {% endif %}
             {% endfor %}
           </div>
           <span class="form-hint" style="display:block;margin-bottom:8px">Hover over an image and click to mark it for deletion</span>
