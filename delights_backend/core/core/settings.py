@@ -170,8 +170,6 @@ MEDIA_ROOT = Path(
         "/var/data/media" if RUNNING_ON_RENDER else str(BASE_DIR / "media"),
     )
 )
-# Ensure media root exists before handling upload requests.
-MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
