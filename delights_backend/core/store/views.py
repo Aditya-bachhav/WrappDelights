@@ -1,5 +1,6 @@
 import json
 import re
+import logging
 from decimal import Decimal, InvalidOperation
 
 from django.conf import settings
@@ -13,6 +14,46 @@ from delights_backend.core.store import models
 from .models import Category, CorporateInquiry, Hamper, HamperImage, HomepageSection
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+
+logger = logging.getLogger(__name__)
+
+# Max file size: 5MB
+MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
+ALLOWED_IMAGE_FORMATS = {'JPEG', 'PNG', 'GIF', 'WEBP'}
+
+
+def _validate_and_save_image(image_file, max_size=MAX_IMAGE_SIZE):
+    """Safely validate and accept an image file. Returns (success, message)."""
+    if not image_file:
+        return True, None  # No image provided is OK
+    
+    try:
+        # Check file size
+        if image_file.size > max_size:
+            return False, f"Image too large ({image_file.size / 1024 / 1024:.1f}MB). Max: {max_size / 1024 / 1024:.0f}MB"
+        
+        # Try to open and validate with Pillow
+        from PIL import Image
+        from io import BytesIO
+        
+        # Reset file pointer to beginning
+        if hasattr(image_file, 'seek'):
+            image_file.seek(0)
+        
+        # Try to open and verify the image
+        img = Image.open(image_file)
+        img.verify()
+        
+        # Reset for actual saving
+        if hasattr(image_file, 'seek'):
+            image_file.seek(0)
+        
+        return True, None
+    
+    except Exception as e:
+        logger.error(f"Image validation failed: {e}", exc_info=True)
+        return False, f"Invalid image file: {str(e)[:50]}"
+
 
 CATALOG_NAV_CATEGORIES = [
     "Corporate Gifting",
@@ -716,13 +757,21 @@ def dashboard_create_product(request):
         if category_id:
             category = Category.objects.filter(id=category_id).first()
 
+        # Validate cover image
+        cover_image = request.FILES.get("cover_image")
+        if cover_image:
+            valid, error_msg = _validate_and_save_image(cover_image)
+            if not valid:
+                messages.error(request, f"Cover image error: {error_msg}")
+                return redirect("dashboard_create_product")
+        
         hamper = Hamper.objects.create(
             name=request.POST.get("name", "").strip(),
             category=category,
             short_description=request.POST.get("short_description", "").strip(),
             description=request.POST.get("description", "").strip(),
             included_items=request.POST.get("included_items", "").strip(),
-            cover_image=request.FILES.get("cover_image"),
+            cover_image=cover_image,
             base_price=_parse_price(request.POST.get("base_price")),
             price_label=request.POST.get("price_label", "").strip(),
             min_bulk_quantity=int(request.POST.get("min_bulk_quantity") or 25),
@@ -736,8 +785,17 @@ def dashboard_create_product(request):
             hamper.homepage_sections.set(HomepageSection.objects.filter(id__in=section_ids))
 
         gallery_images = request.FILES.getlist("gallery")
+        invalid_count = 0
         for idx, image in enumerate(gallery_images):
-            HamperImage.objects.create(hamper=hamper, image=image, position=idx)
+            valid, error_msg = _validate_and_save_image(image)
+            if valid:
+                HamperImage.objects.create(hamper=hamper, image=image, position=idx)
+            else:
+                logger.warning(f"Skipped invalid gallery image: {error_msg}")
+                invalid_count += 1
+        
+        if invalid_count > 0:
+            messages.warning(request, f"Skipped {invalid_count} invalid gallery image(s).")
 
         messages.success(request, f'Hamper "{hamper.name}" created successfully.')
         return redirect("dashboard_products")
@@ -773,8 +831,14 @@ def dashboard_edit_product(request, product_id):
         hamper.is_event_special = request.POST.get("is_event_special") == "on"
         hamper.is_active = request.POST.get("is_active") == "on"
 
-        if request.FILES.get("cover_image"):
-            hamper.cover_image = request.FILES.get("cover_image")
+        # Validate and set cover image
+        cover_image = request.FILES.get("cover_image")
+        if cover_image:
+            valid, error_msg = _validate_and_save_image(cover_image)
+            if not valid:
+                messages.error(request, f"Cover image error: {error_msg}")
+                return redirect("dashboard_edit_product", product_id=product_id)
+            hamper.cover_image = cover_image
 
         hamper.save()
 
@@ -789,8 +853,17 @@ def dashboard_edit_product(request, product_id):
         # Add new gallery images
         gallery_images = request.FILES.getlist("gallery")
         existing_count = hamper.images.count()
+        invalid_count = 0
         for idx, image in enumerate(gallery_images):
-            HamperImage.objects.create(hamper=hamper, image=image, position=existing_count + idx)
+            valid, error_msg = _validate_and_save_image(image)
+            if valid:
+                HamperImage.objects.create(hamper=hamper, image=image, position=existing_count + idx)
+            else:
+                logger.warning(f"Skipped invalid gallery image: {error_msg}")
+                invalid_count += 1
+        
+        if invalid_count > 0:
+            messages.warning(request, f"Skipped {invalid_count} invalid gallery image(s).")
 
         messages.success(request, f'Hamper "{hamper.name}" updated successfully.')
         return redirect("dashboard_products")
