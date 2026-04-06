@@ -8,7 +8,7 @@ services:
       mountPath: /var/data
       sizeGB: 1
     buildCommand: bash build.sh
-    startCommand: python delights_backend/core/manage.py migrate && python delights_backend/core/manage.py ensure_superuser && gunicorn delights_backend.core.core.wsgi:application --chdir delights_backend/core
+    startCommand: gunicorn core.wsgi:application --chdir delights_backend/core --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.10
