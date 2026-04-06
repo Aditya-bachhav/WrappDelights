@@ -5,7 +5,6 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, re_path
 from django.views.static import serve
 
-from delights_backend.core.store import views
 from delights_backend.core.store.views import (
     corporate,
     custom_hamper_builder,

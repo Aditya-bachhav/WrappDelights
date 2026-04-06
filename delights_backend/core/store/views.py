@@ -11,8 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from delights_backend.core.store import models
 from .models import Category, CorporateInquiry, Hamper, HamperImage, HomepageSection
-from django.contrib.auth.models import User
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
 CATALOG_NAV_CATEGORIES = [
@@ -190,23 +189,6 @@ def health(request):
             "service": "wrapp-delights",
             "error": str(e)
         }, status=503)
-
-def create_admin(request):
-    bootstrap_username = getattr(settings, "ADMIN_BOOTSTRAP_USERNAME", "Admin")
-    bootstrap_password = getattr(settings, "ADMIN_BOOTSTRAP_PASSWORD", "D^L!G#t$0@dm/7404")
-    bootstrap_email = getattr(settings, "ADMIN_BOOTSTRAP_EMAIL", "admin@example.com")
-
-    user = User.objects.filter(username__iexact=bootstrap_username).first()
-    if not user:
-        user = User(username=bootstrap_username)
-
-    user.username = bootstrap_username
-    user.email = bootstrap_email
-    user.is_staff = True
-    user.is_superuser = True
-    user.set_password(bootstrap_password)
-    user.save()
-    return HttpResponse(f"Admin credentials ensured for '{bootstrap_username}'")
 
 def _selected_products_from_inquiry(inquiry):
     combined = "\n".join(
