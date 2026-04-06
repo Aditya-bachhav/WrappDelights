@@ -6,6 +6,7 @@ from django.urls import path
 
 from delights_backend.core.store import views
 from delights_backend.core.store.views import (
+    corporate,
     custom_hamper_builder,
     custom_hamper_step,
     custom_hamper_review,
@@ -47,6 +48,7 @@ urlpatterns = [
     path("home/", home, name="home_alt"),
     path("products/", product_list, name="products"),
     path("products/<int:product_id>/", product_detail, name="product_detail"),
+    path("corporate/", corporate, name="corporate"),
     path("custom-hamper/", custom_hamper_builder, name="custom_hamper"),
     # Generic step matcher - handles steps 1-5
     path("custom-hamper/step-<int:step_number>/", custom_hamper_step, name="custom_hamper_step"),

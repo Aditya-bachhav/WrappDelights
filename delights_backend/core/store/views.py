@@ -240,6 +240,77 @@ def _build_whatsapp_message_from_inquiry(inquiry):
     return "\n".join(lines)
 
 
+def corporate(request):
+    selected_hamper = None
+    hamper_id_raw = (request.GET.get("hamper") or request.POST.get("hamper_id") or "").strip()
+    if hamper_id_raw.isdigit():
+        selected_hamper = Hamper.objects.filter(id=int(hamper_id_raw), is_active=True).first()
+
+    selected_type = (request.GET.get("type") or request.POST.get("inquiry_type") or "quote").strip().lower()
+    if selected_type not in {"quote", "bulk", "customize", "product"}:
+        selected_type = "quote"
+
+    if request.method == "POST":
+        inquiry_type = selected_type
+        if inquiry_type == "product":
+            inquiry_type = "bulk"
+
+        contact_person = (
+            (request.POST.get("contact_person") or request.POST.get("name") or "").strip()
+            or "Website Visitor"
+        )
+        company_name = (
+            (request.POST.get("company_name") or request.POST.get("company") or "").strip()
+            or "Individual Customer"
+        )
+        email = (request.POST.get("email") or "").strip()
+        phone = (request.POST.get("phone") or "").strip()
+
+        quantity_raw = (request.POST.get("quantity") or "").strip()
+        try:
+            quantity = max(1, int(quantity_raw))
+        except (TypeError, ValueError):
+            quantity = 1
+
+        delivery_address = (
+            (request.POST.get("delivery_address") or request.POST.get("location") or "").strip()
+        )
+        message = (
+            (request.POST.get("message") or request.POST.get("notes") or "").strip()
+        )
+        customization_details = (
+            (request.POST.get("customization_details") or request.POST.get("requirement") or "").strip()
+        )
+
+        inquiry = CorporateInquiry.objects.create(
+            inquiry_type=inquiry_type,
+            hamper=selected_hamper,
+            company_name=company_name,
+            contact_person=contact_person,
+            email=email,
+            phone=phone,
+            quantity=quantity,
+            delivery_address=delivery_address,
+            message=message,
+            customization_details=customization_details,
+        )
+
+        return redirect(f"{reverse('corporate_success')}?inquiry={inquiry.id}")
+
+    return render(
+        request,
+        "corporate.html",
+        {
+            "selected_hamper": selected_hamper,
+            "selected_type": selected_type,
+            "products": Hamper.objects.filter(is_active=True).order_by("-created_at")[:8],
+            "whatsapp_number": SUCCESS_WHATSAPP_RAW,
+            "phone_number": "+91 83471 36985",
+            "phone_number_raw": "+918347136985",
+        },
+    )
+
+
 def home(request):
     active_hampers = Hamper.objects.filter(is_active=True).select_related("category")
 
