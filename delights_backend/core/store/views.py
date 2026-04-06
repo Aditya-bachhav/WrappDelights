@@ -1,7 +1,9 @@
 import json
 import re
 import logging
+import os
 from decimal import Decimal, InvalidOperation
+from pathlib import Path
 
 from django.conf import settings
 from django.contrib import messages
@@ -17,6 +19,41 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
 logger = logging.getLogger(__name__)
+
+
+def _files_debug_info(files):
+    info = []
+    for key in files.keys():
+        for f in files.getlist(key):
+            info.append(
+                {
+                    "field": key,
+                    "name": getattr(f, "name", ""),
+                    "size": getattr(f, "size", None),
+                    "content_type": getattr(f, "content_type", ""),
+                }
+            )
+    return info
+
+
+def _media_storage_state():
+    media_root = Path(settings.MEDIA_ROOT)
+    parent = media_root.parent
+    return {
+        "media_root": str(media_root),
+        "media_exists": media_root.exists(),
+        "media_is_dir": media_root.is_dir() if media_root.exists() else False,
+        "media_writable": os.access(media_root, os.W_OK) if media_root.exists() else False,
+        "parent_exists": parent.exists(),
+        "parent_writable": os.access(parent, os.W_OK) if parent.exists() else False,
+    }
+
+
+def _ensure_media_root_ready():
+    media_root = Path(settings.MEDIA_ROOT)
+    media_root.mkdir(parents=True, exist_ok=True)
+    if not os.access(media_root, os.W_OK):
+        raise PermissionError(f"MEDIA_ROOT is not writable: {media_root}")
 
 
 CATALOG_NAV_CATEGORIES = [
@@ -717,6 +754,9 @@ def dashboard_products(request):
 def dashboard_create_product(request):
     if request.method == "POST":
         try:
+            if request.FILES:
+                _ensure_media_root_ready()
+
             with transaction.atomic():
                 category = None
                 category_id = request.POST.get("category")
@@ -750,9 +790,11 @@ def dashboard_create_product(request):
             return redirect("dashboard_products")
         except Exception:
             logger.exception(
-                "Product create failed. POST keys=%s FILE keys=%s",
+                "Product create failed. POST keys=%s FILE keys=%s FILE details=%s MEDIA state=%s",
                 list(request.POST.keys()),
                 list(request.FILES.keys()),
+                _files_debug_info(request.FILES),
+                _media_storage_state(),
             )
             messages.error(request, "Image upload failed. Check server logs.")
             return redirect("dashboard_create_product")
@@ -774,6 +816,9 @@ def dashboard_edit_product(request, product_id):
 
     if request.method == "POST":
         try:
+            if request.FILES:
+                _ensure_media_root_ready()
+
             with transaction.atomic():
                 category_id = request.POST.get("category")
                 category = Category.objects.filter(id=category_id).first() if category_id else None
@@ -813,10 +858,12 @@ def dashboard_edit_product(request, product_id):
             return redirect("dashboard_products")
         except Exception:
             logger.exception(
-                "Product edit failed. product_id=%s POST keys=%s FILE keys=%s",
+                "Product edit failed. product_id=%s POST keys=%s FILE keys=%s FILE details=%s MEDIA state=%s",
                 product_id,
                 list(request.POST.keys()),
                 list(request.FILES.keys()),
+                _files_debug_info(request.FILES),
+                _media_storage_state(),
             )
             messages.error(request, "Image upload failed. Check server logs.")
             return redirect("dashboard_edit_product", product_id=product_id)
