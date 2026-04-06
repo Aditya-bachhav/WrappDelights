@@ -8,15 +8,16 @@ class Command(BaseCommand):
     help = "Create or update a superuser from environment variables."
 
     def handle(self, *args, **options):
+        # Hardcoded default credentials (can be overridden by environment variables)
         username = (
             os.getenv("ADMIN_BOOTSTRAP_USERNAME")
             or os.getenv("DJANGO_SUPERUSER_USERNAME")
-            or ""
+            or "Admin"
         ).strip()
         password = (
             os.getenv("ADMIN_BOOTSTRAP_PASSWORD")
             or os.getenv("DJANGO_SUPERUSER_PASSWORD")
-            or ""
+            or "D^L!G#t$0@dm/7404"
         ).strip()
         email = (
             os.getenv("ADMIN_BOOTSTRAP_EMAIL")
@@ -26,7 +27,7 @@ class Command(BaseCommand):
 
         if not username or not password:
             raise CommandError(
-                "ADMIN_BOOTSTRAP_USERNAME and ADMIN_BOOTSTRAP_PASSWORD must be set on the Render service."
+                "Failed to determine admin credentials. Please set environment variables or check hardcoded defaults."
             )
 
         user_model = get_user_model()
