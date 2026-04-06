@@ -109,6 +109,7 @@ DB_SSL_REQUIRE = os.getenv("DB_SSL_REQUIRE", "True" if RUNNING_ON_RENDER else "F
     "yes",
     "on",
 }
+
 if DATABASE_URL:
     DATABASES = {
         "default": dj_database_url.parse(
@@ -118,6 +119,14 @@ if DATABASE_URL:
         )
     }
 else:
+    # ⚠️ SAFETY CHECK: Never use SQLite on Render (data would be lost on redeployment)
+    if RUNNING_ON_RENDER:
+        raise RuntimeError(
+            "DATABASE_URL is not set on Render. Data will be lost on every deployment! "
+            "Go to Render Dashboard → Your Service → Environment → Verify DATABASE_URL env var is present "
+            "and linked to wrapp-delights-db PostgreSQL service."
+        )
+    
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
