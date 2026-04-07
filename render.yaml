@@ -25,7 +25,7 @@ services:
           name: wrapp-delights-db
           property: connectionString
       - key: CLOUDINARY_CLOUD_NAME
-        sync: false
+        value: dwti6e55r
       - key: CLOUDINARY_API_KEY
         sync: false
       - key: CLOUDINARY_API_SECRET
