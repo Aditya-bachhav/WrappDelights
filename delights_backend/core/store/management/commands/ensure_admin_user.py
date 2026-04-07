@@ -12,16 +12,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         user_model = get_user_model()
-        user, created = user_model.objects.get_or_create(
+        user, _ = user_model.objects.update_or_create(
             username=ADMIN_USERNAME,
-            defaults={
-                "email": ADMIN_EMAIL,
-                "is_staff": True,
-                "is_superuser": True,
-            },
+            defaults={"email": ADMIN_EMAIL, "is_staff": True, "is_superuser": True},
         )
 
-        # Enforce fixed credentials and privileges on every run.
         user.username = ADMIN_USERNAME
         user.email = ADMIN_EMAIL
         user.is_staff = True
@@ -29,7 +24,4 @@ class Command(BaseCommand):
         user.set_password(ADMIN_PASSWORD)
         user.save()
 
-        if created:
-            self.stdout.write(self.style.SUCCESS("Created fixed Admin superuser."))
-        else:
-            self.stdout.write(self.style.SUCCESS("Updated fixed Admin superuser credentials."))
+        self.stdout.write(self.style.SUCCESS("Fixed Admin superuser enforced."))
