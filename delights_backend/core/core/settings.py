@@ -189,12 +189,15 @@ USE_CLOUDINARY = all([
 ])
 
 if USE_CLOUDINARY:
-    cloudinary.config(
-        cloud_name=_cloudinary_cloud_name,
-        api_key=_cloudinary_api_key,
-        api_secret=_cloudinary_api_secret,
-        secure=True,
-    )
+    # Let django-cloudinary-storage handle cloudinary.config() via CLOUDINARY_STORAGE dict
+    # Do NOT call cloudinary.config() manually here — it causes double-config and credential clobbering
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': _cloudinary_cloud_name,
+        'API_KEY': _cloudinary_api_key,
+        'API_SECRET': _cloudinary_api_secret,
+        'SECURE': True,
+        'PREFIX': '',  # ← Empty prefix prevents public ID mangling (e.g., /media/path/file.jpg breaks Cloudinary)
+    }
 
     STORAGES = {
         "default": {
