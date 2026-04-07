@@ -153,11 +153,13 @@ tr:hover td{background:var(--surface-low)}
 .form-actions{padding:14px 20px;background:var(--surface-low);border-top:1px solid var(--border);display:flex;gap:8px}
 
 /* ── ALERTS ── */
-.alert{padding:12px 14px;border-radius:var(--radius-lg);font-size:.78rem;font-weight:700;margin-bottom:16px;border:1px solid transparent;display:flex;align-items:center;gap:8px}
+.alert{padding:12px 14px;border-radius:var(--radius-lg);font-size:.78rem;font-weight:700;margin-bottom:16px;border:1px solid transparent;display:flex;align-items:flex-start;gap:8px}
 .alert .material-symbols-outlined{font-size:16px;flex-shrink:0}
 .alert-success{background:var(--green-bg);color:var(--green-text);border-color:var(--green-border)}
+.alert-warning{background:#fff7e6;color:#8a5a00;border-color:#f5d58a}
 .alert-error{background:var(--red-bg);color:var(--primary);border-color:var(--red-border)}
 .alert-info{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)}
+.alert-text{min-width:0;white-space:pre-wrap;overflow-wrap:anywhere}
 
 /* ── FILTER BAR ── */
 .filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -304,9 +306,9 @@ hr.wd-divider{height:1px;background:var(--border);border:none;margin:0}
   <div class="content">
     {% if messages %}
       {% for message in messages %}
-        <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
-          <span class="material-symbols-outlined">{% if message.tags == 'error' %}error{% else %}check_circle{% endif %}</span>
-          {{ message }}
+        <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% elif message.tags == 'info' %}info{% else %}success{% endif %}">
+          <span class="material-symbols-outlined">{% if message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% elif message.tags == 'info' %}info{% else %}check_circle{% endif %}</span>
+          <span class="alert-text">{{ message }}</span>
         </div>
       {% endfor %}
     {% endif %}
