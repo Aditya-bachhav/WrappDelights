@@ -44,6 +44,9 @@ from delights_backend.core.store.views import (
 admin.site.has_permission = lambda request: bool(
     request.user.is_active and request.user.is_superuser
 )
+admin.site.site_header = "WrappDelights Admin"
+admin.site.site_title = "WrappDelights"
+admin.site.index_title = "Dashboard"
 
 urlpatterns = [
     path(settings.ADMIN_PANEL_PATH, admin.site.urls),

@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="icon" type="image/svg+xml" href="https://cdn.jsdelivr.net/gh/Aditya-bachhav/WrappDelights@main/delights_backend/core/media/logo.svg">
+{% endblock %}
+
+{% block branding %}
+<div id="site-name">
+  <a href="{% url 'admin:index' %}">WrappDelights Admin</a>
+</div>
+{% endblock %}
