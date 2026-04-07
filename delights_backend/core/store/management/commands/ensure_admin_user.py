@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 
-ADMIN_USERNAME = "Admin"
+ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "D^L!G#t$0@dm/7404"
 ADMIN_EMAIL = "admin@example.com"
 

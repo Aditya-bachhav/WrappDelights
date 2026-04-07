@@ -5,6 +5,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, re_path
 from django.views.static import serve
 
+from delights_backend.core.store.forms import CaseInsensitiveAuthenticationForm
 from delights_backend.core.store.views import (
     corporate,
     custom_hamper_builder,
@@ -95,7 +96,14 @@ urlpatterns = [
     path("dashboard/corporate-requests/<int:inquiry_id>/delete/", dashboard_delete_inquiry, name="dashboard_delete_inquiry"),
 
     # Auth
-    path("login/", auth_views.LoginView.as_view(template_name="login.html"), name="login"),
+    path(
+        "login/",
+        auth_views.LoginView.as_view(
+            template_name="login.html",
+            authentication_form=CaseInsensitiveAuthenticationForm,
+        ),
+        name="login",
+    ),
     path("logout/", auth_views.LogoutView.as_view(next_page="/"), name="logout"),
     path("account/", dashboard, name="account"),
 ]
