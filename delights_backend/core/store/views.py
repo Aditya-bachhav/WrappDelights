@@ -62,8 +62,13 @@ def _save_gallery_images(hamper, gallery_images, start_position=0):
                 position=start_position + offset,
             )
             uploaded += 1
-        except Exception:
-            failed.append(getattr(image, "name", "unknown"))
+        except Exception as e:
+            failed.append(
+                {
+                    "name": getattr(image, "name", "unknown"),
+                    "error": str(e),
+                }
+            )
             logger.exception(
                 "Gallery image upload failed. hamper_id=%s image_name=%s",
                 hamper.id,
@@ -807,12 +812,14 @@ def dashboard_create_product(request):
                 hamper.homepage_sections.set(HomepageSection.objects.filter(id__in=section_ids))
 
             gallery_images = request.FILES.getlist("gallery")
-            uploaded_count, failed_images = _save_gallery_images(hamper, gallery_images)
+            _, failed_images = _save_gallery_images(hamper, gallery_images)
 
             if failed_images:
+                failed_names = ", ".join(item["name"] for item in failed_images[:3])
+                first_error = failed_images[0].get("error") or "Unknown upload error"
                 messages.warning(
                     request,
-                    f'Hamper "{hamper.name}" created, but {len(failed_images)} gallery image(s) failed to upload.',
+                    f'Hamper "{hamper.name}" created, but {len(failed_images)} gallery image(s) failed: {failed_names}. Error: {first_error}',
                 )
             else:
                 messages.success(request, f'Hamper "{hamper.name}" created successfully.')
@@ -888,9 +895,11 @@ def dashboard_edit_product(request, product_id):
             _, failed_images = _save_gallery_images(hamper, gallery_images, start_position=existing_count)
 
             if failed_images:
+                failed_names = ", ".join(item["name"] for item in failed_images[:3])
+                first_error = failed_images[0].get("error") or "Unknown upload error"
                 messages.warning(
                     request,
-                    f'Hamper "{hamper.name}" updated, but {len(failed_images)} gallery image(s) failed to upload.',
+                    f'Hamper "{hamper.name}" updated, but {len(failed_images)} gallery image(s) failed: {failed_names}. Error: {first_error}',
                 )
             else:
                 messages.success(request, f'Hamper "{hamper.name}" updated successfully.')
