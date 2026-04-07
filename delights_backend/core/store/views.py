@@ -49,6 +49,30 @@ def _media_storage_state():
     }
 
 
+def _save_gallery_images(hamper, gallery_images, start_position=0):
+    """Save gallery images one by one so one bad file does not abort the whole request."""
+    uploaded = 0
+    failed = []
+
+    for offset, image in enumerate(gallery_images):
+        try:
+            HamperImage.objects.create(
+                hamper=hamper,
+                image=image,
+                position=start_position + offset,
+            )
+            uploaded += 1
+        except Exception:
+            failed.append(getattr(image, "name", "unknown"))
+            logger.exception(
+                "Gallery image upload failed. hamper_id=%s image_name=%s",
+                hamper.id,
+                getattr(image, "name", "unknown"),
+            )
+
+    return uploaded, failed
+
+
 CATALOG_NAV_CATEGORIES = [
     "Corporate Gifting",
     "Wedding & Events",
@@ -747,38 +771,53 @@ def dashboard_products(request):
 def dashboard_create_product(request):
     if request.method == "POST":
         try:
-            with transaction.atomic():
-                category = None
-                category_id = request.POST.get("category")
-                if category_id:
-                    category = Category.objects.filter(id=category_id).first()
+            category = None
+            category_id = request.POST.get("category")
+            if category_id:
+                category = Category.objects.filter(id=category_id).first()
 
-                hamper = Hamper.objects.create(
-                    name=request.POST.get("name", "").strip(),
-                    category=category,
-                    short_description=request.POST.get("short_description", "").strip(),
-                    description=request.POST.get("description", "").strip(),
-                    included_items=request.POST.get("included_items", "").strip(),
-                    cover_image=request.FILES.get("cover_image"),
-                    base_price=_parse_price(request.POST.get("base_price")),
-                    price_label=request.POST.get("price_label", "").strip(),
-                    min_bulk_quantity=int(request.POST.get("min_bulk_quantity") or 25),
-                    is_featured=request.POST.get("is_featured") == "on",
-                    is_event_special=request.POST.get("is_event_special") == "on",
-                    is_active=request.POST.get("is_active") == "on",
+            hamper = Hamper.objects.create(
+                name=request.POST.get("name", "").strip(),
+                category=category,
+                short_description=request.POST.get("short_description", "").strip(),
+                description=request.POST.get("description", "").strip(),
+                included_items=request.POST.get("included_items", "").strip(),
+                base_price=_parse_price(request.POST.get("base_price")),
+                price_label=request.POST.get("price_label", "").strip(),
+                min_bulk_quantity=int(request.POST.get("min_bulk_quantity") or 25),
+                is_featured=request.POST.get("is_featured") == "on",
+                is_event_special=request.POST.get("is_event_special") == "on",
+                is_active=request.POST.get("is_active") == "on",
+            )
+
+            cover_image = request.FILES.get("cover_image")
+            if cover_image:
+                try:
+                    hamper.cover_image = cover_image
+                    hamper.save(update_fields=["cover_image"])
+                except Exception:
+                    logger.exception(
+                        "Cover image upload failed. hamper_id=%s cover_name=%s",
+                        hamper.id,
+                        getattr(cover_image, "name", "unknown"),
+                    )
+
+            section_ids = request.POST.getlist("homepage_sections")
+            if section_ids:
+                hamper.homepage_sections.set(HomepageSection.objects.filter(id__in=section_ids))
+
+            gallery_images = request.FILES.getlist("gallery")
+            uploaded_count, failed_images = _save_gallery_images(hamper, gallery_images)
+
+            if failed_images:
+                messages.warning(
+                    request,
+                    f'Hamper "{hamper.name}" created, but {len(failed_images)} gallery image(s) failed to upload.',
                 )
-
-                section_ids = request.POST.getlist("homepage_sections")
-                if section_ids:
-                    hamper.homepage_sections.set(HomepageSection.objects.filter(id__in=section_ids))
-
-                gallery_images = request.FILES.getlist("gallery")
-                for idx, image in enumerate(gallery_images):
-                    HamperImage.objects.create(hamper=hamper, image=image, position=idx)
-
-            messages.success(request, f'Hamper "{hamper.name}" created successfully.')
+            else:
+                messages.success(request, f'Hamper "{hamper.name}" created successfully.')
             return redirect("dashboard_products")
-        except Exception:
+        except Exception as e:
             logger.exception(
                 "Product create failed. POST keys=%s FILE keys=%s FILE details=%s MEDIA state=%s",
                 list(request.POST.keys()),
@@ -786,7 +825,7 @@ def dashboard_create_product(request):
                 _files_debug_info(request.FILES),
                 _media_storage_state(),
             )
-            messages.error(request, "Image upload failed. Check server logs.")
+            messages.error(request, f"Image upload failed: {type(e).__name__}: {e}")
             return redirect("dashboard_create_product")
 
     return render(
@@ -806,44 +845,57 @@ def dashboard_edit_product(request, product_id):
 
     if request.method == "POST":
         try:
-            with transaction.atomic():
-                category_id = request.POST.get("category")
-                category = Category.objects.filter(id=category_id).first() if category_id else None
+            category_id = request.POST.get("category")
+            category = Category.objects.filter(id=category_id).first() if category_id else None
 
-                hamper.name = request.POST.get("name", "").strip()
-                hamper.category = category
-                hamper.short_description = request.POST.get("short_description", "").strip()
-                hamper.description = request.POST.get("description", "").strip()
-                hamper.included_items = request.POST.get("included_items", "").strip()
-                hamper.base_price = _parse_price(request.POST.get("base_price"))
-                hamper.price_label = request.POST.get("price_label", "").strip()
-                hamper.min_bulk_quantity = int(request.POST.get("min_bulk_quantity") or 25)
-                hamper.is_featured = request.POST.get("is_featured") == "on"
-                hamper.is_event_special = request.POST.get("is_event_special") == "on"
-                hamper.is_active = request.POST.get("is_active") == "on"
+            hamper.name = request.POST.get("name", "").strip()
+            hamper.category = category
+            hamper.short_description = request.POST.get("short_description", "").strip()
+            hamper.description = request.POST.get("description", "").strip()
+            hamper.included_items = request.POST.get("included_items", "").strip()
+            hamper.base_price = _parse_price(request.POST.get("base_price"))
+            hamper.price_label = request.POST.get("price_label", "").strip()
+            hamper.min_bulk_quantity = int(request.POST.get("min_bulk_quantity") or 25)
+            hamper.is_featured = request.POST.get("is_featured") == "on"
+            hamper.is_event_special = request.POST.get("is_event_special") == "on"
+            hamper.is_active = request.POST.get("is_active") == "on"
 
-                if request.FILES.get("cover_image"):
-                    hamper.cover_image = request.FILES.get("cover_image")
+            hamper.save()
 
-                hamper.save()
+            cover_image = request.FILES.get("cover_image")
+            if cover_image:
+                try:
+                    hamper.cover_image = cover_image
+                    hamper.save(update_fields=["cover_image"])
+                except Exception:
+                    logger.exception(
+                        "Cover image upload failed on edit. hamper_id=%s cover_name=%s",
+                        hamper.id,
+                        getattr(cover_image, "name", "unknown"),
+                    )
 
-                section_ids = request.POST.getlist("homepage_sections")
-                hamper.homepage_sections.set(HomepageSection.objects.filter(id__in=section_ids))
+            section_ids = request.POST.getlist("homepage_sections")
+            hamper.homepage_sections.set(HomepageSection.objects.filter(id__in=section_ids))
 
-                # Handle gallery deletions
-                delete_ids = request.POST.getlist("delete_gallery")
-                if delete_ids:
-                    HamperImage.objects.filter(id__in=delete_ids, hamper=hamper).delete()
+            # Handle gallery deletions
+            delete_ids = request.POST.getlist("delete_gallery")
+            if delete_ids:
+                HamperImage.objects.filter(id__in=delete_ids, hamper=hamper).delete()
 
-                # Add new gallery images
-                gallery_images = request.FILES.getlist("gallery")
-                existing_count = hamper.images.count()
-                for idx, image in enumerate(gallery_images):
-                    HamperImage.objects.create(hamper=hamper, image=image, position=existing_count + idx)
+            # Add new gallery images
+            gallery_images = request.FILES.getlist("gallery")
+            existing_count = hamper.images.count()
+            _, failed_images = _save_gallery_images(hamper, gallery_images, start_position=existing_count)
 
-            messages.success(request, f'Hamper "{hamper.name}" updated successfully.')
+            if failed_images:
+                messages.warning(
+                    request,
+                    f'Hamper "{hamper.name}" updated, but {len(failed_images)} gallery image(s) failed to upload.',
+                )
+            else:
+                messages.success(request, f'Hamper "{hamper.name}" updated successfully.')
             return redirect("dashboard_products")
-        except Exception:
+        except Exception as e:
             logger.exception(
                 "Product edit failed. product_id=%s POST keys=%s FILE keys=%s FILE details=%s MEDIA state=%s",
                 product_id,
@@ -852,7 +904,7 @@ def dashboard_edit_product(request, product_id):
                 _files_debug_info(request.FILES),
                 _media_storage_state(),
             )
-            messages.error(request, "Image upload failed. Check server logs.")
+            messages.error(request, f"Image upload failed: {type(e).__name__}: {e}")
             return redirect("dashboard_edit_product", product_id=product_id)
 
     return render(
