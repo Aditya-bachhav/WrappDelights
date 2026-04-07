@@ -615,17 +615,11 @@
               <div class="thumb active" data-src="{{ images.first.image.url }}">
                 <img src="{{ images.first.image.url }}" alt="{{ product.name }}">
               </div>
-              {% for image in images|slice:"1:4" %}
+              {% for image in images|slice:"1:" %}
                 <div class="thumb" data-src="{{ image.image.url }}">
                   <img src="{{ image.image.url }}" alt="{{ product.name }} image {{ forloop.counter|add:1 }}">
                 </div>
               {% endfor %}
-              {% if images|length > 4 %}
-                <div class="thumb-more">
-                  <img src="{{ images.4.image.url }}" alt="">
-                  <span class="thumb-more-label">+{{ images|length|add:"-4" }}</span>
-                </div>
-              {% endif %}
             {% elif product.cover_image %}
               <div class="thumb active" data-src="{{ product.cover_image.url }}">
                 <img src="{{ product.cover_image.url }}" alt="{{ product.name }}">

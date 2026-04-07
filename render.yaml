@@ -24,6 +24,12 @@ services:
         fromDatabase:
           name: wrapp-delights-db
           property: connectionString
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
       - key: MEDIA_ROOT
         value: /var/data/media
 

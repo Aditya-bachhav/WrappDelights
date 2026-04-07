@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 
+import cloudinary
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -64,6 +65,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary',
+    'cloudinary_storage',
     'delights_backend.core.store',
 ]
 
@@ -176,6 +179,31 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = "/media/"
+_cloudinary_cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME", "").strip()
+_cloudinary_api_key = os.getenv("CLOUDINARY_API_KEY", "").strip()
+_cloudinary_api_secret = os.getenv("CLOUDINARY_API_SECRET", "").strip()
+USE_CLOUDINARY = all([
+    _cloudinary_cloud_name,
+    _cloudinary_api_key,
+    _cloudinary_api_secret,
+])
+
+if USE_CLOUDINARY:
+    cloudinary.config(
+        cloud_name=_cloudinary_cloud_name,
+        api_key=_cloudinary_api_key,
+        api_secret=_cloudinary_api_secret,
+        secure=True,
+    )
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 _configured_media_root = Path(
     os.getenv(
         "MEDIA_ROOT",
@@ -183,13 +211,26 @@ _configured_media_root = Path(
     )
 )
 
-# On Render, fall back to local media when /var/data is unavailable or not writable.
-if str(_configured_media_root).startswith("/var/data") and not (
-    Path("/var/data").exists() and os.access("/var/data", os.W_OK)
-):
+if USE_CLOUDINARY:
+    # MEDIA_ROOT is unused for cloud storage, but kept for compatibility paths.
     MEDIA_ROOT = BASE_DIR / "media"
 else:
-    MEDIA_ROOT = _configured_media_root
+    # On Render, fall back to local media when /var/data is unavailable or not writable.
+    if str(_configured_media_root).startswith("/var/data") and not (
+        Path("/var/data").exists() and os.access("/var/data", os.W_OK)
+    ):
+        MEDIA_ROOT = BASE_DIR / "media"
+    else:
+        MEDIA_ROOT = _configured_media_root
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
