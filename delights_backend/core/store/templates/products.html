@@ -1,448 +1,516 @@
 {% extends "base.html" %}
 
-{% block nav_catalog %}text-primary font-bold{% endblock %}
+{% block nav_catalog %}text-primary{% endblock %}
 
 {% block title %}Catalog — WrappDelights{% endblock %}
 
 {% block extra_css %}
 <style>
-  /* ─── Layout ─── */
-  .catalog-layout {
-    display: flex;
-    min-height: calc(100vh - 96px);
-    align-items: flex-start;
-    width: 100%;
-    margin-top: 96px;
+  /* ─── Entrance / Reveal ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
+  .anim-fade-up { animation: fadeUp 0.65s cubic-bezier(.2,.8,.3,1) both; }
+  .delay-100 { animation-delay: .10s; }
+  .delay-200 { animation-delay: .20s; }
+  .delay-300 { animation-delay: .30s; }
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .65s ease, transform .65s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
 
-  /* ─── Main Content ─── */
-  .catalog-main {
-    flex: 1;
-    min-width: 0;
-    padding: 28px 32px;
-  }
-
-  /* Breadcrumb */
-  .breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: #8c7070;
-    margin-bottom: 20px;
-  }
-  .breadcrumb a { transition: color 0.2s; }
-  .breadcrumb a:hover { color: #570012; }
-  .breadcrumb .material-symbols-outlined { font-size: 14px; }
-  .breadcrumb .current { color: #1c1b1b; }
-
-  /* Page Header */
-  .catalog-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 28px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(224, 191, 191, 0.2);
-  }
-  /* Category nav */
-  .category-nav {
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    gap: 10px;
-    flex-wrap:wrap;
-    margin: 0 auto 16px;
-    padding: 0;
-  }
-  .category-chip {
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:8px;
-    text-decoration:none;
-    color:#1c1b1b;
-    text-align:center;
-    width:100%;
-    max-width:108px;
-  }
-  .category-chip-circle {
-    width:68px;
-    height:68px;
-    border-radius:999px;
-    overflow:hidden;
-    border:2px solid rgba(224,191,191,0.45);
-    background:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow: 0 6px 16px rgba(87,0,18,0.05);
-    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-  .category-chip:hover .category-chip-circle,
-  .category-chip.active .category-chip-circle {
-    transform: translateY(-2px);
-    border-color:#570012;
-    box-shadow: 0 10px 20px rgba(87,0,18,0.12);
-  }
-  .category-chip img { width:100%; height:100%; object-fit:cover; display:block; }
-  .category-chip .category-fallback { font-size:26px; color:#570012; }
-  .category-chip-label { font-size:10px; font-weight:800; line-height:1.2; color:#1c1b1b; }
-  .catalog-title {
-    font-size: clamp(1.8rem, 3vw, 2.6rem);
-    font-weight: 900;
-    letter-spacing: -0.03em;
-    color: #1c1b1b;
-    line-height: 1;
-  }
-  .catalog-desc {
-    font-size: 12px;
-    color: #8c7070;
-    margin-top: 6px;
-    max-width: 560px;
-    line-height: 1.6;
-  }
-
-  .sort-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #f6f3f2;
-    padding: 6px 12px;
-    border: 1px solid rgba(224, 191, 191, 0.3);
-    flex-shrink: 0;
-  }
-  .sort-wrap label {
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: #8c7070;
-    white-space: nowrap;
-  }
-  .sort-wrap select {
-    background: transparent;
-    border: none;
-    font-size: 11px;
-    font-weight: 700;
-    color: #570012;
-    cursor: pointer;
-    padding-right: 20px;
-    outline: none;
-    font-family: 'Inter', sans-serif;
-  }
-
-  /* Active filter tags */
-  .active-filters {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-  .active-filter-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    background: #ffdada;
-    color: #570012;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    border-radius: 2px;
-  }
-  .active-filter-tag button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #570012;
-    padding: 0;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-  }
-  .active-filter-tag .material-symbols-outlined { font-size: 14px; }
-  .result-count {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #8c7070;
-    margin-left: auto;
-  }
-
-  /* ─── Product Grid ─── */
-  .product-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-  }
-
-  /* Product Card */
-  .prod-card {
-    background: #ffffff;
-    border: 1px solid transparent;
-    display: flex;
-    flex-direction: column;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  .prod-card:hover {
-    border-color: rgba(224, 191, 191, 0.35);
-    box-shadow: 0 8px 28px rgba(87, 0, 18, 0.08);
-  }
-  .prod-card.is-corporate {
-    border-radius: 28px;
+  /* ─── Page hero banner ─── */
+  .catalog-hero {
+    position: relative;
+    background: linear-gradient(135deg, #fdf7f6 0%, #fce8e8 100%);
+    border-bottom: 1px solid #e4beba;
     overflow: hidden;
   }
-  .prod-card.is-corporate .prod-card-img {
-    border-radius: 28px 28px 0 0;
+  .catalog-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 80% 40%, rgba(175,16,26,.07) 0%, transparent 55%),
+      radial-gradient(circle at 15% 80%, rgba(84,96,103,.06) 0%, transparent 50%);
+    pointer-events: none;
   }
-  .prod-card.is-corporate:hover {
-    box-shadow: 0 14px 34px rgba(87, 0, 18, 0.12);
-    transform: translateY(-2px);
+  .catalog-hero-texture {
+    position: absolute; inset: 0; opacity: .018; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* ─── Search bar ─── */
+  .catalog-search-wrap { max-width: 680px; }
+  .catalog-search-form {
+    display: flex;
+    align-items: stretch;
+    border: 1.5px solid #e4beba;
+    border-radius: 14px;
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 8px 28px rgba(175,16,26,.06);
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .catalog-search-form:focus-within {
+    border-color: #af101a;
+    box-shadow: 0 0 0 4px rgba(175,16,26,.10);
+  }
+  .catalog-search-icon {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 14px; color: #b09090; flex-shrink: 0;
+  }
+  .catalog-search-input {
+    flex: 1; border: none; outline: none; background: transparent;
+    padding: 14px 0; font-family: 'Manrope', sans-serif; font-size: 13px; color: #1a1c1c;
+  }
+  .catalog-search-input::placeholder { color: #b09090; }
+  .catalog-search-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: none; background: #af101a; color: #fff;
+    padding: 0 22px; font-size: 10px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .16em; cursor: pointer;
+    border-radius: 0 13px 13px 0; flex-shrink: 0; transition: background .2s;
+  }
+  .catalog-search-btn:hover { background: #930010; }
+
+  /* ─── Category pills ─── */
+  .cat-pill {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; gap: 8px; text-decoration: none;
+    transition: transform .25s ease;
+  }
+  .cat-pill:hover { transform: translateY(-4px); }
+  .cat-pill-img {
+    width: 76px; height: 76px; border-radius: 50%;
+    overflow: hidden; border: 2px solid #e4beba;
+    background: #fff8f7;
+    box-shadow: 0 4px 14px rgba(175,16,26,.07);
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .25s ease, box-shadow .25s ease;
+  }
+  .cat-pill:hover .cat-pill-img,
+  .cat-pill.active .cat-pill-img {
+    border-color: #af101a;
+    box-shadow: 0 8px 24px rgba(175,16,26,.18);
+  }
+  .cat-pill img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cat-pill-fallback { font-size: 28px; color: #af101a; }
+  .cat-pill-label {
+    font-size: 10px; font-weight: 800; letter-spacing: .03em;
+    color: #1a1c1c; line-height: 1.3; max-width: 90px;
+  }
+  .cat-pill.active .cat-pill-label { color: #af101a; }
+
+  /* ─── Sort / filter bar ─── */
+  .sort-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid #e4beba;
+    border-radius: 10px; padding: 7px 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.04);
+  }
+  .sort-bar label {
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .16em; color: #8f6f6c; white-space: nowrap;
+  }
+  .sort-bar select {
+    background: transparent; border: none; font-family: 'Manrope', sans-serif;
+    font-size: 11px; font-weight: 700; color: #af101a; cursor: pointer; outline: none;
+  }
+
+  /* ─── Active filter tags ─── */
+  .filter-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; background: #ffdad6; color: #93000a;
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .12em; border-radius: 999px;
+    border: 1px solid rgba(147,0,10,.15);
+  }
+  .filter-tag a {
+    display: flex; align-items: center; color: inherit; text-decoration: none;
+  }
+  .filter-tag .material-symbols-outlined { font-size: 13px; }
+  .result-count {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .12em; color: #8f6f6c; margin-left: auto;
+  }
+
+  /* ─── Product grid ─── */
+  .prod-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  /* ─── Product card ─── */
+  .prod-card {
+    background: #fff;
+    border: 1px solid rgba(228,190,186,.4);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 4px 16px rgba(0,0,0,.04);
+    transition: border-color .3s ease, box-shadow .3s ease, transform .3s ease;
+  }
+  .prod-card:hover {
+    border-color: rgba(175,16,26,.22);
+    box-shadow: 0 16px 40px rgba(175,16,26,.10);
+    transform: translateY(-3px);
   }
   .prod-card-img {
     aspect-ratio: 1;
-    overflow: hidden;
-    background: #eae7e7;
-    position: relative;
-    display: block;
+    overflow: hidden; background: #fff8f7;
+    position: relative; display: block;
   }
   .prod-card-img img {
     width: 100%; height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform .6s ease;
     display: block;
   }
-  .prod-card:hover .prod-card-img img { transform: scale(1.05); }
+  .prod-card:hover .prod-card-img img { transform: scale(1.06); }
   .prod-card-img-empty {
-    width: 100%; height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: #8c7070;
-    background: #f0eded;
+    width: 100%; height: 100%; min-height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .14em; color: #8f6f6c; background: #f3eded;
   }
+  /* Hover quick-view overlay */
+  .prod-card-quick {
+    position: absolute; bottom: 12px; left: 12px; right: 12px;
+    background: rgba(255,255,255,.95); backdrop-filter: blur(6px);
+    border: 1px solid #e4beba; border-radius: 10px;
+    padding: 10px; text-align: center;
+    font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+    color: #1a1c1c; text-decoration: none;
+    opacity: 0; transform: translateY(8px);
+    transition: opacity .3s ease, transform .3s ease;
+  }
+  .prod-card:hover .prod-card-quick { opacity: 1; transform: translateY(0); }
+
+  /* Badges */
   .prod-img-badges {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
+    position: absolute; top: 10px; left: 10px;
+    display: flex; gap: 4px; flex-wrap: wrap;
   }
 
   .prod-card-body {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
+    padding: 16px 18px 18px;
+    display: flex; flex-direction: column; flex: 1;
   }
   .prod-card-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 6px;
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 8px; margin-bottom: 6px;
   }
   .prod-card-name {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    color: #1c1b1b;
-    line-height: 1.3;
-    transition: color 0.2s;
+    font-family: 'Noto Serif', serif;
+    font-size: 14px; font-weight: 700;
+    color: #1a1c1c; line-height: 1.35;
+    text-decoration: none;
+    transition: color .2s;
   }
-  .prod-card:hover .prod-card-name { color: #570012; }
+  .prod-card:hover .prod-card-name { color: #af101a; }
   .prod-card-price {
-    font-size: 13px;
-    font-weight: 900;
-    color: #570012;
-    white-space: nowrap;
-    flex-shrink: 0;
+    font-size: 13px; font-weight: 900;
+    color: #af101a; white-space: nowrap; flex-shrink: 0;
   }
   .prod-card-desc {
-    font-size: 11px;
-    color: #8c7070;
-    line-height: 1.6;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin-bottom: 14px;
-    flex: 1;
+    font-size: 11px; color: #5b403d; line-height: 1.65;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; margin-bottom: 14px; flex: 1;
   }
   .prod-card-cta {
-    display: block;
-    width: 100%;
-    padding: 11px;
-    background: #570012;
-    color: #ffffff;
-    font-size: 9px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    text-align: center;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    border-radius: 2px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    width: 100%; padding: 11px;
+    background: #af101a; color: #fff;
+    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .18em;
+    border: none; border-radius: 10px; cursor: pointer; text-decoration: none;
+    transition: background .2s, transform .1s;
+    box-shadow: 0 4px 14px rgba(175,16,26,.2);
   }
-  .prod-card-cta:hover { background: #8e1027; }
-  .prod-card-cta:active { transform: scale(0.99); }
+  .prod-card-cta:hover { background: #930010; }
+  .prod-card-cta:active { transform: scale(.98); }
 
-  /* Empty state */
+  /* ─── Empty state ─── */
   .empty-state {
     grid-column: 1 / -1;
-    text-align: center;
-    padding: 80px 20px;
+    text-align: center; padding: 80px 20px;
+    background: #fff; border: 1px dashed #e4beba;
+    border-radius: 20px;
   }
   .empty-state .material-symbols-outlined {
-    font-size: 48px;
-    color: #e0bfbf;
-    display: block;
-    margin: 0 auto 16px;
+    font-size: 52px; color: #e4beba; display: block; margin: 0 auto 16px;
   }
   .empty-state h3 {
-    font-size: 16px;
-    font-weight: 700;
-    color: #1c1b1b;
-    margin-bottom: 8px;
+    font-family: 'Noto Serif', serif;
+    font-size: 18px; font-weight: 700; color: #1a1c1c; margin-bottom: 8px;
   }
-  .empty-state p {
-    font-size: 12px;
-    color: #8c7070;
+  .empty-state p { font-size: 13px; color: #5b403d; }
+
+  /* ─── Section kicker (shared with home) ─── */
+  .section-kicker {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+  }
+  .section-kicker-line { width: 28px; height: 1px; background: #af101a; opacity: .5; }
+  .section-kicker-text {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .22em; color: #af101a;
   }
 
   /* ─── Responsive ─── */
-  @media (max-width: 1024px) {
-    .product-grid { grid-template-columns: repeat(4, 1fr); }
-    .catalog-main { padding: 20px 20px; }
-  }
-  @media (max-width: 768px) {
-    .product-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 480px) {
-    .product-grid { grid-template-columns: 1fr; }
-    .catalog-header { flex-direction: column; align-items: flex-start; }
-    .catalog-main { padding: 16px; }
+  @media (max-width: 1100px) { .prod-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 768px)  { .prod-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px)  {
+    .prod-grid { grid-template-columns: 1fr; }
+    .catalog-hero { padding: 28px 16px 32px; }
   }
 </style>
 {% endblock %}
 
 {% block content %}
+<div class="pt-[68px]">
 
-<div class="catalog-layout">
+  <!-- ═══════════════════════════════════════════
+       VALUE STRIP (marquee) — mirrors home.html
+  ════════════════════════════════════════════ -->
+  <div class="bg-primary overflow-hidden py-3.5 select-none" aria-hidden="true">
+    <div style="display:flex;gap:0;animation:marquee 26s linear infinite;white-space:nowrap;">
+      {% for _ in "xxxxxxxx" %}
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:0 40px;border-right:1px solid rgba(255,255,255,.15);flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#fff;">
+        <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">verified</span>
+        Custom Branding Available
+      </span>
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:0 40px;border-right:1px solid rgba(255,255,255,.15);flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#fff;">
+        <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">local_shipping</span>
+        Pan-India Delivery
+      </span>
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:0 40px;border-right:1px solid rgba(255,255,255,.15);flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#fff;">
+        <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">package_2</span>
+        Bulk Orders Welcome
+      </span>
+      {% endfor %}
+    </div>
+  </div>
+  <style>@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-33.333%); } }</style>
 
-  <!-- ══════════════════════════════
-       MAIN
-  ══════════════════════════════ -->
-  <main class="catalog-main">
 
-    <!-- Breadcrumb -->
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="{% url 'home' %}">Home</a>
-      <span class="material-symbols-outlined">chevron_right</span>
-      {% if request.GET.category %}
-        <a href="{% url 'products' %}">Catalog</a>
-        <span class="material-symbols-outlined">chevron_right</span>
-        <span class="current">{{ active_category_label|default:request.GET.category|capfirst }}</span>
-      {% else %}
-        <span class="current">Catalog</span>
-      {% endif %}
-    </nav>
+  <!-- ═══════════════════════════════════════════
+       CATALOG HERO
+  ════════════════════════════════════════════ -->
+  <section class="catalog-hero px-6 md:px-12 py-14 md:py-20">
+    <div class="catalog-hero-texture"></div>
+    <div class="relative z-10 max-w-7xl mx-auto">
 
-    <!-- Category chips -->
-    {% if categories and not active_category %}
-      <div class="category-nav">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-1.5 mb-8 anim-fade-up" aria-label="Breadcrumb"
+           style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:#8f6f6c;">
+        <a href="{% url 'home' %}" style="color:inherit;text-decoration:none;transition:color .2s;"
+           onmouseover="this.style.color='#af101a'" onmouseout="this.style.color='#8f6f6c'">Home</a>
+        <span class="material-symbols-outlined" style="font-size:14px;color:#c9a8a8;">chevron_right</span>
+        {% if request.GET.category %}
+          <a href="{% url 'products' %}" style="color:inherit;text-decoration:none;transition:color .2s;"
+             onmouseover="this.style.color='#af101a'" onmouseout="this.style.color='#8f6f6c'">Catalog</a>
+          <span class="material-symbols-outlined" style="font-size:14px;color:#c9a8a8;">chevron_right</span>
+          <span style="color:#1a1c1c;">{{ active_category_label|default:request.GET.category|capfirst }}</span>
+        {% else %}
+          <span style="color:#1a1c1c;">Catalog</span>
+        {% endif %}
+      </nav>
+
+      <!-- Heading + search -->
+      <div class="grid md:grid-cols-2 gap-10 items-center">
+
+        <!-- Left: heading -->
+        <div>
+          <div class="section-kicker anim-fade-up">
+            <div class="section-kicker-line"></div>
+            <span class="section-kicker-text">Corporate Gifting Catalog</span>
+          </div>
+          <h1 class="font-serif text-[2.6rem] md:text-[3.4rem] leading-[1.05] text-on-surface mb-4 anim-fade-up delay-100">
+            {% if active_category_label %}
+              {{ active_category_label }}
+            {% else %}
+              All&nbsp;<em class="text-primary not-italic">Gifts</em>
+            {% endif %}
+          </h1>
+          <p class="text-secondary text-[14px] leading-relaxed max-w-md anim-fade-up delay-200">
+            Curated collections for corporate distribution — sustainable packaging,
+            rapid fulfilment, and custom branding on every order.
+          </p>
+
+          <!-- Trust chips -->
+          <div class="flex flex-wrap items-center gap-3 mt-7 anim-fade-up delay-300">
+            <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #e4beba;border-radius:999px;font-size:10px;font-weight:700;color:#5b403d;background:#fff;">
+              <span class="material-symbols-outlined" style="font-size:14px;color:#af101a;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">verified</span>
+              Bulk-friendly
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #e4beba;border-radius:999px;font-size:10px;font-weight:700;color:#5b403d;background:#fff;">
+              <span class="material-symbols-outlined" style="font-size:14px;color:#af101a;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">local_shipping</span>
+              Pan-India delivery
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #e4beba;border-radius:999px;font-size:10px;font-weight:700;color:#5b403d;background:#fff;">
+              <span class="material-symbols-outlined" style="font-size:14px;color:#af101a;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">palette</span>
+              Custom branding
+            </span>
+          </div>
+        </div>
+
+        <!-- Right: search -->
+        <div class="catalog-search-wrap w-full anim-fade-up delay-200">
+          <form method="get" action="{% url 'products' %}" class="catalog-search-form">
+            {% if request.GET.category %}
+              <input type="hidden" name="category" value="{{ request.GET.category }}">
+            {% endif %}
+            {% if request.GET.sort %}
+              <input type="hidden" name="sort" value="{{ request.GET.sort }}">
+            {% endif %}
+            <div class="catalog-search-icon">
+              <span class="material-symbols-outlined" style="font-size:19px;">search</span>
+            </div>
+            <input type="text" name="q" value="{{ search_query }}"
+                   class="catalog-search-input"
+                   placeholder="Search products, categories, descriptions…"
+                   aria-label="Search products">
+            <button type="submit" class="catalog-search-btn">
+              <span class="material-symbols-outlined" style="font-size:15px;">arrow_forward</span>
+              Search
+            </button>
+          </form>
+
+          <!-- Quick links -->
+          <div class="flex flex-wrap gap-2 mt-3">
+            <span style="font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8f6f6c;margin-top:2px;">Popular:</span>
+            {% for q in catalog_quick_links %}
+              <a href="{% url 'products' %}?q={{ q|urlencode }}"
+                 style="font-size:10px;font-weight:700;color:#af101a;border:1px solid rgba(175,16,26,.25);border-radius:999px;padding:3px 10px;text-decoration:none;transition:background .15s;"
+                 onmouseover="this.style.background='#fce8e8'" onmouseout="this.style.background='transparent'">
+                {{ q }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       CATEGORY CHIPS (only on un-filtered view)
+  ════════════════════════════════════════════ -->
+  {% if categories and not active_category %}
+  <div class="bg-white border-b border-[#f0e4e4] py-8 px-6 md:px-12">
+    <div class="max-w-7xl mx-auto reveal">
+      <div class="flex justify-center flex-wrap gap-6">
         {% for cat in categories %}
-          <a href="{% url 'products' %}?category={{ cat.slug }}" class="category-chip {% if active_category == cat.slug %}active{% endif %}">
-            <div class="category-chip-circle">
+          <a href="{% url 'products' %}?category={{ cat.slug }}"
+             class="cat-pill {% if active_category == cat.slug %}active{% endif %}">
+            <div class="cat-pill-img">
               {% if cat.image %}
                 <img src="{{ cat.image.url }}" alt="{{ cat.display_name|default:cat.name }}">
               {% else %}
-                <span class="category-fallback material-symbols-outlined">category</span>
+                <span class="cat-pill-fallback material-symbols-outlined">category</span>
               {% endif %}
             </div>
-            <span class="category-chip-label">{{ cat.display_name|default:cat.name }}</span>
+            <span class="cat-pill-label">{{ cat.display_name|default:cat.name }}</span>
           </a>
         {% endfor %}
       </div>
-    {% endif %}
+    </div>
+  </div>
+  {% endif %}
 
-    <!-- Page Header -->
-    <div class="catalog-header">
-      <div>
-        <p class="wd-kicker" style="margin-bottom:6px;">Corporate Gifting Catalog</p>
-        <h1 class="catalog-title">{% if active_category_label %}{{ active_category_label }}{% else %}All Gifts{% endif %}</h1>
-        <p class="catalog-desc">
-          Curated collections for corporate distribution — sustainable packaging,
-          rapid fulfillment, and custom branding on every order.
-        </p>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-        <!-- Sort -->
-        <form method="get" action="{% url 'products' %}" id="sortForm">
-          {% if request.GET.category %}
-            <input type="hidden" name="category" value="{{ request.GET.category }}">
-          {% endif %}
-          <div class="sort-wrap">
-            <label for="sortSelect">Sort by</label>
-            <select id="sortSelect" name="sort" onchange="document.getElementById('sortForm').submit()">
-              <option value=""       {% if not request.GET.sort %}selected{% endif %}>Lead Time (Shortest)</option>
-              <option value="price"  {% if request.GET.sort == "price" %}selected{% endif %}>Price (Low to High)</option>
-              <option value="-price" {% if request.GET.sort == "-price" %}selected{% endif %}>Price (High to Low)</option>
-              <option value="-id"    {% if request.GET.sort == "-id" %}selected{% endif %}>Newest</option>
-            </select>
-          </div>
-        </form>
-      </div>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN CATALOG BODY
+  ════════════════════════════════════════════ -->
+  <section class="py-10 px-6 md:px-12 max-w-7xl mx-auto">
+
+    <!-- Toolbar: sort + active filters -->
+    <div class="flex flex-wrap items-center gap-3 mb-8 reveal">
+
+      <!-- Sort -->
+      <form method="get" action="{% url 'products' %}" id="sortForm">
+        {% if request.GET.category %}
+          <input type="hidden" name="category" value="{{ request.GET.category }}">
+        {% endif %}
+        {% if request.GET.q %}
+          <input type="hidden" name="q" value="{{ request.GET.q }}">
+        {% endif %}
+        <div class="sort-bar">
+          <label for="sortSelect">Sort</label>
+          <select id="sortSelect" name="sort" onchange="document.getElementById('sortForm').submit()">
+            <option value=""       {% if not request.GET.sort %}selected{% endif %}>Lead Time (Shortest)</option>
+            <option value="price"  {% if request.GET.sort == "price" %}selected{% endif %}>Price: Low → High</option>
+            <option value="-price" {% if request.GET.sort == "-price" %}selected{% endif %}>Price: High → Low</option>
+            <option value="-id"    {% if request.GET.sort == "-id" %}selected{% endif %}>Newest First</option>
+          </select>
+        </div>
+      </form>
+
+      <!-- Active filter tags -->
+      {% if request.GET.category %}
+        <span class="filter-tag">
+          <span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">sell</span>
+          {{ active_category_label|default:request.GET.category|capfirst }}
+          <a href="{% url 'products' %}{% if request.GET.sort or request.GET.q %}?{% if request.GET.sort %}sort={{ request.GET.sort }}{% if request.GET.q %}&amp;q={{ request.GET.q|urlencode }}{% endif %}{% else %}q={{ request.GET.q|urlencode }}{% endif %}{% endif %}"
+             aria-label="Remove category filter">
+            <span class="material-symbols-outlined" style="font-size:13px;">close</span>
+          </a>
+        </span>
+      {% endif %}
+      {% if request.GET.sort %}
+        <span class="filter-tag">
+          <span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">sort</span>
+          {{ request.GET.sort }}
+          <a href="{% url 'products' %}{% if request.GET.category or request.GET.q %}?{% if request.GET.category %}category={{ request.GET.category }}{% if request.GET.q %}&amp;q={{ request.GET.q|urlencode }}{% endif %}{% else %}q={{ request.GET.q|urlencode }}{% endif %}{% endif %}"
+             aria-label="Remove sort">
+            <span class="material-symbols-outlined" style="font-size:13px;">close</span>
+          </a>
+        </span>
+      {% endif %}
+      {% if request.GET.q %}
+        <span class="filter-tag">
+          <span class="material-symbols-outlined" style="font-size:13px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">search</span>
+          "{{ request.GET.q }}"
+          <a href="{% url 'products' %}{% if request.GET.category or request.GET.sort %}?{% if request.GET.category %}category={{ request.GET.category }}{% if request.GET.sort %}&amp;sort={{ request.GET.sort }}{% endif %}{% else %}sort={{ request.GET.sort }}{% endif %}{% endif %}"
+             aria-label="Clear search">
+            <span class="material-symbols-outlined" style="font-size:13px;">close</span>
+          </a>
+        </span>
+      {% endif %}
+
+      <!-- Result count -->
+      {% if request.GET.category or request.GET.sort or request.GET.q %}
+        <span class="result-count">{{ products.paginator.count|default:products|length }} result{{ products.paginator.count|default:products|length|pluralize }}</span>
+      {% endif %}
+
+      <!-- Clear all -->
+      {% if request.GET.category or request.GET.sort or request.GET.q %}
+        <a href="{% url 'products' %}"
+           style="margin-left:4px;font-size:10px;font-weight:700;color:#af101a;text-decoration:none;letter-spacing:.06em;text-transform:uppercase;transition:opacity .2s;"
+           onmouseover="this.style.opacity='.6'" onmouseout="this.style.opacity='1'">
+          Clear all
+        </a>
+      {% endif %}
     </div>
 
-    <!-- Active Filter Tags -->
-    {% if request.GET.category or request.GET.sort %}
-      <div class="active-filters">
-        {% if request.GET.category %}
-          <span class="active-filter-tag">
-            {{ active_category_label|default:request.GET.category|capfirst }}
-            <a href="{% url 'products' %}{% if request.GET.sort %}?sort={{ request.GET.sort }}{% endif %}" aria-label="Remove category filter">
-              <span class="material-symbols-outlined">close</span>
-            </a>
-          </span>
-        {% endif %}
-        {% if request.GET.sort %}
-          <span class="active-filter-tag">
-            Sorted: {{ request.GET.sort }}
-            <a href="{% url 'products' %}{% if request.GET.category %}?category={{ request.GET.category }}{% endif %}" aria-label="Remove sort">
-              <span class="material-symbols-outlined">close</span>
-            </a>
-          </span>
-        {% endif %}
-        <span class="result-count">{{ products.paginator.count|default:products|length }} results</span>
-      </div>
-    {% endif %}
 
-    <!-- Product Grid -->
-    <div class="product-grid">
+    <!-- ─── Product Grid ─── -->
+    <div class="prod-grid reveal">
       {% for product in products %}
-        <article class="prod-card {% if product.category and 'corporate' in product.category.slug %}is-corporate{% endif %}">
+        <article class="prod-card">
+
+          <!-- Image -->
           <a href="{% url 'product_detail' product.id %}" class="prod-card-img">
             {% if product.cover_image %}
               <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
             {% else %}
-              <div class="prod-card-img-empty">No Image</div>
+              <div class="prod-card-img-empty">
+                <span class="material-symbols-outlined" style="font-size:36px;color:#c9a8a8;">image_not_supported</span>
+              </div>
             {% endif %}
+
+            <!-- Badges -->
             <div class="prod-img-badges">
               {% if product.is_featured %}
                 <span class="wd-badge wd-badge-primary">Featured</span>
@@ -453,36 +521,105 @@
                 <span class="wd-badge wd-badge-surface">Bulk Friendly</span>
               {% endif %}
             </div>
+
+            <!-- Hover overlay -->
+            <a href="{% url 'product_detail' product.id %}" class="prod-card-quick">
+              View &amp; Inquire
+              <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;margin-left:4px;">arrow_forward</span>
+            </a>
           </a>
+
+          <!-- Body -->
           <div class="prod-card-body">
             <div class="prod-card-top">
               <a href="{% url 'product_detail' product.id %}" class="prod-card-name">{{ product.name }}</a>
               <span class="prod-card-price">
-                {% if product.base_price %}
-                  ₹ {{ product.base_price|floatformat:0 }}
-                {% elif product.price_label %}
-                  {{ product.price_label }}
-                {% else %}
-                  On Request
-                {% endif %}
+                {% if product.base_price %}₹{{ product.base_price|floatformat:0 }}
+                {% elif product.price_label %}{{ product.price_label }}
+                {% else %}On Request{% endif %}
               </span>
             </div>
-            <p class="prod-card-desc">{{ product.short_description|default:"Premium corporate gifting option available for bulk orders." }}</p>
+            <p class="prod-card-desc">
+              {{ product.short_description|default:"Premium corporate gifting option available for bulk orders." }}
+            </p>
             <a href="{% url 'product_detail' product.id %}" class="prod-card-cta">
-              View & Inquire
+              <span class="material-symbols-outlined" style="font-size:14px;">open_in_new</span>
+              View &amp; Inquire
             </a>
           </div>
+
         </article>
       {% empty %}
         <div class="empty-state">
           <span class="material-symbols-outlined">inventory_2</span>
           <h3>No products found</h3>
-          <p>Try adjusting your filters or <a href="{% url 'products' %}" style="color:#570012;font-weight:700;">browse all products</a>.</p>
+          <p>
+            Try adjusting your filters or&nbsp;
+            <a href="{% url 'products' %}" style="color:#af101a;font-weight:700;">browse all gifts</a>.
+          </p>
         </div>
       {% endfor %}
     </div>
 
-  </main>
-</div>
+  </section>
 
+
+  <!-- ═══════════════════════════════════════════
+       CORPORATE CTA BANNER  (mirrors home.html)
+  ════════════════════════════════════════════ -->
+  <section class="py-14 px-6 md:px-12">
+    <div class="max-w-7xl mx-auto reveal">
+      <div style="background:linear-gradient(135deg,#fff8f7 0%,#fce8e8 100%);border:1px solid #e4beba;border-radius:20px;overflow:hidden;position:relative;padding:48px 48px;display:flex;flex-direction:column;gap:24px;"
+           class="md:flex-row md:items-center md:justify-between">
+        <!-- BG accent -->
+        <div style="position:absolute;right:-40px;top:-40px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(175,16,26,.08),transparent 70%);pointer-events:none;"></div>
+
+        <div style="position:relative;z-index:1;">
+          <div class="section-kicker">
+            <div class="section-kicker-line"></div>
+            <span class="section-kicker-text">For Enterprises</span>
+          </div>
+          <h2 class="font-serif text-[1.9rem] md:text-[2.4rem] text-on-surface mt-1 mb-3 leading-tight">
+            Need Bulk Corporate Gifting?
+          </h2>
+          <p class="text-secondary text-[14px] max-w-md leading-relaxed">
+            From Diwali gifts to employee kits — we handle large orders with custom branding
+            and pan-India delivery. Get a quote in 24 hours.
+          </p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px;flex-shrink:0;position:relative;z-index:1;"
+             class="sm:flex-row">
+          <a href="tel:+919309810348"
+             class="inline-flex items-center gap-2 px-7 py-4 bg-primary text-on-primary rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-on-primary-fixed-variant transition-all active:scale-95">
+            <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">call</span>
+            Call Us
+          </a>
+          <a href="https://wa.me/919309810348?text=Hi%2C%20I%27d%20like%20to%20explore%20bulk%20gifting."
+             target="_blank" rel="noopener"
+             class="inline-flex items-center gap-2 px-7 py-4 bg-white border-2 border-outline-variant text-on-surface rounded-xl font-bold text-sm uppercase tracking-widest hover:border-[#25D366] hover:text-[#25D366] transition-all active:scale-95">
+            <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">chat</span>
+            WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (() => {
+    /* ── Scroll reveal ── */
+    const reveals = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+    reveals.forEach(el => io.observe(el));
+  })();
+</script>
 {% endblock %}

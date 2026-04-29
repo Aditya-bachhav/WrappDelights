@@ -31,6 +31,7 @@ from delights_backend.core.store.views import (
     dashboard_edit_section,
     dashboard_inquiry_detail,
     dashboard_products,
+    dashboard_toggle_bestseller,
     dashboard_sections,
     dashboard_toggle_product,
     health,
@@ -80,6 +81,7 @@ urlpatterns = [
     path("dashboard/products/<int:product_id>/edit/", dashboard_edit_product, name="dashboard_edit_product"),
     path("dashboard/products/<int:product_id>/delete/", dashboard_delete_product, name="dashboard_delete_product"),
     path("dashboard/products/<int:product_id>/toggle/", dashboard_toggle_product, name="dashboard_toggle_product"),
+    path("dashboard/products/<int:product_id>/toggle-bestseller/", dashboard_toggle_bestseller, name="dashboard_toggle_bestseller"),
 
     # Dashboard — categories
     path("dashboard/categories/", dashboard_categories, name="dashboard_categories"),

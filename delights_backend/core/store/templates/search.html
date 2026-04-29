@@ -398,15 +398,11 @@
         </p>
         <div class="suggestion-row">
           <p class="wd-kicker" style="width:100%;margin-bottom:10px;">Popular searches</p>
-          {% for term in "Corporate Hamper,Festive Box,Welcome Kit,Branded Packaging,Wellness Kit"|split:"," %}
-            <a href="{% url 'search' %}?q={{ term|urlencode }}" class="suggestion-pill">{{ term }}</a>
-          {% empty %}
-            <a href="{% url 'search' %}?q=corporate+hamper" class="suggestion-pill">Corporate Hamper</a>
-            <a href="{% url 'search' %}?q=festive+box" class="suggestion-pill">Festive Box</a>
-            <a href="{% url 'search' %}?q=welcome+kit" class="suggestion-pill">Welcome Kit</a>
-            <a href="{% url 'search' %}?q=branded+packaging" class="suggestion-pill">Branded Packaging</a>
-            <a href="{% url 'search' %}?q=wellness" class="suggestion-pill">Wellness Kit</a>
-          {% endfor %}
+          <a href="{% url 'search' %}?q=corporate+hamper" class="suggestion-pill">Corporate Hamper</a>
+          <a href="{% url 'search' %}?q=festive+box" class="suggestion-pill">Festive Box</a>
+          <a href="{% url 'search' %}?q=welcome+kit" class="suggestion-pill">Welcome Kit</a>
+          <a href="{% url 'search' %}?q=branded+packaging" class="suggestion-pill">Branded Packaging</a>
+          <a href="{% url 'search' %}?q=wellness" class="suggestion-pill">Wellness Kit</a>
         </div>
       </div>
     {% endif %}

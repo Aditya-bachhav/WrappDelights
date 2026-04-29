@@ -4,60 +4,77 @@
 
 {% block extra_css %}
 <style>
+  /* ─── Entrance animations ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .anim-fade-up { animation: fadeUp .65s cubic-bezier(.2,.8,.3,1) both; }
+  .delay-100 { animation-delay: .10s; }
+  .delay-200 { animation-delay: .20s; }
+  .delay-300 { animation-delay: .30s; }
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ─── Section kicker ─── */
+  .section-kicker {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+  }
+  .section-kicker-line { width: 28px; height: 1px; background: #af101a; opacity: .5; }
+  .section-kicker-text {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .22em; color: #af101a;
+  }
+
   /* ─── Shell ─── */
-  body { background: #f9f9f9; }
   .review-shell {
     max-width: 1280px;
     margin: 0 auto;
     padding: 104px 24px 80px;
   }
 
-  /* ─── Page Header ─── */
-  .review-header {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: start;
-    gap: 24px;
-    margin-bottom: 40px;
+  /* ─── Page hero strip ─── */
+  .review-hero {
+    position: relative;
+    background: linear-gradient(135deg, #fff8f7 0%, #fce8e8 100%);
+    border-bottom: 1px solid #e4beba;
+    overflow: hidden;
+    padding: 48px 24px 44px;
   }
-  .review-kicker {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
+  .review-hero::before {
+    content: "";
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at 80% 40%, rgba(175,16,26,.07) 0%, transparent 55%);
   }
-  .review-kicker-divider { width: 24px; height: 1px; background: #af101a; opacity: 0.4; }
-  .review-kicker-text {
-    font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.2em; color: #af101a;
+  .review-hero-texture {
+    position: absolute; inset: 0; opacity: .018; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .review-hero-inner {
+    position: relative; z-index: 1;
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: center; gap: 24px;
   }
   .review-title {
     font-family: 'Noto Serif', serif;
-    font-size: clamp(26px, 4vw, 38px);
-    font-weight: 700;
-    color: #1a1c1c;
-    letter-spacing: -0.02em;
-    margin: 0 0 6px;
-    line-height: 1.15;
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 700; color: #1a1c1c;
+    letter-spacing: -.02em; line-height: 1.1; margin: 10px 0 10px;
   }
-  .review-subtitle { font-size: 13px; color: #546067; margin: 0; line-height: 1.6; }
-
+  .review-subtitle { font-size: 13px; color: #5b403d; line-height: 1.65; max-width: 500px; }
   .step-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: #F7ECEE;
-    border: 1px solid #e4beba;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 11px;
-    color: #af101a;
-    font-weight: 700;
-    white-space: nowrap;
-    align-self: flex-start;
-    margin-top: 4px;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fff; border: 1px solid #e4beba;
+    border-radius: 999px; padding: 8px 18px;
+    font-size: 11px; font-weight: 800; color: #af101a;
+    white-space: nowrap; letter-spacing: .06em;
+    box-shadow: 0 4px 14px rgba(175,16,26,.08);
   }
-  .step-badge .material-symbols-outlined { font-size: 14px; }
+  .step-badge .material-symbols-outlined {
+    font-size: 15px; color: #af101a;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
+  }
 
   /* ─── Two-col layout ─── */
   .review-layout {
@@ -66,17 +83,13 @@
     gap: 28px;
     align-items: start;
   }
-  @media (max-width: 1024px) {
-    .review-layout { grid-template-columns: 1fr; }
-    .right-sticky { position: static; }
-  }
 
-  /* ─── Left: Items List ─── */
+  /* ─── Section header label ─── */
   .items-section-label {
-    font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.16em; color: #5b403d;
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .16em; color: #5b403d;
     margin-bottom: 14px;
-    display: flex; align-items: center; gap: 8px;
+    display: flex; align-items: center; gap: 10px;
   }
   .items-section-label::after {
     content: ''; flex: 1; height: 1px; background: #e4beba;
@@ -84,248 +97,238 @@
 
   .items-list { display: flex; flex-direction: column; gap: 10px; }
 
-  /* ─── Item Card ─── */
+  /* ─── Item card ─── */
   .item-card {
     background: #fff;
-    border: 1px solid #e4beba;
-    border-radius: 12px;
-    display: flex;
-    gap: 16px;
-    padding: 16px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 12px rgba(175,16,26,0.04);
+    border: 1px solid rgba(228,190,186,.5);
+    border-radius: 16px;
+    display: flex; gap: 16px; padding: 16px;
+    transition: border-color .2s, box-shadow .2s, transform .2s;
+    box-shadow: 0 2px 12px rgba(175,16,26,.04);
   }
   .item-card:hover {
-    border-color: #D9CDC0;
-    box-shadow: 0 6px 24px rgba(175,16,26,0.07);
+    border-color: rgba(175,16,26,.2);
+    box-shadow: 0 8px 28px rgba(175,16,26,.08);
+    transform: translateY(-1px);
   }
-
   .item-thumb {
-    width: 88px; height: 88px;
-    border-radius: 8px;
-    background: #F7ECEE;
-    overflow: hidden;
-    flex-shrink: 0;
+    width: 88px; height: 88px; border-radius: 12px;
+    background: #fff8f7; overflow: hidden; flex-shrink: 0;
+    border: 1px solid #e4beba;
   }
   .item-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .item-thumb-placeholder {
     width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    color: #e4beba;
+    display: flex; align-items: center; justify-content: center; color: #e4beba;
   }
   .item-thumb-placeholder .material-symbols-outlined { font-size: 28px; }
 
   .item-body { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-
   .item-category {
-    font-size: 9px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.14em; color: #546067;
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .14em; color: #8f6f6c;
   }
   .item-name {
     font-family: 'Noto Serif', serif;
-    font-size: 15px; font-weight: 700;
-    color: #1a1c1c; margin: 0;
-    line-height: 1.3;
+    font-size: 15px; font-weight: 700; color: #1a1c1c;
+    margin: 0; line-height: 1.3;
   }
-
   .item-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: auto;
-    padding-top: 10px;
-    gap: 12px;
-    flex-wrap: wrap;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: auto; padding-top: 10px; gap: 12px; flex-wrap: wrap;
+  }
+  .item-price {
+    font-family: 'Noto Serif', serif;
+    font-size: 17px; font-weight: 700; color: #af101a; white-space: nowrap;
   }
 
   /* Qty stepper */
   .qty-stepper {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid #e4beba;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #f9f9f9;
+    display: inline-flex; align-items: center;
+    border: 1px solid #e4beba; border-radius: 10px;
+    overflow: hidden; background: #f9f9f9;
   }
   .qty-btn {
-    width: 30px; height: 30px;
+    width: 32px; height: 32px;
     display: flex; align-items: center; justify-content: center;
-    background: transparent; border: none;
-    cursor: pointer; color: #546067; font-size: 15px; font-weight: 700;
-    transition: background 0.15s, color 0.15s;
+    background: transparent; border: none; cursor: pointer;
+    color: #5b403d; font-size: 16px; font-weight: 700;
+    transition: background .15s, color .15s;
   }
-  .qty-btn:hover { background: #F7ECEE; color: #af101a; }
+  .qty-btn:hover { background: #fff8f7; color: #af101a; }
   .qty-input {
-    width: 40px; height: 30px;
-    text-align: center;
+    width: 42px; height: 32px; text-align: center;
     border: none; border-left: 1px solid #e4beba; border-right: 1px solid #e4beba;
-    background: #fff;
-    font-family: 'Manrope', sans-serif;
-    font-size: 12px; font-weight: 700; color: #1a1c1c;
-    outline: none;
+    background: #fff; font-family: 'Manrope', sans-serif;
+    font-size: 12px; font-weight: 700; color: #1a1c1c; outline: none;
   }
-  .qty-input:focus { background: #FFF0EE; }
-
-  .item-price {
-    font-family: 'Noto Serif', serif;
-    font-size: 17px; font-weight: 700; color: #af101a;
-    white-space: nowrap;
-  }
+  .qty-input:focus { background: #fff8f7; }
 
   .remove-btn {
     display: inline-flex; align-items: center; gap: 4px;
-    background: transparent;
-    border: 1px solid #e4beba;
-    border-radius: 6px;
-    color: #8f6f6c;
-    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-    padding: 5px 10px; cursor: pointer;
-    transition: all 0.2s;
+    background: transparent; border: 1px solid #e4beba; border-radius: 8px;
+    color: #8f6f6c; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em;
+    padding: 5px 10px; cursor: pointer; transition: all .2s;
   }
-  .remove-btn .material-symbols-outlined { font-size: 12px; }
-  .remove-btn:hover { border-color: #af101a; color: #af101a; background: #FFF0EE; }
+  .remove-btn .material-symbols-outlined { font-size: 13px; }
+  .remove-btn:hover { border-color: #af101a; color: #af101a; background: #fff8f7; }
 
   /* ─── Subtotal bar ─── */
   .subtotal-bar {
-    margin-top: 16px;
-    background: #fff;
-    border: 1px solid #e4beba;
-    border-radius: 12px;
-    padding: 16px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 12px rgba(175,16,26,0.04);
+    margin-top: 14px;
+    background: #fff; border: 1px solid rgba(228,190,186,.5);
+    border-radius: 16px; padding: 18px 22px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 4px 18px rgba(175,16,26,.05);
   }
-  .subtotal-left { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: #546067; }
-  .subtotal-meta { font-size: 11px; color: #8f6f6c; margin-top: 2px; }
+  .subtotal-left {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .14em; color: #5b403d;
+  }
+  .subtotal-meta { font-size: 11px; color: #8f6f6c; margin-top: 3px; }
   .subtotal-price {
     font-family: 'Noto Serif', serif;
-    font-size: 26px; font-weight: 700; color: #af101a;
-    letter-spacing: -0.01em;
+    font-size: 26px; font-weight: 700; color: #af101a; letter-spacing: -.01em;
   }
 
-  /* Empty state */
+  /* ─── Empty state ─── */
   .empty-state {
-    text-align: center;
-    padding: 64px 32px;
-    border: 1px dashed #e4beba;
-    border-radius: 12px;
-    background: #fff;
-    color: #8f6f6c;
+    text-align: center; padding: 64px 32px;
+    border: 1px dashed #e4beba; border-radius: 16px;
+    background: #fff; color: #8f6f6c;
   }
-  .empty-state .material-symbols-outlined { font-size: 48px; color: #e4beba; display: block; margin-bottom: 12px; }
+  .empty-state .material-symbols-outlined {
+    font-size: 52px; color: #e4beba; display: block; margin-bottom: 14px;
+  }
+  .empty-state h3 {
+    font-family: 'Noto Serif', serif; font-size: 17px;
+    font-weight: 700; color: #1a1c1c; margin-bottom: 6px;
+  }
   .empty-state a { color: #af101a; font-weight: 700; }
 
-  /* ─── Right: Sticky Panel ─── */
-  .right-sticky { position: sticky; top: 100px; display: flex; flex-direction: column; gap: 16px; }
+  /* ─── Right sticky panel ─── */
+  .right-sticky { position: sticky; top: 84px; display: flex; flex-direction: column; gap: 16px; }
 
-  /* Order Summary box */
+  /* Order summary dark box */
   .summary-box {
-    background: #1a1c1c;
-    border-radius: 12px;
-    padding: 24px;
-    color: #fff;
+    background: #160507;
+    border-radius: 16px; padding: 24px; color: #fff;
+    position: relative; overflow: hidden;
   }
+  .summary-box::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(175,16,26,.22) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .summary-box-inner { position: relative; z-index: 1; }
   .summary-box-title {
-    font-size: 9px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.2em; color: rgba(255,255,255,0.5);
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .2em; color: rgba(255,255,255,.45);
     margin: 0 0 16px; padding-bottom: 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,.1);
   }
   .summary-row {
     display: flex; justify-content: space-between; align-items: center;
     font-size: 12px; font-weight: 600; margin-bottom: 10px;
   }
-  .summary-row .label { color: rgba(255,255,255,0.55); }
-  .summary-row .value { color: #ffb3ac; font-weight: 700; }
+  .summary-row .label { color: rgba(255,255,255,.5); }
+  .summary-row .value { color: #ffb3ac; font-weight: 800; }
   .summary-total-row {
     display: flex; justify-content: space-between; align-items: baseline;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255,255,255,.1);
     margin-top: 14px; padding-top: 14px;
   }
-  .summary-total-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(255,255,255,0.5); }
+  .summary-total-label {
+    font-size: 9px; text-transform: uppercase; letter-spacing: .16em;
+    color: rgba(255,255,255,.45);
+  }
   .summary-total-price {
     font-family: 'Noto Serif', serif;
-    font-size: 28px; font-weight: 700; color: #fff;
-    letter-spacing: -0.01em;
+    font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -.01em;
   }
 
-  /* Inquiry form panel */
+  /* ─── Inquiry form panel ─── */
   .inquiry-panel {
-    background: #fff;
-    border: 1px solid #e4beba;
-    border-radius: 12px;
-    padding: 28px;
-    box-shadow: 0 4px 20px rgba(175,16,26,0.05);
-    position: relative;
-    overflow: hidden;
+    background: #fff; border: 1px solid #e4beba;
+    border-radius: 16px; padding: 28px;
+    box-shadow: 0 6px 24px rgba(175,16,26,.07);
+    position: relative; overflow: hidden;
   }
   .inquiry-panel::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, #af101a, #e4beba, #af101a);
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, #af101a, #ffb3ac, #af101a);
   }
   .inquiry-title {
     font-family: 'Noto Serif', serif;
     font-size: 18px; font-weight: 700; font-style: italic;
     color: #1a1c1c; margin: 0 0 4px;
   }
-  .inquiry-desc { font-size: 12px; color: #546067; margin: 0 0 24px; line-height: 1.6; }
+  .inquiry-desc { font-size: 12px; color: #5b403d; margin: 0 0 22px; line-height: 1.65; }
 
+  /* Form fields */
   .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 5px; }
   .form-label {
-    font-size: 9px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.18em; color: #5b403d;
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .18em; color: #5b403d;
   }
   .form-input, .form-textarea {
     width: 100%; box-sizing: border-box;
-    background: #fff; border: 1px solid #E7DED6; border-radius: 8px;
-    padding: 11px 14px;
-    font-family: 'Manrope', sans-serif; font-size: 13px; color: #1a1c1c;
-    transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+    background: #fff; border: 1px solid #e4beba; border-radius: 10px;
+    padding: 11px 14px; font-family: 'Manrope', sans-serif;
+    font-size: 13px; color: #1a1c1c;
+    transition: border-color .2s, box-shadow .2s; outline: none;
   }
   .form-input:focus, .form-textarea:focus {
     border-color: #af101a;
-    box-shadow: 0 0 0 3px rgba(175,16,26,0.1);
+    box-shadow: 0 0 0 3px rgba(175,16,26,.10);
   }
-  .form-input::placeholder, .form-textarea::placeholder { color: #bbb; }
+  .form-input::placeholder, .form-textarea::placeholder { color: #c9a8a8; }
   .form-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
-
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
   .submit-btn {
     width: 100%; margin-top: 4px;
     display: flex; align-items: center; justify-content: center; gap: 8px;
     background: #af101a; color: #fff;
-    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em;
-    padding: 14px 20px; border: none; border-radius: 8px;
-    cursor: pointer; transition: background 0.2s, transform 0.15s;
+    font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .16em;
+    padding: 14px 20px; border: none; border-radius: 12px;
+    cursor: pointer; transition: background .2s, transform .15s;
+    box-shadow: 0 6px 18px rgba(175,16,26,.25);
   }
   .submit-btn .material-symbols-outlined { font-size: 16px; }
   .submit-btn:hover { background: #930010; }
-  .submit-btn:active { transform: scale(0.98); }
-  .submit-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+  .submit-btn:active { transform: scale(.98); }
+  .submit-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
 
   /* ─── Mobile bottom CTA ─── */
   .mobile-submit-bar {
     display: none;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
-    background: #fff;
-    border-top: 1px solid #e4beba;
-    box-shadow: 0 -4px 24px rgba(175,16,26,0.08);
+    background: #fff; border-top: 1px solid #e4beba;
+    box-shadow: 0 -4px 24px rgba(175,16,26,.10);
     padding: 14px 20px;
     align-items: center; justify-content: space-between; gap: 16px;
   }
-  @media (max-width: 1024px) { .mobile-submit-bar { display: flex; } }
   .mobile-total-price {
     font-family: 'Noto Serif', serif;
     font-size: 22px; font-weight: 700; color: #af101a;
   }
-  .mobile-total-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #8f6f6c; }
+  .mobile-total-label {
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .12em; color: #8f6f6c;
+  }
 
+  /* ─── Responsive ─── */
+  @media (max-width: 1024px) {
+    .review-layout { grid-template-columns: 1fr; }
+    .right-sticky { position: static; }
+    .mobile-submit-bar { display: flex; }
+    .review-shell { padding-bottom: 100px; }
+  }
   @media (max-width: 768px) {
-    .review-header { grid-template-columns: 1fr; }
+    .review-hero-inner { grid-template-columns: 1fr; }
     .step-badge { display: none; }
     .form-row { grid-template-columns: 1fr; }
     .item-footer { flex-direction: column; align-items: flex-start; }
@@ -334,172 +337,280 @@
 {% endblock %}
 
 {% block content %}
-<div class="review-shell">
+<div style="padding-top:68px;">
 
-  <!-- ─── Page Header ─── -->
-  <div class="review-header">
-    <div>
-      <div class="review-kicker">
-        <div class="review-kicker-divider"></div>
-        <span class="review-kicker-text">Step {{ step_count }} of {{ step_count }} &nbsp;·&nbsp; Final Review</span>
-      </div>
-      <h1 class="review-title">Review & Submit</h1>
-      <p class="review-subtitle">Check your selections, adjust quantities, then send your inquiry for a personalised quote.</p>
-    </div>
-    <div class="step-badge">
-      <span class="material-symbols-outlined">task_alt</span>
-      Last step
+  <!-- ═══════════════════════════════════════════
+       VALUE STRIP
+  ════════════════════════════════════════════ -->
+  <div class="bg-primary overflow-hidden py-3 select-none" aria-hidden="true">
+    <div style="display:flex;animation:marquee 26s linear infinite;white-space:nowrap;">
+      {% for _ in "xxxxxxxx" %}
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:0 40px;border-right:1px solid rgba(255,255,255,.15);flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#fff;">
+        <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">verified</span>
+        Custom Branding Available
+      </span>
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:0 40px;border-right:1px solid rgba(255,255,255,.15);flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#fff;">
+        <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">local_shipping</span>
+        Pan-India Delivery
+      </span>
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:0 40px;border-right:1px solid rgba(255,255,255,.15);flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#fff;">
+        <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">package_2</span>
+        Bulk Orders Welcome
+      </span>
+      {% endfor %}
     </div>
   </div>
+  <style>@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-33.333%); } }</style>
 
-  <!-- ─── Main Layout ─── -->
-  <div class="review-layout">
 
-    <!-- LEFT: Items -->
-    <div>
-      <div class="items-section-label">
-        <span>Your Hamper Contents</span>
+  <!-- ═══════════════════════════════════════════
+       HERO HEADER
+  ════════════════════════════════════════════ -->
+  <section class="review-hero">
+    <div class="review-hero-texture"></div>
+    <div class="review-hero-inner">
+      <div>
+        <div class="section-kicker anim-fade-up">
+          <div class="section-kicker-line"></div>
+          <span class="section-kicker-text">
+            Step {{ step_count }} of {{ step_count }} &nbsp;·&nbsp; Final Review
+          </span>
+        </div>
+        <h1 class="review-title anim-fade-up delay-100">Review &amp; Submit</h1>
+        <p class="review-subtitle anim-fade-up delay-200">
+          Check your selections, adjust quantities, then send your inquiry for a personalised quote.
+        </p>
+
+        <!-- Progress chips -->
+        <div class="flex flex-wrap items-center gap-3 mt-6 anim-fade-up delay-300">
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #e4beba;border-radius:999px;font-size:10px;font-weight:700;color:#5b403d;background:#fff;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:#af101a;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">check_circle</span>
+            Items selected
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid #e4beba;border-radius:999px;font-size:10px;font-weight:700;color:#5b403d;background:#fff;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:#af101a;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">edit_note</span>
+            Review &amp; adjust
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid rgba(175,16,26,.3);border-radius:999px;font-size:10px;font-weight:800;color:#af101a;background:#fff8f7;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:#af101a;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">send</span>
+            Submit inquiry
+          </span>
+        </div>
       </div>
 
-      <div class="items-list" id="reviewItems">
-        {% if kit %}
-          {% for item in kit %}
-            <div class="item-card" data-product="{{ item.product_id|default_if_none:0 }}">
-              <div class="item-thumb">
-                {% if item.cover_image %}
-                  <img src="{{ item.cover_image.url }}" alt="{{ item.name }}">
-                {% else %}
-                  <div class="item-thumb-placeholder">
-                    <span class="material-symbols-outlined">inventory_2</span>
-                  </div>
-                {% endif %}
-              </div>
-              <div class="item-body">
-                <p class="item-category">{{ item.category|default:"Item" }}</p>
-                <h4 class="item-name">{{ item.name|default:item.product_id }}</h4>
-                <div class="item-footer">
-                  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-                    <div class="qty-stepper">
-                      <button class="qty-btn" type="button" data-action="dec">−</button>
-                      <input class="qty-input" type="number" value="{{ item.quantity|default:1 }}" min="1" data-action="qty">
-                      <button class="qty-btn" type="button" data-action="inc">+</button>
+      <div class="step-badge anim-fade-up delay-200">
+        <span class="material-symbols-outlined">task_alt</span>
+        Last step
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       MAIN BODY
+  ════════════════════════════════════════════ -->
+  <div class="review-shell">
+    <div class="review-layout">
+
+      <!-- ══ LEFT: Items ══ -->
+      <div class="reveal">
+        <div class="items-section-label">
+          <span>Your Hamper Contents</span>
+        </div>
+
+        <div class="items-list" id="reviewItems">
+          {% if kit %}
+            {% for item in kit %}
+              <div class="item-card" data-product="{{ item.product_id|default_if_none:0 }}">
+                <div class="item-thumb">
+                  {% if item.cover_image %}
+                    <img src="{{ item.cover_image.url }}" alt="{{ item.name }}">
+                  {% else %}
+                    <div class="item-thumb-placeholder">
+                      <span class="material-symbols-outlined">inventory_2</span>
                     </div>
-                    <button class="remove-btn" type="button" data-action="remove">
-                      <span class="material-symbols-outlined">delete_outline</span>
-                      Remove
-                    </button>
+                  {% endif %}
+                </div>
+                <div class="item-body">
+                  <p class="item-category">{{ item.category|default:"Item" }}</p>
+                  <h4 class="item-name">{{ item.name|default:item.product_id }}</h4>
+                  <div class="item-footer">
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                      <div class="qty-stepper">
+                        <button class="qty-btn" type="button" data-action="dec">−</button>
+                        <input class="qty-input" type="number" value="{{ item.quantity|default:1 }}" min="1" data-action="qty">
+                        <button class="qty-btn" type="button" data-action="inc">+</button>
+                      </div>
+                      <button class="remove-btn" type="button" data-action="remove">
+                        <span class="material-symbols-outlined">delete_outline</span>
+                        Remove
+                      </button>
+                    </div>
+                    <span class="item-price">₹{{ item.price|default:0 }}</span>
                   </div>
-                  <span class="item-price">₹{{ item.price|default:0 }}</span>
                 </div>
               </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <span class="material-symbols-outlined">shopping_bag</span>
+              <h3>Your hamper is empty</h3>
+              <p><a href="{% url 'custom_hamper_step' "1" %}">Start building your hamper</a> to continue.</p>
             </div>
-          {% endfor %}
-        {% else %}
-          <div class="empty-state">
-            <span class="material-symbols-outlined">shopping_bag</span>
-            <p>No items yet. <a href="{% url 'custom_hamper_step' "1" %}">Start building your hamper</a>.</p>
+          {% endif %}
+        </div>
+
+        <!-- Subtotal bar -->
+        <div class="subtotal-bar">
+          <div>
+            <div class="subtotal-left">Order Subtotal</div>
+            <div class="subtotal-meta" id="totalQtyLabel">
+              {{ totals.total_quantity|default:0 }} unit{{ totals.total_quantity|default:0|pluralize }}
+            </div>
           </div>
-        {% endif %}
+          <div class="subtotal-price" id="totalPriceLabel">₹{{ totals.total_price|default:0 }}</div>
+        </div>
       </div>
 
-      <!-- Subtotal bar -->
-      <div class="subtotal-bar">
-        <div>
-          <div class="subtotal-left">Order Subtotal</div>
-          <div class="subtotal-meta" id="totalQtyLabel">{{ totals.total_quantity|default:0 }} unit{{ totals.total_quantity|default:0|pluralize }}</div>
+
+      <!-- ══ RIGHT: Summary + Form ══ -->
+      <div class="reveal" style="animation-delay:.15s;">
+        <div class="right-sticky">
+
+          <!-- Order summary dark box -->
+          <div class="summary-box">
+            <div class="summary-box-inner">
+              <p class="summary-box-title">Order Summary</p>
+              <div class="summary-row">
+                <span class="label">Items</span>
+                <span class="value" id="summaryItemCount">{{ kit|length|default:0 }}</span>
+              </div>
+              <div class="summary-row">
+                <span class="label">Total Units</span>
+                <span class="value" id="summaryQty">{{ totals.total_quantity|default:0 }}</span>
+              </div>
+              <div class="summary-row">
+                <span class="label">Delivery</span>
+                <span class="value">Pan-India</span>
+              </div>
+              <div class="summary-total-row">
+                <span class="summary-total-label">Estimated Total</span>
+                <span class="summary-total-price" id="totalPriceLabelAlt">₹{{ totals.total_price|default:0 }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inquiry form -->
+          <div class="inquiry-panel">
+            <h2 class="inquiry-title">Send Your Inquiry</h2>
+            <p class="inquiry-desc">
+              We'll reach out within 24 hours with a personalised quote for your hamper order.
+            </p>
+
+            <form method="post" id="reviewForm">
+              {% csrf_token %}
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="f-name">Full Name *</label>
+                  <input class="form-input" id="f-name" name="name" required placeholder="Priya Sharma">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="f-company">Company</label>
+                  <input class="form-input" id="f-company" name="company" placeholder="ACME Corp">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="f-email">Email</label>
+                  <input class="form-input" id="f-email" type="email" name="email" placeholder="you@company.com">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="f-phone">Phone</label>
+                  <input class="form-input" id="f-phone" type="tel" name="phone" placeholder="+91 9XXXXXXXXX">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="f-qty">How many hampers?</label>
+                <input class="form-input" id="f-qty" type="number" min="1" name="quantity"
+                       value="{{ totals.total_quantity|default:1 }}" placeholder="25">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="f-notes">Special Requests</label>
+                <textarea class="form-textarea" id="f-notes" name="notes"
+                          placeholder="Branding needs, delivery timeline, custom packaging…"></textarea>
+              </div>
+
+              <!-- WhatsApp alternative -->
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                <div style="flex:1;height:1px;background:#e4beba;"></div>
+                <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:#8f6f6c;">or</span>
+                <div style="flex:1;height:1px;background:#e4beba;"></div>
+              </div>
+              <a href="https://wa.me/919309810348?text=Hi%2C%20I%27d%20like%20a%20quote%20for%20a%20custom%20hamper."
+                 target="_blank" rel="noopener"
+                 style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#f0faf0;border:1px solid rgba(37,211,102,.3);border-radius:12px;text-decoration:none;margin-bottom:16px;transition:background .2s,border-color .2s;"
+                 onmouseover="this.style.background='#e0f5e0';this.style.borderColor='#25D366'"
+                 onmouseout="this.style.background='#f0faf0';this.style.borderColor='rgba(37,211,102,.3)'">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0;">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                <div>
+                  <p style="font-size:11px;font-weight:800;color:#1a1c1c;margin:0;">Chat on WhatsApp</p>
+                  <p style="font-size:10px;color:#5b403d;margin:0;">Quick inquiry — reply in minutes</p>
+                </div>
+                <span class="material-symbols-outlined" style="font-size:16px;color:#25D366;margin-left:auto;">arrow_forward</span>
+              </a>
+
+              <button class="submit-btn" type="submit" id="submitBtn" {% if not kit %}disabled{% endif %}>
+                <span class="material-symbols-outlined">send</span>
+                Submit Inquiry
+              </button>
+            </form>
+          </div>
+
         </div>
-        <div class="subtotal-price" id="totalPriceLabel">₹{{ totals.total_price|default:0 }}</div>
       </div>
+
     </div>
+  </div>
 
-    <!-- RIGHT: Summary + Form -->
-    <div class="review-right">
-      <div class="right-sticky">
 
-        <!-- Order summary -->
-        <div class="summary-box">
-          <p class="summary-box-title">Order Summary</p>
-          <div class="summary-row">
-            <span class="label">Items</span>
-            <span class="value" id="summaryItemCount">{{ kit|length|default:0 }}</span>
-          </div>
-          <div class="summary-row">
-            <span class="label">Units</span>
-            <span class="value" id="summaryQty">{{ totals.total_quantity|default:0 }}</span>
-          </div>
-          <div class="summary-total-row">
-            <span class="summary-total-label">Total</span>
-            <span class="summary-total-price" id="totalPriceLabelAlt">₹{{ totals.total_price|default:0 }}</span>
-          </div>
-        </div>
-
-        <!-- Inquiry Form -->
-        <div class="inquiry-panel">
-          <h2 class="inquiry-title">Send Your Inquiry</h2>
-          <p class="inquiry-desc">We'll reach out within 24 hours with a personalised quote for your hamper order.</p>
-
-          <form method="post" id="reviewForm">
-            {% csrf_token %}
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="f-name">Full Name *</label>
-                <input class="form-input" id="f-name" name="name" required placeholder="Priya Sharma">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="f-company">Company</label>
-                <input class="form-input" id="f-company" name="company" placeholder="ACME Corp">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="f-email">Email</label>
-                <input class="form-input" id="f-email" type="email" name="email" placeholder="you@company.com">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="f-phone">Phone</label>
-                <input class="form-input" id="f-phone" type="tel" name="phone" placeholder="+91 9XXXXXXXXX">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="f-qty">How many hampers?</label>
-              <input class="form-input" id="f-qty" type="number" min="1" name="quantity" value="{{ totals.total_quantity|default:1 }}" placeholder="25">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="f-notes">Special Requests</label>
-              <textarea class="form-textarea" id="f-notes" name="notes" placeholder="Branding needs, delivery timeline, custom packaging…"></textarea>
-            </div>
-
-            <button class="submit-btn" type="submit" id="submitBtn" {% if not kit %}disabled{% endif %}>
-              <span class="material-symbols-outlined">send</span>
-              Submit Inquiry
-            </button>
-          </form>
-        </div>
-
-      </div>
+  <!-- ═══════════════════════════════════════════
+       MOBILE BOTTOM CTA
+  ════════════════════════════════════════════ -->
+  <div class="mobile-submit-bar">
+    <div>
+      <div class="mobile-total-label">Estimated Total</div>
+      <div class="mobile-total-price" id="mobileTotalPrice">₹{{ totals.total_price|default:0 }}</div>
     </div>
-
+    <button class="submit-btn" type="button" id="mobileSubmitTrigger"
+            style="width:auto;margin:0;"
+            {% if not kit %}disabled{% endif %}>
+      <span class="material-symbols-outlined">send</span>
+      Submit Inquiry
+    </button>
   </div>
-</div>
 
-<!-- Mobile sticky CTA -->
-<div class="mobile-submit-bar">
-  <div>
-    <div class="mobile-total-label">Order Total</div>
-    <div class="mobile-total-price" id="mobileTotalPrice">₹{{ totals.total_price|default:0 }}</div>
-  </div>
-  <button class="submit-btn" type="button" id="mobileSubmitTrigger" style="width:auto;margin:0;" {% if not kit %}disabled{% endif %}>
-    <span class="material-symbols-outlined">send</span>
-    Submit Inquiry
-  </button>
 </div>
 {% endblock %}
+
 
 {% block extra_js %}
 <script>
 (function () {
   'use strict';
 
+  /* ── Scroll reveal ── */
+  var reveals = document.querySelectorAll('.reveal');
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.06 });
+  reveals.forEach(function(el) { io.observe(el); });
+
+  /* ── API routes ── */
   var routes = {
     remove:  "{% url 'custom_hamper_remove_item' %}",
     update:  "{% url 'custom_hamper_update_quantity' %}",
@@ -531,7 +642,7 @@
       opts.headers['Content-Type'] = 'application/json';
       opts.headers['X-CSRFToken'] = getCookie('csrftoken');
     }
-    return fetch(url, opts).then(function (r) { return r.json(); });
+    return fetch(url, opts).then(function(r) { return r.json(); });
   }
 
   function buildItemCard(item) {
@@ -547,7 +658,7 @@
           '<p class="item-category">' + (item.category || 'Item') + '</p>' +
           '<h4 class="item-name">' + item.name + '</h4>' +
           '<div class="item-footer">' +
-            '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
+            '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
               '<div class="qty-stepper">' +
                 '<button class="qty-btn" type="button" data-action="dec">−</button>' +
                 '<input class="qty-input" type="number" min="1" value="' + item.quantity + '" data-action="qty">' +
@@ -567,7 +678,6 @@
 
   function render(data) {
     if (!data || data.error) return;
-
     var total = data.total_price || 0;
     var qty   = data.total_quantity || 0;
     var count = data.item_count || 0;
@@ -587,7 +697,8 @@
       itemsWrap.innerHTML =
         '<div class="empty-state">' +
           '<span class="material-symbols-outlined">shopping_bag</span>' +
-          '<p>No items yet. <a href="{% url "custom_hamper_step" "1" %}">Start building your hamper</a>.</p>' +
+          '<h3>Your hamper is empty</h3>' +
+          '<p><a href="{% url "custom_hamper_step" "1" %}">Start building your hamper</a> to continue.</p>' +
         '</div>';
       return;
     }
@@ -596,7 +707,7 @@
   }
 
   function refresh() {
-    request(routes.summary).then(render).catch(function () {});
+    request(routes.summary).then(render).catch(function() {});
   }
 
   function removeItem(productId) {
@@ -613,29 +724,26 @@
     }).then(render);
   }
 
-  itemsWrap.addEventListener('click', function (evt) {
+  itemsWrap.addEventListener('click', function(evt) {
     var row = evt.target.closest('[data-product]');
     if (!row) return;
     var pid = row.getAttribute('data-product');
 
     if (evt.target.closest('[data-action="remove"]')) {
-      removeItem(pid);
-      return;
+      removeItem(pid); return;
     }
     var input = row.querySelector('input[data-action="qty"]');
     if (evt.target.dataset.action === 'dec') {
       var dVal = Math.max(1, (parseInt(input.value, 10) || 1) - 1);
-      input.value = dVal;
-      updateQty(pid, dVal);
+      input.value = dVal; updateQty(pid, dVal);
     }
     if (evt.target.dataset.action === 'inc') {
       var iVal = (parseInt(input.value, 10) || 1) + 1;
-      input.value = iVal;
-      updateQty(pid, iVal);
+      input.value = iVal; updateQty(pid, iVal);
     }
   });
 
-  itemsWrap.addEventListener('change', function (evt) {
+  itemsWrap.addEventListener('change', function(evt) {
     if (evt.target.dataset.action !== 'qty') return;
     var row = evt.target.closest('[data-product]');
     if (!row) return;
@@ -644,9 +752,8 @@
     updateQty(row.getAttribute('data-product'), val);
   });
 
-  // Mobile submit triggers the real form
   if (mobileBtn) {
-    mobileBtn.addEventListener('click', function () {
+    mobileBtn.addEventListener('click', function() {
       var form = document.getElementById('reviewForm');
       if (form) form.requestSubmit ? form.requestSubmit() : form.submit();
     });

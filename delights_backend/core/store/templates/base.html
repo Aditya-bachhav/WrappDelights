@@ -93,6 +93,66 @@
 
   /* ─── Shared reusable component classes ─── */
 
+  /* ─── Navbar ─── */
+  /* Scrolled state: slightly more opaque */
+  header.scrolled {
+    background: rgba(255,255,255,0.97) !important;
+    box-shadow: 0 2px 20px rgba(128,1,31,0.07);
+  }
+
+  /* Logo wordmark */
+  .wd-logo {
+    font-family: 'Noto Serif', serif;
+    font-style: italic;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #160507;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.2s ease;
+  }
+  .wd-logo:hover { opacity: 0.75; }
+  .wd-logo-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #af101a;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+  }
+
+  /* Nav links */
+  .wd-nav-link {
+    position: relative;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #3d2020;
+    text-decoration: none;
+    padding: 6px 0;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .wd-nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1.5px;
+    background: #af101a;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.22s ease;
+  }
+  .wd-nav-link:hover { color: #af101a; }
+  .wd-nav-link:hover::after { transform: scaleX(1); }
+  .wd-nav-link.active { color: #af101a; }
+  .wd-nav-link.active::after { transform: scaleX(1); }
+
   /* Nav dropdowns */
   .wd-nav-dropdown {
     position: relative;
@@ -100,27 +160,37 @@
   .wd-nav-dropdown::after {
     content: "";
     position: absolute;
-    left: 0;
-    right: 0;
+    left: 0; right: 0;
     top: 100%;
-    height: 14px;
+    height: 16px;
   }
   .wd-nav-dropdown-menu {
     position: absolute;
-    top: calc(100% + 14px);
+    top: calc(100% + 16px);
     left: 50%;
-    transform: translateX(-50%);
-    min-width: 280px;
-    padding: 10px;
+    transform: translateX(-50%) translateY(-6px);
+    min-width: 240px;
+    padding: 8px;
     background: #fff;
-    border: 1px solid #E7DED6;
-    border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid #eddada;
+    border-radius: 18px;
+    box-shadow: 0 24px 56px rgba(128,1,31,0.11), 0 4px 12px rgba(0,0,0,0.05);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
     z-index: 60;
+  }
+  /* Small arrow pointer */
+  .wd-nav-dropdown-menu::before {
+    content: "";
+    position: absolute;
+    top: -6px; left: 50%;
+    transform: translateX(-50%);
+    width: 12px; height: 6px;
+    background: #fff;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    filter: drop-shadow(0 -1px 0 #eddada);
   }
   .wd-nav-dropdown:hover .wd-nav-dropdown-menu,
   .wd-nav-dropdown:focus-within .wd-nav-dropdown-menu,
@@ -130,27 +200,182 @@
     pointer-events: auto;
     transform: translateX(-50%) translateY(0);
   }
+  /* Dropdown section label */
+  .wd-nav-dropdown-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #b09090;
+    padding: 6px 12px 4px;
+  }
   .wd-nav-dropdown-link {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 12px;
+    padding: 9px 12px;
     border-radius: 12px;
     color: #1a1c1c;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    transition: background 0.16s ease, color 0.16s ease;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    transition: background 0.15s ease, color 0.15s ease;
+    text-decoration: none;
   }
   .wd-nav-dropdown-link:hover {
-    background: #F7ECEE;
-    color: #80011F;
+    background: #fdf0f0;
+    color: #af101a;
+  }
+  .wd-nav-dropdown-link:hover .material-symbols-outlined {
+    color: #af101a;
   }
   .wd-nav-dropdown-link .material-symbols-outlined {
-    font-size: 18px;
-    color: #8f6f6c;
+    font-size: 17px;
+    color: #c49090;
+    transition: color 0.15s ease;
   }
+  .wd-nav-dropdown-divider {
+    height: 1px;
+    background: #f0e4e4;
+    margin: 4px 8px;
+  }
+
+  /* Search pill */
+  .wd-search-pill {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1px solid #e4beba;
+    border-radius: 999px;
+    background: #fdf7f7;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .wd-search-pill:focus-within {
+    border-color: #af101a;
+    box-shadow: 0 0 0 3px rgba(175,16,26,0.1);
+    background: #fff;
+  }
+  .wd-search-pill input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 12px;
+    font-family: 'Manrope', sans-serif;
+    color: #1a1c1c;
+    padding: 7px 10px 7px 14px;
+    width: 160px;
+  }
+  .wd-search-pill input::placeholder { color: #b09090; }
+  .wd-search-pill button {
+    display: flex; align-items: center; justify-content: center;
+    background: transparent;
+    border: none;
+    color: #b09090;
+    padding: 7px 10px;
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+  .wd-search-pill button:hover { color: #af101a; }
+
+  /* Cart icon button */
+  .wd-cart-btn {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    border: 1px solid #e4beba;
+    background: #fdf7f7;
+    color: #5b403d;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  .wd-cart-btn:hover {
+    border-color: #af101a;
+    color: #af101a;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(175,16,26,0.12);
+  }
+  .wd-cart-count {
+    position: absolute;
+    top: -5px; right: -5px;
+    min-width: 18px; height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #af101a;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+    border: 2px solid #fdf7f7;
+  }
+
+  /* CTA button in nav */
+  .wd-nav-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #af101a;
+    color: #fff;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    box-shadow: 0 4px 14px rgba(175,16,26,0.25);
+  }
+  .wd-nav-cta:hover {
+    background: #930010;
+    box-shadow: 0 6px 20px rgba(175,16,26,0.35);
+    transform: translateY(-1px);
+  }
+  .wd-nav-cta:active { transform: scale(0.97); }
+
+  /* Mobile menu toggle */
+  .wd-mobile-toggle {
+    display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    border: 1px solid #e4beba;
+    background: #fdf7f7;
+    color: #5b403d;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .wd-mobile-toggle:hover {
+    border-color: #af101a;
+    color: #af101a;
+  }
+
+  /* Mobile drawer */
+  #mobileMenu {
+    background: #fff;
+    border-top: 1px solid #f0e4e4;
+  }
+  .wd-mobile-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1c1c;
+    border-bottom: 1px solid #f7f0f0;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .wd-mobile-link:hover { color: #af101a; }
+  .wd-mobile-link .material-symbols-outlined {
+    font-size: 18px;
+    color: #c49090;
+    flex-shrink: 0;
+  }
+  .wd-mobile-link:hover .material-symbols-outlined { color: #af101a; }
 
   /* Product Card */
   .wd-card {
@@ -289,6 +514,8 @@
     transform: translateY(-3px) scale(1.05);
     box-shadow: 0 14px 32px rgba(37, 211, 102, 0.5);
   }
+
+  /* (legacy search styles removed — replaced by .wd-search-pill) */
 </style>
 
 {% block extra_css %}{% endblock %}
@@ -299,152 +526,187 @@
 <!-- ═══════════════════════════════════════════
      HEADER
 ════════════════════════════════════════════ -->
-<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border-b border-outline-variant">
+<header id="siteHeader" class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-[#f0e4e4] transition-shadow duration-300">
 
   <!-- Top Nav -->
-  <nav class="flex items-center w-full px-8 py-6 max-w-none mx-auto gap-6">
+  <nav class="flex items-center w-full px-6 md:px-10 py-0 h-[68px] max-w-[1400px] mx-auto gap-6" aria-label="Main navigation">
 
-    <!-- Left: Logo -->
-    <a href="{% url 'home' %}" class="text-2xl font-serif italic text-neutral-900 dark:text-neutral-50 flex-shrink-0">WrappDelights</a>
+    <!-- ── Logo ── -->
+    <a href="{% url 'home' %}" class="wd-logo flex-shrink-0" aria-label="WrappDelights home">
+      <div class="wd-logo-dot"></div>
+      WrappDelights
+    </a>
 
-    <!-- Center: Primary CTAs as buttons -->
+    <!-- ── Center Nav ── -->
     <div class="flex-1 flex justify-center">
-      <nav class="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-widest" aria-label="Primary navigation">
-        <div class="wd-nav-dropdown">
+      <ul class="hidden md:flex items-center gap-7 list-none m-0 p-0" aria-label="Primary navigation">
+
+        <!-- Wedding -->
+        <li class="wd-nav-dropdown">
           <a href="{% url 'products' %}?category=wedding-events"
-             class="wd-nav-dropdown-trigger {% block nav_wedding %}text-neutral-700{% endblock %} hover:text-primary transition-colors inline-flex items-center gap-1"
-             aria-haspopup="true"
-             aria-expanded="false">
+             class="wd-nav-link wd-nav-dropdown-trigger {% block nav_wedding %}{% endblock %}"
+             aria-haspopup="true" aria-expanded="false">
             Wedding
-            <span class="material-symbols-outlined text-[16px]">expand_more</span>
+            <span class="material-symbols-outlined" style="font-size:14px;opacity:.6;">expand_more</span>
           </a>
-          <div class="wd-nav-dropdown-menu" role="menu" aria-label="Wedding menu">
+          <div class="wd-nav-dropdown-menu" role="menu">
+            <p class="wd-nav-dropdown-label">Wedding Gifts</p>
             <a href="{% url 'products' %}?category=wedding-events" class="wd-nav-dropdown-link" role="menuitem">
-              <span class="material-symbols-outlined">favorite</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">favorite</span>
               Wedding Return Gifts
             </a>
             <a href="{% url 'products' %}?category=wedding-events" class="wd-nav-dropdown-link" role="menuitem">
-              <span class="material-symbols-outlined">diamond</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">diamond</span>
               Wedding Accessories
             </a>
             <a href="{% url 'products' %}?category=wedding-events" class="wd-nav-dropdown-link" role="menuitem">
-              <span class="material-symbols-outlined">redeem</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">redeem</span>
               Wedding Hampers
             </a>
           </div>
-        </div>
-        <div class="wd-nav-dropdown">
+        </li>
+
+        <!-- Employees -->
+        <li class="wd-nav-dropdown">
           <a href="{% url 'products' %}?category=individual-products"
-             class="wd-nav-dropdown-trigger {% block nav_shop %}text-neutral-700{% endblock %} hover:text-primary transition-colors inline-flex items-center gap-1"
-             aria-haspopup="true"
-             aria-expanded="false">
+             class="wd-nav-link wd-nav-dropdown-trigger {% block nav_shop %}{% endblock %}"
+             aria-haspopup="true" aria-expanded="false">
             Employees
-            <span class="material-symbols-outlined text-[16px]">expand_more</span>
+            <span class="material-symbols-outlined" style="font-size:14px;opacity:.6;">expand_more</span>
           </a>
-          <div class="wd-nav-dropdown-menu" role="menu" aria-label="Employees menu">
+          <div class="wd-nav-dropdown-menu" role="menu">
+            <p class="wd-nav-dropdown-label">Employee Gifts</p>
             <a href="{% url 'products' %}?category=individual-products" class="wd-nav-dropdown-link" role="menuitem">
-              <span class="material-symbols-outlined">badge</span>
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">badge</span>
               Employee Welcome Kit
             </a>
-            <a href="{% url 'search' %}?q=welcome+kit" class="wd-nav-dropdown-link" role="menuitem">
-              <span class="material-symbols-outlined">work</span>
-              Welcome Kit
+            <a href="{% url 'products' %}?category=individual-products" class="wd-nav-dropdown-link" role="menuitem">
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">work</span>
+              Office Welcome Kit
             </a>
           </div>
-        </div>
-        <a href="{% url 'custom_hamper' %}"
-           class="{% block nav_hamper %}text-neutral-700{% endblock %} hover:text-primary transition-colors">
-          Add Your Own Hamper
-        </a>
-        <div class="wd-nav-dropdown">
+        </li>
+
+        <!-- Corporate -->
+        <li class="wd-nav-dropdown">
           <a href="{% url 'products' %}?category=corporate-gifting"
-             class="wd-nav-dropdown-trigger {% block nav_corporate %}text-neutral-700{% endblock %} hover:text-primary transition-colors inline-flex items-center gap-1"
-             aria-haspopup="true"
-             aria-expanded="false">
+             class="wd-nav-link wd-nav-dropdown-trigger {% block nav_corporate %}{% endblock %}"
+             aria-haspopup="true" aria-expanded="false">
             Corporate
-            <span class="material-symbols-outlined text-[16px]">expand_more</span>
+            <span class="material-symbols-outlined" style="font-size:14px;opacity:.6;">expand_more</span>
           </a>
-          <div class="wd-nav-dropdown-menu" role="menu" aria-label="Corporate menu">
+          <div class="wd-nav-dropdown-menu" role="menu">
+            <p class="wd-nav-dropdown-label">Corporate Occasions</p>
             <a href="{% url 'search' %}?q=corporate+christmas+gift" class="wd-nav-dropdown-link" role="menuitem">
-              <span class="material-symbols-outlined">celebration</span>
-              Corporate Christmas Gift
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">celebration</span>
+              Corporate Christmas Gifts
             </a>
             <a href="{% url 'search' %}?q=corporate+gifts+for+women%27s+day" class="wd-nav-dropdown-link" role="menuitem">
-              <span class="material-symbols-outlined">female</span>
-              Corporate Gifts for Women's Day
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">female</span>
+              Women's Day Gifts
             </a>
             <a href="{% url 'search' %}?q=corporate+new+year+gift" class="wd-nav-dropdown-link" role="menuitem">
-              <span class="material-symbols-outlined">new_releases</span>
-              Corporate New Year Gift
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">new_releases</span>
+              New Year Gifts
             </a>
+            <div class="wd-nav-dropdown-divider"></div>
             <a href="{% url 'search' %}?q=corporate+diwali+gift" class="wd-nav-dropdown-link" role="menuitem">
-              <span class="material-symbols-outlined">light_mode</span>
-              Corporate Diwali Gift
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">light_mode</span>
+              Diwali Gifts
             </a>
           </div>
-        </div>
-        <a href="{% url 'products' %}"
-           class="{% block nav_all %}text-neutral-700{% endblock %} hover:text-primary transition-colors">
-          All Gifts
-        </a>
-      </nav>
+        </li>
+
+        <!-- All Gifts -->
+        <li>
+          <a href="{% url 'products' %}"
+             class="wd-nav-link {% block nav_all %}{% endblock %}">
+            All Gifts
+          </a>
+        </li>
+
+      </ul>
     </div>
 
-    <!-- Right: Cart + Mobile Menu Toggle -->
-    <div class="flex items-center gap-4 flex-shrink-0">
+    <!-- ── Right: Search + Cart + CTA + Mobile Toggle ── -->
+    <div class="flex items-center gap-3 flex-shrink-0">
+
+      <!-- Search pill (desktop) -->
+      <form method="get" action="{% url 'products' %}" class="wd-search-pill hidden sm:flex" role="search" aria-label="Search products">
+        <input type="text" name="q" placeholder="Search gifts…" aria-label="Search products">
+        <button type="submit" aria-label="Search">
+          <span class="material-symbols-outlined" style="font-size:17px;">search</span>
+        </button>
+      </form>
+
+      <!-- Cart -->
       {% with kit_count=request.session.kit|length %}
-        <a href="{% url 'custom_hamper_review' %}"
-           class="relative flex items-center justify-center text-outline hover:text-primary transition-colors"
-           aria-label="View recent items">
-          <span class="material-symbols-outlined text-xl">shopping_bag</span>
+        <a href="{% url 'custom_hamper_review' %}" class="wd-cart-btn" aria-label="View hamper kit">
+          <span class="material-symbols-outlined" style="font-size:20px;">shopping_bag</span>
           {% if kit_count %}
-            <span class="absolute -top-1 -right-2 min-w-[18px] h-[18px] px-[6px] rounded-full bg-primary text-on-primary text-[10px] font-bold flex items-center justify-center leading-none">{{ kit_count }}</span>
+            <span class="wd-cart-count">{{ kit_count }}</span>
           {% endif %}
         </a>
       {% endwith %}
 
-      <!-- Mobile menu toggle -->
-      <button type="button" id="mobileMenuToggle" class="md:hidden flex items-center justify-center w-9 h-9 border border-outline-variant hover:border-primary hover:text-primary text-outline transition-colors" aria-expanded="false" aria-controls="mobileMenu" aria-label="Toggle navigation menu">
-        <span class="material-symbols-outlined text-xl" id="mobileMenuIcon">menu</span>
+      <!-- Build Hamper CTA (desktop only) -->
+      <a href="{% url 'custom_hamper' %}" class="wd-nav-cta hidden lg:inline-flex {% block nav_hamper %}{% endblock %}">
+        <span class="material-symbols-outlined" style="font-size:15px;">auto_fix_high</span>
+        Build Hamper
+      </a>
+
+      <!-- Mobile toggle -->
+      <button type="button" id="mobileMenuToggle"
+              class="wd-mobile-toggle md:hidden"
+              aria-expanded="false" aria-controls="mobileMenu" aria-label="Toggle navigation">
+        <span class="material-symbols-outlined" style="font-size:20px;" id="mobileMenuIcon">menu</span>
       </button>
     </div>
   </nav>
 
-  <!-- Mobile Menu Drawer -->
-  <div id="mobileMenu"
-       class="hidden md:hidden border-t border-outline-variant/20 bg-[#fcf9f8] px-6 pb-5 pt-4"
-       aria-label="Mobile navigation">
-    <nav class="flex flex-col gap-1">
-      <a href="{% url 'products' %}?category=wedding-events"
-         class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
-        <span class="material-symbols-outlined text-lg text-outline">favorite</span>
+  <!-- ── Mobile Drawer ── -->
+  <div id="mobileMenu" class="hidden md:hidden" aria-label="Mobile navigation">
+    <!-- Mobile search -->
+    <div class="px-5 pt-4 pb-2">
+      <form method="get" action="{% url 'products' %}" class="wd-search-pill w-full" role="search">
+        <input type="text" name="q" placeholder="Search gifts…" aria-label="Search" style="width:100%;">
+        <button type="submit" aria-label="Search">
+          <span class="material-symbols-outlined" style="font-size:17px;">search</span>
+        </button>
+      </form>
+    </div>
+    <nav class="flex flex-col px-5 pb-5">
+      <a href="{% url 'products' %}?category=wedding-events" class="wd-mobile-link">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">favorite</span>
         Wedding
       </a>
-      <a href="{% url 'products' %}?category=individual-products"
-         class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
-        <span class="material-symbols-outlined text-lg text-outline">shopping_bag</span>
+      <a href="{% url 'products' %}?category=individual-products" class="wd-mobile-link">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">badge</span>
         Employees
       </a>
-      <a href="{% url 'custom_hamper' %}"
-         class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
-        <span class="material-symbols-outlined text-lg text-outline">redeem</span>
-        Add Your Own Hamper
-      </a>
-      <a href="{% url 'products' %}?category=corporate-gifting"
-         class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
-        <span class="material-symbols-outlined text-lg text-outline">business_center</span>
+      <a href="{% url 'products' %}?category=corporate-gifting" class="wd-mobile-link">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">business_center</span>
         Corporate
       </a>
-      <a href="{% url 'products' %}"
-         class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
-        <span class="material-symbols-outlined text-lg text-outline">inventory_2</span>
+      <a href="{% url 'products' %}" class="wd-mobile-link">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">inventory_2</span>
         All Gifts
       </a>
-      <a href="tel:{{ phone_number_raw|default:'+919309810348' }}"
-         class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] transition-colors">
-        <span class="material-symbols-outlined text-lg text-outline">call</span>
+      <a href="{% url 'custom_hamper' %}" class="wd-mobile-link">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">redeem</span>
+        Build Custom Hamper
+      </a>
+      <a href="tel:{{ phone_number_raw|default:'+919309810348' }}" class="wd-mobile-link" style="border-bottom:none;">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">call</span>
         {{ phone_number|default:'+91 93098 10348' }}
       </a>
+      <!-- Mobile CTA -->
+      <div class="mt-4">
+        <a href="{% url 'custom_hamper' %}" class="wd-nav-cta w-full justify-center" style="border-radius:12px;">
+          <span class="material-symbols-outlined" style="font-size:15px;">auto_fix_high</span>
+          Build Your Hamper
+        </a>
+      </div>
     </nav>
   </div>
 
@@ -462,75 +724,102 @@
 <!-- ═══════════════════════════════════════════
      FOOTER
 ════════════════════════════════════════════ -->
-<footer class="w-full border-t border-[#e0bfbf]/20 mt-auto bg-[#fcf9f8] dark:bg-slate-950 font-['Inter'] text-[10px] uppercase tracking-[0.05em]">
-  <div class="flex flex-col md:flex-row justify-between gap-10 px-8 md:px-12 py-12 w-full max-w-7xl mx-auto">
+<!-- ═══════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════ -->
+<footer class="w-full mt-auto" style="background:#0f0304;color:#e8d5d5;">
 
-    <!-- Brand -->
-    <div class="flex flex-col gap-4 max-w-xs">
-      <span class="text-lg font-black text-on-surface normal-case tracking-tight">WrappDelights.</span>
-      <p class="text-slate-500 text-xs normal-case tracking-normal leading-relaxed">
-        Architectural procurement excellence for modern enterprises. Premium corporate gifting catalog — Mumbai, India.
-      </p>
-      <div class="flex flex-col gap-1 text-xs normal-case tracking-normal">
-        <a href="tel:{{ phone_number_raw|default:'+919309810348' }}"
-           class="text-slate-500 hover:text-[#570012] transition-colors">
-          {{ phone_number|default:'+91 93098 10348' }}
-        </a>
-        <a href="mailto:sales@wrappdelights.com"
-           class="text-slate-500 hover:text-[#570012] transition-colors">
-          sales@wrappdelights.com
-        </a>
+  <!-- Main footer grid -->
+  <div class="max-w-[1400px] mx-auto px-6 md:px-10 pt-14 pb-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-12">
+
+      <!-- Brand column -->
+      <div class="lg:col-span-2 flex flex-col gap-5">
+        <!-- Logo -->
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#af101a;flex-shrink:0;"></div>
+          <span style="font-family:'Noto Serif',serif;font-style:italic;font-size:1.3rem;font-weight:700;color:#fff;letter-spacing:-0.01em;">WrappDelights</span>
+        </div>
+        <p style="font-size:13px;color:#a08080;line-height:1.7;max-width:300px;">
+          Premium curated gifting for celebrations, corporate milestones, and every occasion in between. Delivered across 80+ cities in India.
+        </p>
+        <!-- Contact -->
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <a href="tel:{{ phone_number_raw|default:'+919309810348' }}"
+             style="display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#c49090;text-decoration:none;transition:color .2s;"
+             onmouseover="this.style.color='#ff9090'" onmouseout="this.style.color='#c49090'">
+            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">call</span>
+            {{ phone_number|default:'+91 93098 10348' }}
+          </a>
+          <a href="mailto:sales@wrappdelights.com"
+             style="display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#c49090;text-decoration:none;transition:color .2s;"
+             onmouseover="this.style.color='#ff9090'" onmouseout="this.style.color='#c49090'">
+            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">mail</span>
+            sales@wrappdelights.com
+          </a>
+          <a href="https://wa.me/{{ whatsapp_number|default:'919309810348' }}?text=Hi%2C%20I%27d%20like%20to%20explore%20bulk%20gifting."
+             target="_blank" rel="noopener"
+             style="display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#c49090;text-decoration:none;transition:color .2s;"
+             onmouseover="this.style.color='#25D366'" onmouseout="this.style.color='#c49090'">
+            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">chat</span>
+            WhatsApp Us
+          </a>
+        </div>
+        <!-- Mumbai badge -->
+        <div style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(175,16,26,.3);border-radius:999px;padding:5px 12px;width:fit-content;">
+          <span class="material-symbols-outlined" style="font-size:13px;color:#af101a;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">location_on</span>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a08080;">Mumbai, India</span>
+        </div>
       </div>
-    </div>
 
-    <!-- Links Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-      <div class="flex flex-col gap-3">
-        <h5 class="font-bold text-on-surface">Catalog</h5>
-        {% for cat in categories|slice:":4" %}
+      <!-- Catalog -->
+      <div class="flex flex-col gap-4">
+        <h5 style="font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#7a5a5a;margin-bottom:2px;">Catalog</h5>
+        {% for cat in categories|slice:":5" %}
           <a href="{% url 'products' %}?category={{ cat.slug }}"
-             class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">
+             style="font-size:13px;color:#a08080;text-decoration:none;transition:color .2s;"
+             onmouseover="this.style.color='#ffb3ac'" onmouseout="this.style.color='#a08080'">
             {{ cat.name }}
           </a>
         {% empty %}
-          <a href="{% url 'products' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Browse All</a>
+          <a href="{% url 'products' %}"
+             style="font-size:13px;color:#a08080;text-decoration:none;"
+             onmouseover="this.style.color='#ffb3ac'" onmouseout="this.style.color='#a08080'">Browse All</a>
         {% endfor %}
       </div>
-      <div class="flex flex-col gap-3">
-        <h5 class="font-bold text-on-surface">Inquiry</h5>
-        <a href="{% url 'custom_hamper' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Custom Hamper</a>
+
+      <!-- Gifting -->
+      <div class="flex flex-col gap-4">
+        <h5 style="font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#7a5a5a;margin-bottom:2px;">Gifting</h5>
+        <a href="{% url 'custom_hamper' %}" style="font-size:13px;color:#a08080;text-decoration:none;" onmouseover="this.style.color='#ffb3ac'" onmouseout="this.style.color='#a08080'">Build Custom Hamper</a>
+        <a href="{% url 'products' %}?category=wedding-events" style="font-size:13px;color:#a08080;text-decoration:none;" onmouseover="this.style.color='#ffb3ac'" onmouseout="this.style.color='#a08080'">Wedding Gifts</a>
+        <a href="{% url 'products' %}?category=corporate-gifting" style="font-size:13px;color:#a08080;text-decoration:none;" onmouseover="this.style.color='#ffb3ac'" onmouseout="this.style.color='#a08080'">Corporate Gifting</a>
+        <a href="{% url 'products' %}?category=individual-products" style="font-size:13px;color:#a08080;text-decoration:none;" onmouseover="this.style.color='#ffb3ac'" onmouseout="this.style.color='#a08080'">Employee Kits</a>
       </div>
-      <div class="flex flex-col gap-3">
-        <h5 class="font-bold text-on-surface">Company</h5>
-        <a href="{% url 'home' %}" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">About Us</a>
-        <a href="#" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Case Studies</a>
+
+      <!-- Company -->
+      <div class="flex flex-col gap-4">
+        <h5 style="font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#7a5a5a;margin-bottom:2px;">Company</h5>
+        <a href="{% url 'home' %}" style="font-size:13px;color:#a08080;text-decoration:none;" onmouseover="this.style.color='#ffb3ac'" onmouseout="this.style.color='#a08080'">About Us</a>
+        <a href="#" style="font-size:13px;color:#a08080;text-decoration:none;" onmouseover="this.style.color='#ffb3ac'" onmouseout="this.style.color='#a08080'">Case Studies</a>
+        <a href="#" style="font-size:13px;color:#a08080;text-decoration:none;" onmouseover="this.style.color='#ffb3ac'" onmouseout="this.style.color='#a08080'">Privacy Policy</a>
+        <a href="#" style="font-size:13px;color:#a08080;text-decoration:none;" onmouseover="this.style.color='#ffb3ac'" onmouseout="this.style.color='#a08080'">Terms of Service</a>
       </div>
-      <div class="flex flex-col gap-3">
-        <h5 class="font-bold text-on-surface">Legal</h5>
-        <a href="#" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Privacy Policy</a>
-        <a href="#" class="text-slate-500 hover:text-[#570012] transition-colors normal-case tracking-normal">Terms of Service</a>
+
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div style="border-top:1px solid rgba(175,16,26,.18);padding:16px 0;">
+    <div class="max-w-[1400px] mx-auto px-6 md:px-10 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <span style="font-size:11px;color:#5a3a3a;">© {% now "Y" %} WrappDelights. All rights reserved. — Premium B2B &amp; B2C Gifting, Mumbai.</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:5px;height:5px;border-radius:50%;background:#af101a;opacity:.5;"></div>
+        <span style="font-size:11px;color:#5a3a3a;font-family:'Noto Serif',serif;font-style:italic;">Curated with love.</span>
       </div>
     </div>
   </div>
 
-  <!-- Bottom Bar -->
-  <div class="px-8 md:px-12 py-4 border-t border-[#e0bfbf]/15 flex flex-col sm:flex-row justify-between items-center gap-2 text-slate-400 normal-case tracking-normal text-[11px]">
-    <span>© {% now "Y" %} WrappDelights. All rights reserved. B2B Catalog.</span>
-    <div class="flex items-center gap-4">
-      <a href="https://wa.me/{{ whatsapp_number|default:'919309810348' }}?text=Hi%2C%20I%27d%20like%20to%20explore%20bulk%20gifting."
-         target="_blank"
-         rel="noopener"
-         class="text-slate-400 hover:text-[#25D366] transition-colors flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-sm">chat</span>
-        WhatsApp
-      </a>
-      <a href="mailto:sales@wrappdelights.com"
-         class="text-slate-400 hover:text-[#570012] transition-colors flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-sm">mail</span>
-        Email
-      </a>
-    </div>
-  </div>
 </footer>
 <!-- ─── End Footer ─── -->
 
@@ -558,6 +847,18 @@
 <script>
 (function () {
   'use strict';
+
+  /* ── Header scroll shadow ── */
+  var header = document.getElementById('siteHeader');
+  if (header) {
+    window.addEventListener('scroll', function () {
+      if (window.scrollY > 10) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    }, { passive: true });
+  }
 
   /* ── Mobile Menu ── */
   var menuBtn  = document.getElementById('mobileMenuToggle');

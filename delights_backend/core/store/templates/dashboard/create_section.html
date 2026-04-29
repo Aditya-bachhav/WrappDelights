@@ -40,6 +40,15 @@
         <input class="form-input" type="number" name="position" value="0" min="0">
         <span class="form-hint">Lower number = displayed first on homepage</span>
       </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">Categories to show (optional)</label>
+        <select class="form-select" name="categories" multiple size="6">
+          {% for cat in categories %}
+            <option value="{{ cat.id }}">{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+        <span class="form-hint">Hold Ctrl/Cmd to select multiple categories</span>
+      </div>
       <label class="form-check">
         <input type="checkbox" name="is_active" checked>
         Active (visible on homepage)

@@ -90,7 +90,9 @@
           <td style="font-weight:800">{{ p.min_bulk_quantity }}</td>
           <td style="white-space:nowrap">
             {% if p.is_featured %}<span class="badge badge-yellow" style="margin-right:3px">Featured</span>{% endif %}
-            {% if p.is_event_special %}<span class="badge badge-blue">Event</span>{% endif %}
+            {% if p.is_event_special %}<span class="badge badge-blue" style="margin-right:3px">Event</span>{% endif %}
+            {% if p.is_bestseller %}<span class="badge badge-gold" style="margin-right:3px">Bestseller</span>{% endif %}
+            {% if p.is_new %}<span class="badge badge-purple">New</span>{% endif %}
           </td>
           <td>
             {% if p.is_active %}<span class="badge badge-green">Live</span>
@@ -103,6 +105,13 @@
               </a>
               <a href="{% url 'dashboard_edit_product' p.id %}" class="btn btn-outline btn-sm btn-icon" title="Edit">
                 <span class="material-symbols-outlined">edit</span>
+              </a>
+              <a href="{% url 'dashboard_toggle_bestseller' p.id %}" class="btn btn-outline btn-sm btn-icon" title="Toggle Bestseller">
+                {% if p.is_bestseller %}
+                  <span class="material-symbols-outlined" style="color:#f5b400">star</span>
+                {% else %}
+                  <span class="material-symbols-outlined">star_border</span>
+                {% endif %}
               </a>
               <a href="{% url 'dashboard_toggle_product' p.id %}" class="btn btn-outline btn-sm btn-icon" title="{% if p.is_active %}Hide{% else %}Show{% endif %}">
                 {% if p.is_active %}

@@ -37,6 +37,11 @@ class HomepageSection(models.Model):
     subtitle = models.TextField(blank=True, default="")
     is_active = models.BooleanField(default=True)
     position = models.PositiveIntegerField(default=0)
+    categories = models.ManyToManyField(
+        "Category",
+        related_name="homepage_sections",
+        blank=True,
+    )
 
     class Meta:
         db_table = "homepage_sections"
@@ -99,6 +104,8 @@ class Hamper(models.Model):
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
     is_event_special = models.BooleanField(default=False)
+    is_bestseller = models.BooleanField(default=False)
+    is_new = models.BooleanField(default=False)
     homepage_sections = models.ManyToManyField(
         HomepageSection,
         related_name="hampers",

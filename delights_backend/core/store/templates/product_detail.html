@@ -6,630 +6,452 @@
 
 {% block extra_css %}
 <style>
-  /* ─── Page Layout ─── */
-  .detail-wrap {
-    max-width: 1240px;
-    margin: 96px auto 0;
-    padding: 32px 24px 64px;
+  /* ─── Entrance animations ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .anim-fade-up { animation: fadeUp .65s cubic-bezier(.2,.8,.3,1) both; }
+  .anim-fade-in { animation: fadeIn .5s ease both; }
+  .delay-100 { animation-delay: .10s; }
+  .delay-200 { animation-delay: .20s; }
+  .delay-300 { animation-delay: .30s; }
+  .delay-400 { animation-delay: .40s; }
+
+  /* ─── Reveal on scroll ─── */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .65s ease, transform .65s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ─── Section kicker (shared) ─── */
+  .section-kicker {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+  }
+  .section-kicker-line { width: 28px; height: 1px; background: #af101a; opacity: .5; }
+  .section-kicker-text {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .22em; color: #af101a;
+  }
+
+  /* ─── Page wrapper ─── */
+  .detail-page { padding-top: 68px; }
 
   /* ─── Breadcrumb ─── */
-  .breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #8c7070;
-    margin-bottom: 24px;
+  .wd-breadcrumb {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .14em; color: #8f6f6c;
   }
-  .breadcrumb a { transition: color 0.2s; }
-  .breadcrumb a:hover { color: #570012; }
-  .breadcrumb .material-symbols-outlined { font-size: 12px; }
-  .breadcrumb .current { color: #570012; font-weight: 800; }
-
-  /* ─── Main Two-Col ─── */
-  .detail-cols {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 32px;
-    align-items: flex-start;
+  .wd-breadcrumb a {
+    color: inherit; text-decoration: none; transition: color .2s;
   }
+  .wd-breadcrumb a:hover { color: #af101a; }
+  .wd-breadcrumb .material-symbols-outlined { font-size: 13px; color: #c9a8a8; }
+  .wd-breadcrumb .current { color: #1a1c1c; }
 
   /* ─── Gallery ─── */
-  .gallery-container {
-    display: block;
-    align-items: flex-start;
-    position: relative;
-    overflow: visible;
+  .gallery-main-box {
+    width: 100%; max-width: 480px; margin: 0 auto; aspect-ratio: 4/5;
+    border-radius: 20px; overflow: hidden;
+    background: #fff8f7;
+    border: 1px solid #e4beba;
+    box-shadow: 0 24px 60px rgba(175,16,26,.08), 0 0 0 1px rgba(228,190,186,.3);
+    cursor: crosshair; position: relative;
   }
-
-  .gallery-area {
-    position: relative;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
+  .gallery-main-box img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block; user-select: none;
+    transition: transform .5s ease;
   }
-
-  .main-img-box {
-    width: 520px;
-    height: 640px;
-    border: 0.5px solid rgba(224, 191, 191, 0.3);
-    overflow: hidden;
-    cursor: crosshair;
-    position: relative;
-    background: #eae7e7;
-    border-radius: 8px;
-    flex-shrink: 0;
-  }
-
-  .main-img-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    user-select: none;
-  }
+  .gallery-main-box:hover img { transform: scale(1.02); }
 
   .zoom-lens {
-    position: absolute;
-    display: none;
-    pointer-events: none;
-    width: 110px;
-    height: 110px;
-    border: 1.5px solid #570012;
-    background: rgba(255, 255, 255, 0.2);
-    box-sizing: border-box;
-    z-index: 5;
-  }
-
-  .zoom-panel {
-    display: block;
-    width: 520px;
-    height: 640px;
-    border: 0.5px solid rgba(224, 191, 191, 0.3);
+    position: absolute; display: none; pointer-events: none;
+    width: 110px; height: 110px;
+    border: 2px solid #af101a;
     border-radius: 8px;
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    left: calc(100% + 8px);
-    background: #eae7e7;
-    flex-shrink: 0;
-    z-index: 40;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.15s ease;
-    pointer-events: none;
+    background: rgba(255,255,255,.15);
+    box-sizing: border-box; z-index: 5;
   }
-
-  .zoom-panel.active {
-    opacity: 1;
-    visibility: visible;
+  .zoom-panel {
+    position: absolute; top: 0; left: calc(100% + 16px);
+    width: 100%; aspect-ratio: 4/5;
+    border-radius: 20px; overflow: hidden;
+    background: #fff8f7; border: 1px solid #e4beba;
+    box-shadow: 0 24px 60px rgba(175,16,26,.10);
+    z-index: 40; opacity: 0; visibility: hidden;
+    transition: opacity .15s ease; pointer-events: none;
   }
-
+  .zoom-panel.active { opacity: 1; visibility: visible; }
   .zoom-panel-img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: block;
+    position: absolute; top: 0; left: 0; display: block;
     will-change: left, top, width, height;
   }
 
-  .thumbs {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    width: 100%;
-    flex-shrink: 0;
-    overflow-x: auto;
-    padding-bottom: 8px;
+  /* Thumbnails */
+  .gallery-thumbs {
+    display: flex; flex-direction: row; gap: 10px;
+    overflow-x: auto; padding-bottom: 4px;
+    scrollbar-width: none;
   }
-
-  .thumb {
-    width: 70px;
-    height: 70px;
+  .gallery-thumbs::-webkit-scrollbar { display: none; }
+  .gallery-thumb {
+    width: 72px; height: 72px; flex-shrink: 0;
+    border-radius: 12px; overflow: hidden;
+    background: #fff8f7;
     border: 2px solid transparent;
-    border-radius: 6px;
-    overflow: hidden;
-    cursor: pointer;
-    background: #eae7e7;
-    transition: border-color 0.15s;
-    flex-shrink: 0;
+    cursor: pointer; transition: border-color .2s, box-shadow .2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .gallery-thumb.active {
+    border-color: #af101a;
+    box-shadow: 0 4px 14px rgba(175,16,26,.18);
+  }
+  .gallery-thumb img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
   }
 
-  .thumb.active {
-    border-color: #570012;
-  }
-
-  .thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .thumb-more {
-    width: 70px;
-    height: 70px;
-    border-radius: 6px;
-    background: #eae7e7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .thumb-more img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: blur(2px);
-    display: block;
-  }
-  .thumb-more-label {
-    position: absolute;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 900;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
-  }
-
-  .hint {
-    font-size: 12px;
-    color: #8c7070;
-    margin-top: 10px;
-  }
-
-  /* ─── Product Info ─── */
+  /* ─── Info column ─── */
   .info-col {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    position: sticky;
-    top: 96px;
+    display: flex; flex-direction: column; gap: 28px;
+    position: sticky; top: 84px;
+  }
+
+  /* Badges row */
+  .prod-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .prod-ref {
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .14em; color: #8f6f6c;
+    border: 1px solid #e4beba; border-radius: 999px;
+    padding: 3px 10px;
+  }
+
+  /* Title block */
+  .prod-title-block {
+    padding-bottom: 22px;
+    border-bottom: 1px solid #f0e4e4;
+  }
+  .prod-title {
+    font-family: 'Noto Serif', serif;
+    font-size: clamp(1.9rem, 3.5vw, 2.6rem);
+    font-weight: 700; color: #1a1c1c;
+    line-height: 1.1; letter-spacing: -.02em;
+    margin: 10px 0 14px;
+  }
+  .prod-price {
+    font-size: 2rem; font-weight: 900;
+    color: #af101a; line-height: 1; margin-bottom: 14px;
+  }
+  .prod-cat {
+    font-size: 11px; color: #5b403d; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .prod-cat a { color: #af101a; text-decoration: none; transition: opacity .2s; }
+  .prod-cat a:hover { opacity: .75; }
+
+  /* What's Inside */
+  .whats-inside-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+  }
+  .inside-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12px; color: #5b403d; line-height: 1.5;
+  }
+  .inside-item .material-symbols-outlined {
+    font-size: 16px; color: #af101a; flex-shrink: 0; margin-top: 1px;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
 
   /* Specs grid */
   .specs-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px 24px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
     padding: 20px 0;
-    border-top: 1px solid rgba(224, 191, 191, 0.2);
-    border-bottom: 1px solid rgba(224, 191, 191, 0.2);
+    border-top: 1px solid #f0e4e4;
+    border-bottom: 1px solid #f0e4e4;
   }
-  .spec-item {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+  .spec-item { display: flex; flex-direction: column; gap: 4px; }
   .spec-label {
-    font-size: 9px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: #8c7070;
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .14em; color: #8f6f6c;
   }
-  .spec-value {
-    font-size: 13px;
-    font-weight: 700;
-    color: #570012;
+  .spec-value { font-size: 13px; font-weight: 700; color: #af101a; }
+
+  /* Trust chips */
+  .trust-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .trust-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border: 1px solid #e4beba;
+    border-radius: 999px; font-size: 10px; font-weight: 700;
+    color: #5b403d; background: #fff8f7;
+  }
+  .trust-chip .material-symbols-outlined {
+    font-size: 14px; color: #af101a;
+    font-variation-settings: 'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;
   }
 
-  /* Header block */
-  .prod-header {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(224, 191, 191, 0.2);
-  }
-  .prod-badges {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .prod-ref {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: #8c7070;
-  }
-  .prod-title {
-    font-size: clamp(1.8rem, 4vw, 2.4rem);
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    color: #1c1b1b;
-    line-height: 1.15;
-  }
-  .prod-cat {
-    font-size: 12px;
-    color: #8c7070;
-    font-weight: 600;
-  }
-  .prod-cat a { color: #570012; transition: opacity 0.2s; }
-  .prod-cat a:hover { opacity: 0.75; }
-
-  /* Section divider label */
-  .section-label {
-    font-size: 9px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: #570012;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(224,191,191,0.3);
-    margin-bottom: 14px;
-  }
-
-  /* What's Inside */
-  .items-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px 16px;
-  }
-  .item-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 12px;
-    color: #584141;
-    line-height: 1.4;
-  }
-  .item-row .material-symbols-outlined {
-    font-size: 15px;
-    color: #570012;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  /* CTA Buttons */
-  .cta-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
+  /* CTA buttons */
+  .cta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .cta-primary {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     padding: 14px 20px;
-    background: #570012;
-    color: #ffffff;
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    border-radius: 2px;
-    text-align: center;
+    background: #af101a; color: #fff;
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .16em; border: none; border-radius: 12px;
+    cursor: pointer; text-decoration: none;
+    transition: background .2s, transform .1s, box-shadow .2s;
+    box-shadow: 0 6px 18px rgba(175,16,26,.25);
   }
-  .cta-primary:hover { background: #8e1027; }
-  .cta-primary:active { transform: scale(0.98); }
+  .cta-primary:hover { background: #930010; box-shadow: 0 10px 28px rgba(175,16,26,.32); }
+  .cta-primary:active { transform: scale(.98); }
   .cta-secondary {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     padding: 14px 20px;
-    background: transparent;
-    color: #570012;
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    border: 1px solid rgba(224,191,191,0.5);
-    cursor: pointer;
-    transition: all 0.2s;
-    border-radius: 2px;
-    text-align: center;
+    background: #fff; color: #af101a;
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .16em; border: 1.5px solid #e4beba; border-radius: 12px;
+    cursor: pointer; text-decoration: none;
+    transition: border-color .2s, background .2s, transform .1s;
   }
-  .cta-secondary:hover {
-    border-color: #570012;
-    background: #ffdada;
-  }
-  .cta-secondary:active { transform: scale(0.98); }
+  .cta-secondary:hover { border-color: #af101a; background: #fff8f7; }
+  .cta-secondary:active { transform: scale(.98); }
   .cta-row .material-symbols-outlined { font-size: 17px; }
 
-  /* ─── Inquiry Form ─── */
+  /* WhatsApp shortcut */
+  .wa-shortcut {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 18px;
+    background: #f0faf0; border: 1px solid rgba(37,211,102,.3);
+    border-radius: 12px; font-size: 11px; font-weight: 700;
+    color: #1a1c1c; text-decoration: none;
+    transition: background .2s, border-color .2s;
+  }
+  .wa-shortcut:hover { background: #e0f5e0; border-color: #25D366; }
+  .wa-icon { width: 22px; height: 22px; flex-shrink: 0; }
+
+  /* ─── Inquiry section ─── */
   .inquiry-section {
-    max-width: 1240px;
-    margin: 60px auto 0;
-    padding: 0 24px 64px;
+    background: linear-gradient(135deg, #fff8f7 0%, #fce8e8 100%);
+    border-top: 1px solid #e4beba;
+    border-bottom: 1px solid #e4beba;
+    position: relative; overflow: hidden;
+  }
+  .inquiry-section::before {
+    content: "";
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at 90% 10%, rgba(175,16,26,.07) 0%, transparent 55%);
   }
   .inquiry-inner {
-    background: #f9f9f9;
-    border: 1px solid rgba(224,191,191,0.2);
-    padding: 40px;
-    max-width: 900px;
-    margin: 0 auto;
-    border-radius: 8px;
-  }
-  .inquiry-header {
-    margin-bottom: 28px;
-  }
-  .inquiry-header h2 {
-    font-size: clamp(1.4rem, 2.5vw, 1.8rem);
-    font-weight: 900;
-    letter-spacing: -0.025em;
-    color: #1c1b1b;
-    margin-top: 6px;
+    max-width: 900px; margin: 0 auto;
+    background: #fff; border: 1px solid #e4beba;
+    border-radius: 20px;
+    box-shadow: 0 16px 48px rgba(175,16,26,.07);
+    padding: 44px 48px;
+    position: relative; z-index: 1;
   }
 
-  /* Underline-style inputs */
-  .field-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 20px;
-  }
+  /* Form fields — underline style */
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
   .field-label {
-    font-size: 9px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: #8c7070;
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .16em; color: #8f6f6c;
   }
   .field-input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1.5px solid rgba(224,191,191,0.5);
-    padding: 10px 0;
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-    color: #1c1b1b;
-    outline: none;
-    transition: border-color 0.2s;
+    width: 100%; background: transparent; border: none;
+    border-bottom: 1.5px solid #e4beba;
+    padding: 10px 0; font-size: 13px; font-family: 'Manrope', sans-serif;
+    color: #1a1c1c; outline: none; transition: border-color .2s;
   }
-  .field-input:focus {
-    border-color: #570012;
-    background: rgba(87, 0, 18, 0.02);
-  }
-  .field-input::placeholder { color: #c4a8a8; }
+  .field-input:focus { border-color: #af101a; }
+  .field-input::placeholder { color: #c9a8a8; }
   .field-textarea {
-    width: 100%;
-    background: #ffffff;
-    border: 1px solid rgba(224,191,191,0.4);
-    padding: 12px;
-    font-size: 13px;
-    font-family: 'Inter', sans-serif;
-    color: #1c1b1b;
-    outline: none;
-    resize: vertical;
-    transition: border-color 0.2s;
-    border-radius: 2px;
-    min-height: 100px;
+    width: 100%; background: #f9f9f9;
+    border: 1px solid #e4beba; border-radius: 10px;
+    padding: 14px; font-size: 13px; font-family: 'Manrope', sans-serif;
+    color: #1a1c1c; outline: none; resize: vertical;
+    min-height: 100px; transition: border-color .2s;
   }
-  .field-textarea:focus { border-color: #570012; }
-  .field-textarea::placeholder { color: #c4a8a8; }
-
-  .form-grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px 28px;
-  }
-  .form-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+  .field-textarea:focus { border-color: #af101a; }
+  .field-textarea::placeholder { color: #c9a8a8; }
+  .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; }
+  .form-stack { display: flex; flex-direction: column; gap: 20px; }
 
   .submit-btn {
-    width: 100%;
-    padding: 14px;
-    background: #570012;
-    color: #ffffff;
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    border-radius: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    width: 100%; padding: 16px;
+    background: #af101a; color: #fff;
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .2em; border: none; border-radius: 12px;
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: center; gap: 8px;
+    transition: background .2s, transform .1s;
+    box-shadow: 0 6px 18px rgba(175,16,26,.25);
   }
-  .submit-btn:hover { background: #8e1027; }
-  .submit-btn:active { transform: scale(0.99); }
+  .submit-btn:hover { background: #930010; }
+  .submit-btn:active { transform: scale(.99); }
 
-  /* ─── Section Divider ─── */
-  .section-sep {
-    height: 1px;
-    background: rgba(224,191,191,0.2);
-    max-width: 1240px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  /* ─── Related Products ─── */
-  .related-section {
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: 48px 24px 64px;
-  }
-  .related-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-  .related-title {
-    font-size: 1.6rem;
-    font-weight: 900;
-    letter-spacing: -0.025em;
-    color: #1c1b1b;
-  }
+  /* ─── Related products ─── */
   .related-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 16px;
   }
   .related-card {
-    background: #ffffff;
-    border: 1px solid transparent;
-    display: flex;
-    flex-direction: column;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    background: #fff; border: 1px solid rgba(228,190,186,.4);
+    border-radius: 16px; overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 4px 16px rgba(0,0,0,.04);
+    transition: border-color .3s, box-shadow .3s, transform .3s;
   }
   .related-card:hover {
-    border-color: rgba(224,191,191,0.35);
-    box-shadow: 0 8px 24px rgba(87,0,18,0.07);
+    border-color: rgba(175,16,26,.22);
+    box-shadow: 0 16px 40px rgba(175,16,26,.10);
+    transform: translateY(-3px);
   }
   .related-img {
-    aspect-ratio: 1;
-    background: #eae7e7;
-    overflow: hidden;
-    display: block;
+    aspect-ratio: 1; overflow: hidden;
+    background: #fff8f7; display: block; position: relative;
   }
   .related-img img {
     width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-    display: block;
+    object-fit: cover; display: block; transition: transform .6s ease;
   }
-  .related-card:hover .related-img img { transform: scale(1.05); }
+  .related-card:hover .related-img img { transform: scale(1.06); }
   .related-img-empty {
-    width: 100%; height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #8c7070;
+    width: 100%; height: 100%; min-height: 180px;
+    display: flex; align-items: center; justify-content: center;
   }
-  .related-body {
-    padding: 14px 16px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    gap: 10px;
-  }
+  .related-body { padding: 14px 16px 18px; display: flex; flex-direction: column; flex: 1; gap: 8px; }
   .related-name {
-    font-size: 13px;
-    font-weight: 700;
-    color: #1c1b1b;
-    letter-spacing: -0.01em;
-    line-height: 1.3;
-    transition: color 0.2s;
+    font-family: 'Noto Serif', serif;
+    font-size: 13px; font-weight: 700; color: #1a1c1c;
+    line-height: 1.35; text-decoration: none; transition: color .2s;
   }
-  .related-card:hover .related-name { color: #570012; }
+  .related-card:hover .related-name { color: #af101a; }
+  .related-price { font-size: 13px; font-weight: 900; color: #af101a; }
   .related-cta {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background: #570012;
-    color: #ffffff;
-    font-size: 9px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    text-align: center;
-    transition: background 0.2s;
-    border-radius: 2px;
-    margin-top: auto;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 100%; padding: 10px;
+    background: #af101a; color: #fff;
+    font-size: 9px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: .14em; text-decoration: none; border-radius: 10px;
+    margin-top: auto; transition: background .2s;
+    box-shadow: 0 4px 12px rgba(175,16,26,.18);
   }
-  .related-cta:hover { background: #8e1027; }
+  .related-cta:hover { background: #930010; }
 
   /* ─── Responsive ─── */
-  @media (max-width: 1024px) {
-    .detail-cols { grid-template-columns: 1fr; gap: 32px; }
-    .info-col { position: static; }
-    .related-grid { grid-template-columns: repeat(2, 1fr); }
-    .gallery-area { flex-direction: column; gap: 16px; }
+  @media (max-width: 1100px) {
     .zoom-panel { display: none !important; }
-    .main-img-box { width: 100%; }
-    .specs-grid { grid-template-columns: 1fr 1fr; }
+    .gallery-main-box { cursor: default; }
   }
-  @media (max-width: 768px) {
-    .detail-wrap { padding: 20px 16px 48px; }
-    .main-img-box { width: 100%; height: 500px; }
-    .zoom-panel { display: none !important; }
-    .thumbs { flex-direction: row; width: 100%; }
-    .specs-grid { grid-template-columns: 1fr; }
+  @media (max-width: 900px) {
+    .detail-cols { grid-template-columns: 1fr !important; }
+    .info-col { position: static; }
+    .related-grid { grid-template-columns: repeat(2,1fr); }
+    .whats-inside-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
     .cta-row { grid-template-columns: 1fr; }
-    .items-grid { grid-template-columns: 1fr; }
     .form-grid-2 { grid-template-columns: 1fr; }
-    .inquiry-inner { padding: 24px 20px; }
-    .related-grid { grid-template-columns: repeat(2, 1fr); }
-    .hint { display: none; }
+    .inquiry-inner { padding: 28px 20px; }
+    .specs-grid { grid-template-columns: 1fr; }
   }
 </style>
 {% endblock %}
 
 {% block content %}
+<div class="detail-page">
 
-<div class="detail-wrap">
+  <!-- ═══════════════════════════════════════════
+       VALUE STRIP
+  ════════════════════════════════════════════ -->
+  <div class="bg-primary overflow-hidden py-3 select-none" aria-hidden="true">
+    <div style="display:flex;animation:marquee 26s linear infinite;white-space:nowrap;">
+      {% for _ in "xxxxxxxx" %}
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:0 40px;border-right:1px solid rgba(255,255,255,.15);flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#fff;">
+        <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">verified</span>
+        Custom Branding Available
+      </span>
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:0 40px;border-right:1px solid rgba(255,255,255,.15);flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#fff;">
+        <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">local_shipping</span>
+        Pan-India Delivery
+      </span>
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:0 40px;border-right:1px solid rgba(255,255,255,.15);flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#fff;">
+        <span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">package_2</span>
+        Bulk Orders Welcome
+      </span>
+      {% endfor %}
+    </div>
+  </div>
+  <style>@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-33.333%); } }</style>
 
-  <!-- Breadcrumb -->
-  <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a href="{% url 'home' %}">Home</a>
-    <span class="material-symbols-outlined">chevron_right</span>
-    <a href="{% url 'products' %}">Catalog</a>
-    {% if product.category %}
+
+  <!-- ═══════════════════════════════════════════
+       BREADCRUMB + PRODUCT HERO SECTION
+  ════════════════════════════════════════════ -->
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10 pt-10 pb-16">
+
+    <!-- Breadcrumb -->
+    <nav class="wd-breadcrumb mb-10 anim-fade-up" aria-label="Breadcrumb">
+      <a href="{% url 'home' %}">Home</a>
       <span class="material-symbols-outlined">chevron_right</span>
-      <a href="{% url 'products' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
-    {% endif %}
-    <span class="material-symbols-outlined">chevron_right</span>
-    <span class="current">{{ product.name|truncatechars:40 }}</span>
-  </nav>
+      <a href="{% url 'products' %}">Catalog</a>
+      {% if product.category %}
+        <span class="material-symbols-outlined">chevron_right</span>
+        <a href="{% url 'products' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+      {% endif %}
+      <span class="material-symbols-outlined">chevron_right</span>
+      <span class="current">{{ product.name|truncatechars:40 }}</span>
+    </nav>
 
-  <!-- Two-Column Layout -->
-  <div class="detail-cols">
+    <!-- Two-column layout -->
+    <div class="detail-cols" style="display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:flex-start;">
 
-    <!-- ══════════ GALLERY ══════════ -->
-    <section aria-label="Product images">
-      <div class="gallery-container">
+      <!-- ══════════ GALLERY ══════════ -->
+      <section aria-label="Product images" class="anim-fade-in" style="position:relative;overflow:visible;">
 
-        <div class="gallery-area">
-          <div class="main-img-box" id="mainBox">
-            {% if images.first %}
-              <img id="mainImg" src="{{ images.first.image.url }}" alt="{{ product.name }}">
-            {% elif product.cover_image %}
-              <img id="mainImg" src="{{ product.cover_image.url }}" alt="{{ product.name }}">
-            {% else %}
-              <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:#8c7070;">No Image Available</div>
-            {% endif %}
-            <div class="zoom-lens" id="lens"></div>
-          </div>
-
-          <div class="thumbs">
-            {% if images.first %}
-              <div class="thumb active" data-src="{{ images.first.image.url }}">
-                <img src="{{ images.first.image.url }}" alt="{{ product.name }}">
-              </div>
-              {% for image in images|slice:"1:" %}
-                <div class="thumb" data-src="{{ image.image.url }}">
-                  <img src="{{ image.image.url }}" alt="{{ product.name }} image {{ forloop.counter|add:1 }}">
-                </div>
-              {% endfor %}
-            {% elif product.cover_image %}
-              <div class="thumb active" data-src="{{ product.cover_image.url }}">
-                <img src="{{ product.cover_image.url }}" alt="{{ product.name }}">
-              </div>
-            {% endif %}
-          </div>
-
-          <p class="hint">Hover over image to zoom</p>
+        <div class="gallery-main-box" id="mainBox">
+          {% if images.first %}
+            <img id="mainImg" src="{{ images.first.image.url }}" alt="{{ product.name }}">
+          {% elif product.cover_image %}
+            <img id="mainImg" src="{{ product.cover_image.url }}" alt="{{ product.name }}">
+          {% else %}
+            <div style="width:100%;height:100%;min-height:480px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+              <span class="material-symbols-outlined" style="font-size:52px;color:#c9a8a8;">image_not_supported</span>
+              <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:#8f6f6c;">No Image Available</span>
+            </div>
+          {% endif %}
+          <div class="zoom-lens" id="lens"></div>
         </div>
 
+        <!-- Thumbnails -->
+        {% if images %}
+        <div class="gallery-thumbs mt-4">
+          {% if images.first %}
+            <div class="gallery-thumb active" data-src="{{ images.first.image.url }}">
+              <img src="{{ images.first.image.url }}" alt="{{ product.name }}">
+            </div>
+            {% for image in images|slice:"1:" %}
+              <div class="gallery-thumb" data-src="{{ image.image.url }}">
+                <img src="{{ image.image.url }}" alt="{{ product.name }} {{ forloop.counter|add:1 }}">
+              </div>
+            {% endfor %}
+          {% elif product.cover_image %}
+            <div class="gallery-thumb active" data-src="{{ product.cover_image.url }}">
+              <img src="{{ product.cover_image.url }}" alt="{{ product.name }}">
+            </div>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        <p style="font-size:11px;color:#8f6f6c;margin-top:10px;display:flex;align-items:center;gap:5px;">
+          <span class="material-symbols-outlined" style="font-size:15px;color:#c9a8a8;">zoom_in</span>
+          Hover over image to zoom
+        </p>
+
+        <!-- Zoom panel -->
         <div class="zoom-panel" id="zoomPanel">
           {% if images.first %}
             <img class="zoom-panel-img" id="zoomImg" src="{{ images.first.image.url }}" alt="">
@@ -638,330 +460,372 @@
           {% endif %}
         </div>
 
-      </div>
-    </section>
+      </section>
 
-    <!-- ══════════ PRODUCT INFO ══════════ -->
-    <section class="info-col" aria-label="Product details">
 
-      <!-- Header -->
-      <div class="prod-header">
-        <div class="prod-badges">
-          <span class="wd-badge wd-badge-surface" style="background:#b9eeab;color:#23501e;">In-Stock</span>
+      <!-- ══════════ PRODUCT INFO ══════════ -->
+      <section class="info-col" aria-label="Product details">
+
+        <!-- Badges + ref -->
+        <div class="prod-badges anim-fade-up">
+          <span class="wd-badge wd-badge-surface">In Stock</span>
           {% if product.is_featured %}
             <span class="wd-badge wd-badge-primary">Featured</span>
           {% endif %}
           <span class="prod-ref">Ref: WD-{{ product.id }}</span>
         </div>
 
-        <h1 class="prod-title">{{ product.name }}</h1>
+        <!-- Title block -->
+        <div class="prod-title-block anim-fade-up delay-100">
+          <div class="section-kicker">
+            <div class="section-kicker-line"></div>
+            <span class="section-kicker-text">
+              {% if product.category %}{{ product.category.name }}{% else %}Corporate Gift{% endif %}
+            </span>
+          </div>
+          <h1 class="prod-title">{{ product.name }}</h1>
+          <p class="prod-price">
+            {% if product.base_price %}
+              ₹{{ product.base_price|floatformat:0 }}
+            {% elif product.price_label %}
+              {{ product.price_label }}
+            {% else %}
+              Price on Request
+            {% endif %}
+          </p>
+          <p class="prod-cat">
+            <span class="material-symbols-outlined" style="font-size:14px;color:#c9a8a8;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">sell</span>
+            {% if product.category %}
+              <a href="{% url 'products' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+            {% else %}
+              Uncategorized
+            {% endif %}
+          </p>
+        </div>
 
-        <p style="font-size: 18px; font-weight: 900; color: #570012; margin-bottom: 12px;">
-          {% if product.base_price %}
-            ₹ {{ product.base_price|floatformat:0 }}
-          {% elif product.price_label %}
-            {{ product.price_label }}
-          {% else %}
-            Price on Request
-          {% endif %}
-        </p>
+        <!-- Trust chips -->
+        <div class="trust-chips anim-fade-up delay-200">
+          <span class="trust-chip">
+            <span class="material-symbols-outlined">verified</span>Bulk-friendly
+          </span>
+          <span class="trust-chip">
+            <span class="material-symbols-outlined">local_shipping</span>Pan-India
+          </span>
+          <span class="trust-chip">
+            <span class="material-symbols-outlined">palette</span>Custom branding
+          </span>
+        </div>
 
-        <p class="prod-cat">
-          Category:
-          {% if product.category %}
-            <a href="{% url 'products' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
-          {% else %}
-            Uncategorized
-          {% endif %}
-        </p>
-      </div>
+        <!-- Specs -->
+        <div class="specs-grid anim-fade-up delay-200">
+          <div class="spec-item">
+            <span class="spec-label">Lead Time</span>
+            <span class="spec-value">{{ product.lead_time|default:"7–10 Days" }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Min. Order</span>
+            <span class="spec-value">{{ product.min_order|default:"50 Units" }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Packaging</span>
+            <span class="spec-value">{{ product.packaging|default:"Premium Box" }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Customisation</span>
+            <span class="spec-value">{{ product.customisation|default:"Logo + Note" }}</span>
+          </div>
+        </div>
 
-      <!-- What's Inside -->
-      <div>
-        <p class="section-label">What's Inside</p>
-        <div class="items-grid">
-          {% if included_items %}
-            {% for item in included_items %}
-              <div class="item-row">
+        <!-- What's Inside -->
+        <div class="anim-fade-up delay-300">
+          <div class="section-kicker" style="margin-bottom:14px;">
+            <div class="section-kicker-line"></div>
+            <span class="section-kicker-text">What's Inside</span>
+          </div>
+          <div class="whats-inside-grid">
+            {% if included_items %}
+              {% for item in included_items %}
+                <div class="inside-item">
+                  <span class="material-symbols-outlined">check_circle</span>
+                  <span>{{ item }}</span>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="inside-item">
                 <span class="material-symbols-outlined">check_circle</span>
-                <span>{{ item }}</span>
+                <span>Premium quality items</span>
               </div>
-            {% endfor %}
-          {% else %}
-            <div class="item-row">
-              <span class="material-symbols-outlined">check_circle</span>
-              <span>Premium quality items included</span>
-            </div>
-            <div class="item-row">
-              <span class="material-symbols-outlined">check_circle</span>
-              <span>Custom branding available</span>
-            </div>
-            <div class="item-row">
-              <span class="material-symbols-outlined">check_circle</span>
-              <span>Sustainable packaging</span>
-            </div>
-            <div class="item-row">
-              <span class="material-symbols-outlined">check_circle</span>
-              <span>PAN India delivery</span>
-            </div>
-          {% endif %}
+              <div class="inside-item">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span>Custom branding available</span>
+              </div>
+              <div class="inside-item">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span>Sustainable packaging</span>
+              </div>
+              <div class="inside-item">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span>PAN India delivery</span>
+              </div>
+            {% endif %}
+          </div>
         </div>
-      </div>
 
-      <!-- CTAs -->
-      <div class="cta-row">
-        <a href="#inquiryForm" class="cta-primary">
-          <span class="material-symbols-outlined">folder_special</span>
-          Submit Inquiry
+        <!-- CTA row -->
+        <div class="cta-row anim-fade-up delay-300">
+          <a href="#inquiryForm" class="cta-primary">
+            <span class="material-symbols-outlined">folder_special</span>
+            Get a Quote
+          </a>
+          <a href="{% url 'custom_hamper' %}" class="cta-secondary">
+            <span class="material-symbols-outlined">auto_fix_high</span>
+            Customise Kit
+          </a>
+        </div>
+
+        <!-- WhatsApp shortcut -->
+        <a href="https://wa.me/919309810348?text=Hi%2C%20I%27m%20interested%20in%20{{ product.name|urlencode }}%20(Ref%3A%20WD-{{ product.id }})"
+           target="_blank" rel="noopener" class="wa-shortcut anim-fade-up delay-400">
+          <svg class="wa-icon" viewBox="0 0 24 24" fill="#25D366" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          <div>
+            <p style="font-size:11px;font-weight:800;color:#1a1c1c;">Chat on WhatsApp</p>
+            <p style="font-size:10px;color:#5b403d;font-weight:600;">Quick inquiry — reply in minutes</p>
+          </div>
+          <span class="material-symbols-outlined" style="font-size:16px;color:#25D366;margin-left:auto;">arrow_forward</span>
         </a>
-        <a href="{% url 'custom_hamper' %}" class="cta-secondary">
-          <span class="material-symbols-outlined">edit</span>
-          Customise Kit
-        </a>
-      </div>
 
-    </section>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════
-     INQUIRY FORM
-══════════════════════════════════ -->
-<div class="section-sep"></div>
-
-<section class="inquiry-section" id="inquiryForm">
-  <div class="inquiry-inner">
-    <div class="inquiry-header">
-      <p class="wd-kicker">Get Pricing</p>
-      <h2>Procurement Inquiry</h2>
+      </section>
     </div>
-
-    <form method="post" action="{% url 'corporate' %}" class="form-stack">
-      {% csrf_token %}
-      <input type="hidden" name="inquiry_type" value="product">
-      <input type="hidden" name="hamper_id" value="{{ product.id }}">
-      <input type="hidden" name="hamper_name" value="{{ product.name }}">
-
-      <div class="form-grid-2">
-        <div class="field-group">
-          <label class="field-label">Full Name *</label>
-          <input type="text" name="name" class="field-input" placeholder="Priya Sharma" required>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Company Name *</label>
-          <input type="text" name="company" class="field-input" placeholder="ACME Corp" required>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Email *</label>
-          <input type="email" name="email" class="field-input" placeholder="name@company.com" required>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Phone *</label>
-          <input type="tel" name="phone" class="field-input" placeholder="+91 XXXXX XXXXX" required>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Quantity *</label>
-          <input type="number" name="quantity" min="1" value="50" class="field-input" placeholder="50" required>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Delivery Location</label>
-          <input type="text" name="location" class="field-input" placeholder="City / State">
-        </div>
-      </div>
-
-      <div class="field-group">
-        <label class="field-label">Additional Notes</label>
-        <textarea name="notes" class="field-textarea"
-                  placeholder="Logo placement, customisation requests, event date, special requirements…"></textarea>
-      </div>
-
-      <button type="submit" class="submit-btn">
-        <span class="material-symbols-outlined" style="font-size:17px;">send</span>
-        Submit Inquiry
-      </button>
-    </form>
   </div>
-</section>
 
-<!-- ══════════════════════════════════
-     RELATED PRODUCTS
-══════════════════════════════════ -->
-{% if related_products %}
-  <div class="section-sep"></div>
-  <section class="related-section">
-    <div class="related-header">
+
+  <!-- ═══════════════════════════════════════════
+       INQUIRY FORM
+  ════════════════════════════════════════════ -->
+  <section class="inquiry-section py-16 px-6 md:px-10" id="inquiryForm">
+    <div class="max-w-[1280px] mx-auto reveal">
+
+      <div class="text-center mb-10">
+        <div class="section-kicker justify-center">
+          <div class="section-kicker-line"></div>
+          <span class="section-kicker-text">Get Pricing</span>
+          <div class="section-kicker-line"></div>
+        </div>
+        <h2 class="font-serif text-[1.9rem] md:text-[2.5rem] text-on-surface mt-2">
+          Procurement Inquiry
+        </h2>
+        <p class="text-secondary text-sm mt-3 max-w-md mx-auto leading-relaxed">
+          Fill in the form below and our team will get back to you with a customised quote within 24 hours.
+        </p>
+      </div>
+
+      <div class="inquiry-inner">
+        <form method="post" action="{% url 'corporate' %}" class="form-stack">
+          {% csrf_token %}
+          <input type="hidden" name="inquiry_type" value="product">
+          <input type="hidden" name="hamper_id" value="{{ product.id }}">
+          <input type="hidden" name="hamper_name" value="{{ product.name }}">
+
+          <div class="form-grid-2">
+            <div class="field-group">
+              <label class="field-label">Full Name *</label>
+              <input type="text" name="name" class="field-input" placeholder="Priya Sharma" required>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Company Name *</label>
+              <input type="text" name="company" class="field-input" placeholder="ACME Corp" required>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Email *</label>
+              <input type="email" name="email" class="field-input" placeholder="name@company.com" required>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Phone *</label>
+              <input type="tel" name="phone" class="field-input" placeholder="+91 XXXXX XXXXX" required>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Quantity *</label>
+              <input type="number" name="quantity" min="1" value="50" class="field-input" placeholder="50" required>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Delivery Location</label>
+              <input type="text" name="location" class="field-input" placeholder="City / State">
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Additional Notes</label>
+            <textarea name="notes" class="field-textarea"
+                      placeholder="Logo placement, customisation requests, event date, special requirements…"></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn">
+            <span class="material-symbols-outlined" style="font-size:18px;">send</span>
+            Submit Inquiry
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       RELATED PRODUCTS
+  ════════════════════════════════════════════ -->
+  {% if related_products %}
+  <section class="py-16 px-6 md:px-10 max-w-[1280px] mx-auto">
+
+    <div class="flex justify-between items-end mb-10 reveal">
       <div>
-        <p class="wd-kicker" style="margin-bottom:6px;">You May Also Like</p>
-        <h2 class="related-title">Related Products</h2>
+        <div class="section-kicker">
+          <div class="section-kicker-line"></div>
+          <span class="section-kicker-text">You May Also Like</span>
+        </div>
+        <h2 class="font-serif text-[1.8rem] md:text-[2.2rem] text-on-surface mt-1">Related Products</h2>
       </div>
       <a href="{% url 'products' %}"
-         style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#570012;display:flex;align-items:center;gap:4px;transition:gap 0.2s;"
-         onmouseover="this.style.gap='8px'" onmouseout="this.style.gap='4px'">
+         class="inline-flex items-center gap-1 text-primary font-bold uppercase tracking-widest text-[10px] border-b border-primary pb-0.5 hover:opacity-70 transition-opacity">
         View All
-        <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+        <span class="material-symbols-outlined text-sm">arrow_forward</span>
       </a>
     </div>
 
-    <div class="related-grid">
+    <div class="related-grid reveal">
       {% for item in related_products|slice:":4" %}
         <article class="related-card">
           <a href="{% url 'product_detail' item.id %}" class="related-img">
             {% if item.cover_image %}
               <img src="{{ item.cover_image.url }}" alt="{{ item.name }}" loading="lazy">
             {% else %}
-              <div class="related-img-empty">No Image</div>
+              <div class="related-img-empty">
+                <span class="material-symbols-outlined" style="font-size:40px;color:#c9a8a8;">image_not_supported</span>
+              </div>
             {% endif %}
           </a>
           <div class="related-body">
             <a href="{% url 'product_detail' item.id %}" class="related-name">{{ item.name }}</a>
             {% if item.base_price %}
-              <span style="font-size:12px;font-weight:900;color:#570012;">₹ {{ item.base_price|floatformat:0 }}</span>
+              <span class="related-price">₹{{ item.base_price|floatformat:0 }}</span>
             {% endif %}
             <a href="{% url 'product_detail' item.id %}" class="related-cta">View Details</a>
           </div>
         </article>
       {% endfor %}
     </div>
-  </section>
-{% endif %}
 
+  </section>
+  {% endif %}
+
+</div>
 {% endblock %}
+
 
 {% block extra_js %}
 <script>
 (function () {
   'use strict';
 
+  /* ── Scroll reveal ── */
+  var reveals = document.querySelectorAll('.reveal');
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  reveals.forEach(function(el) { io.observe(el); });
+
+  /* ── Zoom ── */
   var mainBox   = document.getElementById('mainBox');
   var mainImg   = document.getElementById('mainImg');
   var lens      = document.getElementById('lens');
   var zoomPanel = document.getElementById('zoomPanel');
   var zoomImg   = document.getElementById('zoomImg');
-  var thumbs    = document.querySelectorAll('.thumb');
+  var thumbs    = document.querySelectorAll('.gallery-thumb');
 
   if (!mainBox || !mainImg || !lens || !zoomPanel || !zoomImg) return;
 
   var ZOOM = 3.1;
-
   zoomImg.style.objectFit = 'none';
   zoomImg.style.position  = 'absolute';
   zoomImg.style.maxWidth  = 'none';
   zoomImg.style.maxHeight = 'none';
 
-  function getRenderedMetrics() {
-    var nw = mainImg.naturalWidth;
-    var nh = mainImg.naturalHeight;
-    var bw = mainBox.offsetWidth;
-    var bh = mainBox.offsetHeight;
-
-    if (!nw || !nh || !bw || !bh) {
-      return null;
-    }
-
-    var coverScale = Math.max(bw / nw, bh / nh);
-    var rendW = nw * coverScale;
-    var rendH = nh * coverScale;
-    var cropX = Math.max((rendW - bw) / 2, 0);
-    var cropY = Math.max((rendH - bh) / 2, 0);
-
+  function getMetrics() {
+    var nw = mainImg.naturalWidth, nh = mainImg.naturalHeight;
+    var bw = mainBox.offsetWidth,  bh = mainBox.offsetHeight;
+    if (!nw || !nh || !bw || !bh) return null;
+    var scale = Math.max(bw / nw, bh / nh);
+    var rendW = nw * scale, rendH = nh * scale;
     return {
-      nw: nw,
-      nh: nh,
-      bw: bw,
-      bh: bh,
-      rendW: rendW,
-      rendH: rendH,
-      cropX: cropX,
-      cropY: cropY
+      nw: nw, nh: nh, bw: bw, bh: bh,
+      rendW: rendW, rendH: rendH,
+      cropX: Math.max((rendW - bw) / 2, 0),
+      cropY: Math.max((rendH - bh) / 2, 0)
     };
   }
 
   function initPanel() {
-    var metrics = getRenderedMetrics();
-    if (!metrics) return;
-
-    /* Keep panel aligned with the main image footprint. */
-    zoomPanel.style.width = metrics.bw + 'px';
-    zoomPanel.style.height = metrics.bh + 'px';
+    var m = getMetrics();
+    if (!m) return;
+    zoomPanel.style.width  = m.bw + 'px';
+    zoomPanel.style.height = m.bh + 'px';
   }
 
-  function applyZoomAt(clientX, clientY) {
+  function applyZoom(clientX, clientY) {
     var rect = mainBox.getBoundingClientRect();
-    var metrics = getRenderedMetrics();
-    if (!metrics) return;
+    var m = getMetrics();
+    if (!m) return;
+    var bw = rect.width, bh = rect.height;
+    var pw = zoomPanel.offsetWidth, ph = zoomPanel.offsetHeight;
+    var lw = lens.offsetWidth, lh = lens.offsetHeight;
 
-    var bw = rect.width;
-    var bh = rect.height;
-    var pw = zoomPanel.offsetWidth;
-    var ph = zoomPanel.offsetHeight;
-    var lw = lens.offsetWidth;
-    var lh = lens.offsetHeight;
-
-    var cx = clientX - rect.left;
-    var cy = clientY - rect.top;
-
+    var cx = clientX - rect.left, cy = clientY - rect.top;
     var lx = Math.min(Math.max(cx - lw / 2, 0), bw - lw);
     var ly = Math.min(Math.max(cy - lh / 2, 0), bh - lh);
     lens.style.left = lx + 'px';
     lens.style.top  = ly + 'px';
 
-    var lensCX = lx + lw / 2;
-    var lensCY = ly + lh / 2;
+    var imagePx = Math.min(Math.max(lx + lw / 2 + m.cropX, 0), m.rendW);
+    var imagePy = Math.min(Math.max(ly + lh / 2 + m.cropY, 0), m.rendH);
 
-    var imagePx = lensCX + metrics.cropX;
-    var imagePy = lensCY + metrics.cropY;
-
-    imagePx = Math.min(Math.max(imagePx, 0), metrics.rendW);
-    imagePy = Math.min(Math.max(imagePy, 0), metrics.rendH);
-
-    var zw = metrics.rendW * ZOOM;
-    var zh = metrics.rendH * ZOOM;
+    var zw = m.rendW * ZOOM, zh = m.rendH * ZOOM;
     zoomImg.style.width  = zw + 'px';
     zoomImg.style.height = zh + 'px';
 
-    var ox = -(imagePx * ZOOM - pw / 2);
-    var oy = -(imagePy * ZOOM - ph / 2);
-
-    zoomImg.style.left = Math.min(Math.max(ox, pw - zw), 0) + 'px';
-    zoomImg.style.top  = Math.min(Math.max(oy, ph - zh), 0) + 'px';
+    var ox = Math.min(Math.max(-(imagePx * ZOOM - pw / 2), pw - zw), 0);
+    var oy = Math.min(Math.max(-(imagePy * ZOOM - ph / 2), ph - zh), 0);
+    zoomImg.style.left = ox + 'px';
+    zoomImg.style.top  = oy + 'px';
   }
 
-  if (mainImg.complete) {
-    initPanel();
-  } else {
-    mainImg.addEventListener('load', initPanel);
-  }
+  mainImg.complete ? initPanel() : mainImg.addEventListener('load', initPanel);
 
-  mainBox.addEventListener('mouseenter', function (e) {
+  mainBox.addEventListener('mouseenter', function(e) {
     lens.style.display = 'block';
     zoomPanel.classList.add('active');
-    applyZoomAt(e.clientX, e.clientY);
+    applyZoom(e.clientX, e.clientY);
   });
-
-  mainBox.addEventListener('mousemove', function (e) {
-    applyZoomAt(e.clientX, e.clientY);
-  });
-
-  mainBox.addEventListener('mouseleave', function () {
+  mainBox.addEventListener('mousemove', function(e) { applyZoom(e.clientX, e.clientY); });
+  mainBox.addEventListener('mouseleave', function() {
     lens.style.display = 'none';
     zoomPanel.classList.remove('active');
   });
 
-  thumbs.forEach(function (t) {
-    t.addEventListener('click', function () {
+  thumbs.forEach(function(t) {
+    t.addEventListener('click', function() {
       var src = t.getAttribute('data-src');
       if (!src) return;
       mainImg.src = src;
       zoomImg.src = src;
-      thumbs.forEach(function (x) { x.classList.remove('active'); });
+      thumbs.forEach(function(x) { x.classList.remove('active'); });
       t.classList.add('active');
-      /* Recalculate panel size for new image */
       mainImg.addEventListener('load', initPanel, { once: true });
     });
   });
 
   window.addEventListener('resize', initPanel);
-
 })();
 </script>
 {% endblock %}

@@ -37,6 +37,7 @@ class HomepageSectionAdmin(admin.ModelAdmin):
     list_filter = ("section_type", "is_active")
     list_editable = ("position", "is_active")
     search_fields = ("title", "subtitle")
+    filter_horizontal = ("categories",)
 
 
 def export_products_csv(modeladmin, request, queryset):
@@ -70,9 +71,11 @@ class HamperAdmin(admin.ModelAdmin):
         "min_bulk_quantity",
         "is_active",
         "is_featured",
+        "is_bestseller",
+        "is_new",
     )
     list_filter = ("is_active", "is_featured", "category")
-    list_editable = ("is_active", "is_featured")
+    list_editable = ("is_active", "is_featured", "is_bestseller", "is_new")
     search_fields = ("name", "short_description", "description")
     filter_horizontal = ("homepage_sections",)
     inlines = [HamperImageInline]
@@ -86,7 +89,7 @@ class HamperAdmin(admin.ModelAdmin):
             'fields': ('short_description', 'description', 'included_items', 'min_bulk_quantity')
         }),
         ('Display Options', {
-            'fields': ('is_active', 'is_featured', 'is_event_special', 'homepage_sections')
+                'fields': ('is_active', 'is_featured', 'is_event_special', 'is_bestseller', 'is_new', 'homepage_sections')
         }),
     )
     prepopulated_fields = {"slug": ("name",)}

@@ -86,6 +86,14 @@ CATALOG_NAV_CATEGORIES = [
     "Packaging Solutions",
 ]
 
+CATALOG_QUICK_LINKS = [
+    "Diwali",
+    "Corporate Kit",
+    "Wedding",
+    "Hampers",
+    "Chocolates",
+]
+
 CATEGORY_DISPLAY_NAMES = {
     "corporate-gifting": "Corporate",
     "wedding-events": "Wedding",
@@ -377,6 +385,7 @@ def home(request):
 
     featured_hampers = active_hampers.filter(is_featured=True)[:12]
     event_hampers = active_hampers.filter(is_event_special=True)[:12]
+    best_sellers = active_hampers.filter(is_bestseller=True)[:12]
 
     corporate_welcome = active_hampers.filter(homepage_sections__section_type="corporate_welcome").distinct()[:12]
     event_section = active_hampers.filter(homepage_sections__section_type="event_hampers").distinct()[:12]
@@ -398,6 +407,7 @@ def home(request):
         "home.html",
         {
             "featured_hampers": featured_hampers,
+            "best_sellers": best_sellers,
             "corporate_welcome_hampers": corporate_welcome,
             "event_hampers": event_hampers if event_hampers.exists() else event_section,
             "festival_hampers": festival_hampers,
@@ -411,6 +421,7 @@ def home(request):
 def product_list(request):
     hampers = Hamper.objects.filter(is_active=True).select_related("category")
     category_slug = request.GET.get("category", "").strip()
+    search_query = request.GET.get("q", "").strip()
     active_category_label = CATEGORY_DISPLAY_NAMES.get(
         category_slug,
         category_slug.replace("-", " ").title() if category_slug else "",
@@ -420,6 +431,14 @@ def product_list(request):
 
     if category_slug:
         hampers = hampers.filter(Q(category__slug=category_slug) | Q(category__name__iexact=category_slug))
+    if search_query:
+        hampers = hampers.filter(
+            Q(name__icontains=search_query)
+            | Q(short_description__icontains=search_query)
+            | Q(description__icontains=search_query)
+            | Q(included_items__icontains=search_query)
+            | Q(category__name__icontains=search_query)
+        )
 
     if sort == "price":
         hampers = hampers.order_by("base_price", "id")
@@ -441,7 +460,9 @@ def product_list(request):
             "categories": categories,
             "active_category": category_slug,
             "active_category_label": active_category_label,
+            "search_query": search_query,
             "catalog_nav_categories": CATALOG_NAV_CATEGORIES,
+            "catalog_quick_links": CATALOG_QUICK_LINKS,
         },
     )
 
@@ -964,6 +985,16 @@ def dashboard_toggle_product(request, product_id):
     return redirect(request.META.get("HTTP_REFERER", "dashboard_products"))
 
 
+@login_required
+@user_passes_test(admin_check)
+def dashboard_toggle_bestseller(request, product_id):
+    """Toggle the `is_bestseller` flag for a product from the dashboard."""
+    hamper = get_object_or_404(Hamper, id=product_id)
+    hamper.is_bestseller = not hamper.is_bestseller
+    hamper.save()
+    return redirect(request.META.get("HTTP_REFERER", "dashboard_products"))
+
+
 # ─── CATEGORIES ───────────────────────────────────────────────────────────────
 
 @login_required
@@ -1045,10 +1076,16 @@ def dashboard_create_section(request):
             position=int(request.POST.get("position") or 0),
             is_active=request.POST.get("is_active") == "on",
         )
+        # save selected categories (optional)
+        selected = request.POST.getlist("categories")
+        if selected:
+            cats = Category.objects.filter(id__in=[int(x) for x in selected if x.isdigit()])
+            section.categories.set(cats)
         messages.success(request, f'Section "{section.title}" created.')
         return redirect("dashboard_sections")
     section_choices = HomepageSection.SECTION_CHOICES
-    return render(request, "dashboard/create_section.html", {"section_choices": section_choices})
+    categories = Category.objects.filter(is_active=True).order_by("position", "name")
+    return render(request, "dashboard/create_section.html", {"section_choices": section_choices, "categories": categories})
 
 
 @login_required
@@ -1062,10 +1099,19 @@ def dashboard_edit_section(request, section_id):
         section.position = int(request.POST.get("position") or 0)
         section.is_active = request.POST.get("is_active") == "on"
         section.save()
+        # update categories selection
+        selected = request.POST.getlist("categories")
+        if selected:
+            cats = Category.objects.filter(id__in=[int(x) for x in selected if x.isdigit()])
+            section.categories.set(cats)
+        else:
+            section.categories.clear()
         messages.success(request, f'Section "{section.title}" updated.')
         return redirect("dashboard_sections")
     section_choices = HomepageSection.SECTION_CHOICES
-    return render(request, "dashboard/edit_section.html", {"section": section, "section_choices": section_choices})
+    categories = Category.objects.filter(is_active=True).order_by("position", "name")
+    assigned_ids = list(section.categories.values_list("id", flat=True))
+    return render(request, "dashboard/edit_section.html", {"section": section, "section_choices": section_choices, "categories": categories, "assigned_ids": assigned_ids})
 
 
 @login_required

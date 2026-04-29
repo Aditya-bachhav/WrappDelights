@@ -1,106 +1,600 @@
 {% extends "base.html" %}
 {% block title %}WrappDelights | Curated Gifts, Made Effortless{% endblock %}
-{% block nav_catalog %}text-red-700 border-b-2 border-red-700 font-bold{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ─── Global ─── */
+  .home-fit-image {
+    width: 100%; height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* ─── Hero ─── */
+  .hero-section {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: #fdf7f6;
+  }
+  .hero-bg-pattern {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      radial-gradient(circle at 70% 20%, rgba(175,16,26,0.06) 0%, transparent 55%),
+      radial-gradient(circle at 10% 80%, rgba(84,96,103,0.07) 0%, transparent 50%);
+  }
+  .hero-texture {
+    position: absolute; inset: 0; z-index: 0; opacity: 0.018;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Hero image wrapper */
+  .hero-img-wrapper {
+    position: relative;
+    z-index: 2;
+  }
+  .hero-img-frame {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(128,1,31,0.14), 0 0 0 1px rgba(228,190,186,0.4);
+    transform: rotate(-1.5deg);
+    transition: transform 0.7s cubic-bezier(.2,.8,.3,1);
+  }
+  .hero-img-frame:hover { transform: rotate(0deg); }
+  .hero-img-frame img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+  }
+  .hero-img-frame:hover img { transform: scale(1.03); }
+
+  /* Hero decorative accent lines */
+  .hero-line-accent {
+    position: absolute;
+    border-radius: 2px;
+    background: #af101a;
+    opacity: 0.15;
+  }
+
+  /* Hero badge float */
+  .hero-float-badge {
+    position: absolute;
+    bottom: -20px;
+    left: -24px;
+    background: #fff;
+    border: 1px solid #e4beba;
+    border-radius: 16px;
+    padding: 14px 20px;
+    box-shadow: 0 16px 40px rgba(128,1,31,0.10);
+    z-index: 5;
+    min-width: 200px;
+  }
+  .hero-float-tag {
+    position: absolute;
+    top: -18px;
+    right: -18px;
+    background: #af101a;
+    color: #fff;
+    border-radius: 50%;
+    width: 72px; height: 72px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-family: 'Noto Serif', serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.3;
+    box-shadow: 0 8px 24px rgba(175,16,26,0.3);
+    z-index: 6;
+  }
+
+  /* Slideshow */
+  .hero-slide { width: 100%; }
+  .hero-slide.hidden { display: none; }
+
+  /* ─── Value Strip ─── */
+  .value-strip-marquee {
+    display: flex;
+    gap: 0;
+    animation: marquee 24s linear infinite;
+    white-space: nowrap;
+  }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .value-strip-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 40px;
+    border-right: 1px solid rgba(255,255,255,0.15);
+    flex-shrink: 0;
+  }
+
+  /* ─── Stats ─── */
+  .stat-card {
+    background: #fff;
+    border: 1px solid #efdddd;
+    border-radius: 16px;
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .stat-card::before {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #af101a, #ffb3ac);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .stat-card:hover { box-shadow: 0 12px 32px rgba(175,16,26,0.1); transform: translateY(-2px); }
+  .stat-card:hover::before { transform: scaleX(1); }
+  .stat-number {
+    font-family: 'Noto Serif', serif;
+    font-size: 2.4rem;
+    color: #af101a;
+    line-height: 1;
+    margin-top: 6px;
+  }
+  .stat-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #5b403d;
+  }
+
+  /* ─── Section Headers ─── */
+  .section-kicker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .section-kicker-line {
+    width: 28px; height: 1px;
+    background: #af101a;
+    opacity: 0.5;
+  }
+  .section-kicker-text {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: #af101a;
+  }
+
+  /* ─── Categories ─── */
+  .cat-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    text-decoration: none;
+    transition: transform 0.25s ease;
+  }
+  .cat-pill:hover { transform: translateY(-4px); }
+  .cat-pill-img {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #e4beba;
+    background: #fff8f7;
+    box-shadow: 0 4px 14px rgba(175,16,26,0.08);
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .cat-pill:hover .cat-pill-img {
+    border-color: #af101a;
+    box-shadow: 0 8px 24px rgba(175,16,26,0.18);
+  }
+  .cat-pill-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #1a1c1c;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+  }
+
+  /* ─── Collection Cards ─── */
+  .collection-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #f0e8e8;
+    cursor: pointer;
+  }
+  .collection-card img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(.25,.8,.25,1);
+  }
+  .collection-card:hover img { transform: scale(1.06); }
+  .collection-card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(20,4,4,0.78) 0%, rgba(20,4,4,0.25) 45%, transparent 75%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 32px;
+    transition: background 0.4s ease;
+  }
+  .collection-card:hover .collection-card-overlay {
+    background: linear-gradient(to top, rgba(20,4,4,0.88) 0%, rgba(20,4,4,0.3) 50%, transparent 78%);
+  }
+  .collection-card-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+    padding-bottom: 2px;
+    width: fit-content;
+    transition: gap 0.25s ease;
+    text-decoration: none;
+  }
+  .collection-card:hover .collection-card-arrow { gap: 12px; }
+
+  /* ─── Best Sellers / Product Cards ─── */
+  .product-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(228,190,186,0.4);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .product-card:hover {
+    border-color: rgba(175,16,26,0.25);
+    box-shadow: 0 16px 40px rgba(175,16,26,0.1);
+    transform: translateY(-3px);
+  }
+  .product-card-img {
+    position: relative;
+    overflow: hidden;
+    background: #fff8f7;
+  }
+  .product-card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  .product-card:hover .product-card-img img { transform: scale(1.06); }
+  .product-card-quick {
+    position: absolute;
+    bottom: 12px; left: 12px; right: 12px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(6px);
+    border: 1px solid #e4beba;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #1a1c1c;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    text-decoration: none;
+  }
+  .product-card:hover .product-card-quick { opacity: 1; transform: translateY(0); }
+
+  /* ─── CTA Dark Section ─── */
+  .cta-dark {
+    background: #160507;
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+  }
+  .cta-dark::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(175,16,26,0.22) 0%, transparent 65%);
+  }
+  .cta-dark-img { position: relative; min-height: 400px; overflow: hidden; }
+  .cta-dark-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: brightness(0.6) saturate(0.8);
+    transition: transform 1s ease, filter 1s ease;
+  }
+  .cta-dark:hover .cta-dark-img img { transform: scale(1.04); filter: brightness(0.7) saturate(0.9); }
+  .cta-dark-stat {
+    position: absolute;
+    bottom: 24px; right: 24px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 16px 20px;
+    color: #fff;
+    text-align: right;
+  }
+
+  /* ─── Occasion Cards ─── */
+  .occasion-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #efdddd;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .occasion-card:hover { box-shadow: 0 16px 48px rgba(175,16,26,0.12); transform: translateY(-4px); }
+  .occasion-card-img { overflow: hidden; background: #f7ecee; }
+  .occasion-card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  .occasion-card:hover .occasion-card-img img { transform: scale(1.05); }
+
+  /* ─── How It Works ─── */
+  .how-step {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .how-step-number {
+    font-family: 'Noto Serif', serif;
+    font-size: 3rem;
+    color: #af101a;
+    opacity: 0.12;
+    line-height: 1;
+    font-weight: 700;
+    user-select: none;
+  }
+  .how-step-icon {
+    width: 48px; height: 48px;
+    background: #fff8f7;
+    border: 1px solid #e4beba;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .how-step-connector {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, #e4beba, transparent);
+    margin-top: 24px;
+  }
+
+  /* ─── Testimonials ─── */
+  .testimonial-card {
+    background: #fff;
+    border: 1px solid #efdddd;
+    border-radius: 20px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    transition: box-shadow 0.3s ease;
+  }
+  .testimonial-card:hover { box-shadow: 0 12px 40px rgba(175,16,26,0.09); }
+  .testimonial-stars { color: #af101a; font-size: 13px; letter-spacing: 2px; }
+  .testimonial-quote {
+    font-family: 'Noto Serif', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: #1a1c1c;
+    line-height: 1.65;
+  }
+  .testimonial-author {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #5b403d;
+  }
+
+  /* ─── Corporate CTA Banner ─── */
+  .corp-banner {
+    background: linear-gradient(135deg, #fff8f7 0%, #fce8e8 100%);
+    border: 1px solid #e4beba;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+  .corp-banner::after {
+    content: "";
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(175,16,26,0.08), transparent 70%);
+  }
+
+  /* ─── Entrance animations ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .anim-fade-up   { animation: fadeUp 0.7s cubic-bezier(.2,.8,.3,1) both; }
+  .anim-fade-in   { animation: fadeIn 0.6s ease both; }
+  .delay-100 { animation-delay: 0.1s; }
+  .delay-200 { animation-delay: 0.2s; }
+  .delay-300 { animation-delay: 0.3s; }
+  .delay-400 { animation-delay: 0.4s; }
+  .delay-500 { animation-delay: 0.5s; }
+
+  /* ─── Reveal on scroll ─── */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+</style>
+{% endblock %}
 
 {% block content %}
-<main class="pt-24">
+<div class="pt-[72px]">
 
   <!-- ═══════════════════════════════════════════
        HERO
   ════════════════════════════════════════════ -->
-  <section class="relative w-full min-h-[880px] flex items-center px-8 md:px-20 bg-surface-container-low overflow-hidden">
+  <section class="hero-section px-6 md:px-12 lg:px-20 py-16 md:py-20">
+    <div class="hero-bg-pattern"></div>
+    <div class="hero-texture"></div>
 
-    <!-- Decorative blobs -->
-    <div class="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full bg-primary-fixed-dim/20 blur-3xl -z-0"></div>
-    <div class="pointer-events-none absolute bottom-0 left-0 w-72 h-72 rounded-full bg-secondary-container/30 blur-3xl -z-0"></div>
-
-    <div class="grid md:grid-cols-2 gap-12 items-center w-full max-w-7xl mx-auto relative z-10">
+    <div class="relative z-10 grid md:grid-cols-2 gap-12 lg:gap-20 items-center w-full max-w-7xl mx-auto">
 
       <!-- Copy -->
       <div class="order-2 md:order-1">
-        <div class="flex items-center gap-3 mb-5">
-          <div class="w-6 h-px bg-primary opacity-60"></div>
-          <span class="uppercase tracking-[0.3em] text-xs font-bold text-primary">The Art of Gifting</span>
+        <div class="section-kicker anim-fade-up">
+          <div class="section-kicker-line"></div>
+          <span class="section-kicker-text">The Art of Gifting</span>
         </div>
 
-        <h1 class="text-5xl md:text-6xl lg:text-7xl font-serif leading-[1.1] mb-6 text-on-surface">
-          Curated Gifts,<br>
-          <span class="italic text-primary">Made Effortless</span>
+        <h1 class="text-[2.8rem] sm:text-5xl md:text-6xl lg:text-[4.2rem] font-serif leading-[1.08] mb-6 text-on-surface anim-fade-up delay-100">
+          Gifts That<br>
+          <em class="text-primary not-italic">Tell a Story</em>
         </h1>
 
-        <p class="text-base md:text-lg text-secondary max-w-md mb-10 leading-relaxed font-body">
-          Discover a premium gifting experience tailored to your celebrations. Hand-picked, beautifully wrapped, and delivered with love.
+        <p class="text-base md:text-lg text-secondary max-w-md mb-8 leading-relaxed font-body anim-fade-up delay-200">
+          Premium curated hampers for every occasion — weddings, corporate milestones, and beyond. Beautifully wrapped and delivered across India.
         </p>
 
-        <div class="flex flex-col sm:flex-row gap-4">
+        <!-- Trust row -->
+        <div class="flex items-center gap-5 mb-10 anim-fade-up delay-300">
+          <div class="flex -space-x-2">
+            <img src="https://i.pravatar.cc/36?img=47" alt="" class="w-9 h-9 rounded-full border-2 border-white object-cover">
+            <img src="https://i.pravatar.cc/36?img=12" alt="" class="w-9 h-9 rounded-full border-2 border-white object-cover">
+            <img src="https://i.pravatar.cc/36?img=32" alt="" class="w-9 h-9 rounded-full border-2 border-white object-cover">
+          </div>
+          <div>
+            <div class="text-[#af101a] text-sm font-bold tracking-tight">★★★★★</div>
+            <div class="text-[11px] text-secondary font-semibold">1,200+ happy clients</div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 anim-fade-up delay-400">
           <a href="{% url 'products' %}"
-             class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-on-primary rounded-xl font-bold text-sm tracking-wide hover:bg-on-primary-fixed-variant transition-all active:scale-95 shadow-lg shadow-primary/20">
-            <span class="material-symbols-outlined text-base">auto_awesome</span>
+             class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-on-primary rounded-xl font-bold text-sm tracking-wide hover:bg-on-primary-fixed-variant transition-all active:scale-95 shadow-lg shadow-primary/25">
+            <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
             Browse Catalog
           </a>
           <a href="{% url 'custom_hamper' %}"
-             class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white border border-outline-variant text-on-surface rounded-xl font-bold text-sm tracking-wide hover:border-primary hover:text-primary transition-all active:scale-95">
-            <span class="material-symbols-outlined text-base">inventory_2</span>
+             class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white border-2 border-outline-variant text-on-surface rounded-xl font-bold text-sm tracking-wide hover:border-primary hover:text-primary transition-all active:scale-95">
+            <span class="material-symbols-outlined text-[18px]">inventory_2</span>
             Build Custom Hamper
           </a>
         </div>
 
         <!-- Slideshow dots -->
-        <div class="mt-16 flex items-center gap-3" id="heroDots" aria-label="Hero image selector">
-          <button data-hero-dot="0" class="h-2 w-10 rounded-full bg-primary transition-all duration-300"></button>
-          <button data-hero-dot="1" class="h-2 w-6 rounded-full bg-outline-variant transition-all duration-300"></button>
-          <button data-hero-dot="2" class="h-2 w-6 rounded-full bg-outline-variant transition-all duration-300"></button>
+        <div class="mt-10 flex items-center gap-3 anim-fade-up delay-500" id="heroDots">
+          <button data-hero-dot="0" class="h-[3px] w-10 rounded-full bg-primary transition-all duration-300" aria-label="Slide 1"></button>
+          <button data-hero-dot="1" class="h-[3px] w-5 rounded-full bg-outline-variant transition-all duration-300" aria-label="Slide 2"></button>
+          <button data-hero-dot="2" class="h-[3px] w-5 rounded-full bg-outline-variant transition-all duration-300" aria-label="Slide 3"></button>
         </div>
       </div>
 
-      <!-- Image slideshow -->
-      <div class="relative order-1 md:order-2">
-        <div class="relative z-10 rounded-xl overflow-hidden shadow-2xl -rotate-2 hover:rotate-0 transition-transform duration-700 ease-out">
+      <!-- Image -->
+      <div class="hero-img-wrapper order-1 md:order-2 anim-fade-in delay-200">
+        <!-- decorative lines -->
+        <div class="hero-line-accent" style="width:2px;height:80px;right:24px;top:-20px;"></div>
+        <div class="hero-line-accent" style="width:60px;height:2px;right:24px;top:-20px;"></div>
+
+        <div class="hero-img-frame">
           <div class="hero-slide" data-hero="0">
-            <img src="https://images.pexels.com/photos/18886885/pexels-photo-18886885.jpeg"
-                 alt="Curated hamper" class="w-full aspect-[4/5] object-cover">
+            <img src="https://images.pexels.com/photos/18886885/pexels-photo-18886885.jpeg" alt="Curated hamper">
           </div>
           <div class="hero-slide hidden" data-hero="1">
-            <img src="https://images.pexels.com/photos/7764463/pexels-photo-7764463.jpeg"
-                 alt="Greeting card with gift" class="w-full aspect-[4/5] object-cover">
+            <img src="https://images.pexels.com/photos/7764463/pexels-photo-7764463.jpeg" alt="Gift with greeting card">
           </div>
           <div class="hero-slide hidden" data-hero="2">
-            <img src="https://images.pexels.com/photos/34958125/pexels-photo-34958125.jpeg"
-                 alt="Premium wrap and ribbon" class="w-full aspect-[4/5] object-cover">
-          </div>
-
-          <!-- Floating badge -->
-          <div class="absolute bottom-6 left-6 bg-white/90 backdrop-blur-sm border border-outline-variant/40 rounded-xl px-4 py-3 shadow-lg">
-            <p class="text-[9px] font-bold uppercase tracking-[0.18em] text-secondary mb-0.5">Pan-India Delivery</p>
-            <p class="text-sm font-bold text-on-surface font-serif">5,000+ Hampers Delivered</p>
+            <img src="https://images.pexels.com/photos/34958125/pexels-photo-34958125.jpeg" alt="Premium wrap and ribbon">
           </div>
         </div>
-      </div>
 
+        <!-- Float badge -->
+        <div class="hero-float-badge">
+          <p class="stat-label mb-1">Pan-India Delivery</p>
+          <p class="text-base font-serif font-bold text-on-surface">5,000+ Hampers Delivered</p>
+        </div>
+
+        <!-- Rotated label -->
+        <div class="hero-float-tag">
+          <span style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;opacity:.75;">Since</span>
+          <span style="font-size:16px;font-weight:900;line-height:1;">2019</span>
+          <span style="font-size:8px;letter-spacing:.06em;text-transform:uppercase;opacity:.75;">Mumbai</span>
+        </div>
+      </div>
     </div>
   </section>
 
 
   <!-- ═══════════════════════════════════════════
-       VALUE STRIP
+       VALUE STRIP (marquee)
   ════════════════════════════════════════════ -->
-  <section class="bg-primary py-4">
-    <div class="max-w-7xl mx-auto px-8">
-      <div class="flex flex-col md:flex-row justify-around items-center gap-3 md:gap-0 text-on-primary text-[11px] font-bold tracking-[0.18em] uppercase">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-sm">local_shipping</span>
-          Free delivery above ₹999
-        </div>
-        <div class="hidden md:block w-px h-4 bg-white/20"></div>
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-sm">verified</span>
-          Custom branding available
-        </div>
-        <div class="hidden md:block w-px h-4 bg-white/20"></div>
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-sm">support_agent</span>
-          Bulk gifting support
-        </div>
+  <div class="bg-primary overflow-hidden py-4 select-none" aria-hidden="true">
+    <div class="value-strip-marquee text-on-primary text-[11px] font-bold tracking-[0.18em] uppercase">
+      <!-- Duplicated for seamless loop -->
+      {% for _ in "xxxxxxxx" %}
+      <span class="value-strip-item">
+        <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">verified</span>
+        Custom branding available
+      </span>
+      <span class="value-strip-item">
+        <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">support_agent</span>
+        Dedicated bulk gifting support
+      </span>
+      <span class="value-strip-item">
+        <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">inventory_2</span>
+        500+ curated products
+      </span>
+      {% endfor %}
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       STATS
+  ════════════════════════════════════════════ -->
+  <section class="bg-[#fff8f7] border-b border-[#f0dcdc] py-10">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-2 md:grid-cols-4 gap-4 reveal">
+      <div class="stat-card">
+        <p class="stat-label">Gift Options</p>
+        <p class="stat-number">500+</p>
+        <p class="text-xs text-secondary mt-2">Handpicked products</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Happy Clients</p>
+        <p class="stat-number">1,200+</p>
+        <p class="text-xs text-secondary mt-2">Across India</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Cities Served</p>
+        <p class="stat-number">80+</p>
+        <p class="text-xs text-secondary mt-2">Pan-India delivery</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Repeat Orders</p>
+        <p class="stat-number">72%</p>
+        <p class="text-xs text-secondary mt-2">Clients who reorder</p>
       </div>
     </div>
   </section>
@@ -109,26 +603,35 @@
   <!-- ═══════════════════════════════════════════
        CATEGORY HIGHLIGHTS
   ════════════════════════════════════════════ -->
-  <section class="py-20 bg-surface">
-    <div class="max-w-7xl mx-auto px-8">
+  <section class="py-16 bg-surface">
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
 
-      <div class="flex items-center gap-4 mb-12">
-        <div class="w-6 h-px bg-primary opacity-40"></div>
-        <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">What We Do</span>
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 reveal">
+        <div>
+          <div class="section-kicker">
+            <div class="section-kicker-line"></div>
+            <span class="section-kicker-text">Shop by Occasion</span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-serif text-on-surface">What We Curate</h2>
+        </div>
+        <a href="{% url 'products' %}"
+           class="inline-flex items-center gap-1 text-primary font-bold uppercase tracking-widest text-[10px] border-b border-primary pb-0.5 hover:opacity-70 transition-opacity w-fit">
+          All Categories
+          <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </a>
       </div>
 
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 justify-items-center">
+      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-5 justify-items-center reveal">
         {% for cat in categories %}
-          <a href="{% url 'products' %}?category={{ cat.slug }}"
-             class="group flex flex-col items-center text-center w-full max-w-[140px]">
-            <div class="w-24 h-24 rounded-full overflow-hidden border border-outline-variant/40 bg-white shadow-sm group-hover:shadow-md group-hover:border-primary transition-all duration-300 flex items-center justify-center">
+          <a href="{% url 'products' %}?category={{ cat.slug }}" class="cat-pill">
+            <div class="cat-pill-img">
               {% if cat.image %}
-                <img src="{{ cat.image.url }}" alt="{{ cat.display_name|default:cat.name }}" class="w-full h-full object-cover">
+                <img src="{{ cat.image.url }}" alt="{{ cat.display_name|default:cat.name }}" class="home-fit-image">
               {% else %}
-                <span class="material-symbols-outlined text-4xl text-primary">redeem</span>
+                <span class="material-symbols-outlined text-3xl text-primary">redeem</span>
               {% endif %}
             </div>
-            <h3 class="mt-3 text-sm font-semibold text-on-surface leading-tight">{{ cat.display_name|default:cat.name }}</h3>
+            <span class="cat-pill-label">{{ cat.display_name|default:cat.name }}</span>
           </a>
         {% empty %}
           <div class="col-span-full text-sm text-secondary text-center py-6">Add categories in the dashboard to show them here.</div>
@@ -139,50 +642,54 @@
 
 
   <!-- ═══════════════════════════════════════════
-       FEATURED COLLECTIONS
+       FEATURED COLLECTIONS (editorial grid)
   ════════════════════════════════════════════ -->
-  <section class="py-24 px-8 max-w-7xl mx-auto">
-
-    <div class="flex items-center gap-4 mb-12">
-      <div class="w-6 h-px bg-primary opacity-40"></div>
-      <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Collections</span>
+  <section class="py-16 px-6 md:px-12 max-w-7xl mx-auto">
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 reveal">
+      <div>
+        <div class="section-kicker">
+          <div class="section-kicker-line"></div>
+          <span class="section-kicker-text">Collections</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-serif text-on-surface">Curated for Every Moment</h2>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 reveal">
 
-      <!-- Large card -->
-      <div class="md:col-span-8 group relative overflow-hidden rounded-xl bg-surface-container-low h-[500px]">
-        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-             src="https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=1170&auto=format&fit=crop"
-             alt="Wedding collection" loading="lazy">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-10 md:p-12">
-          <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-white/60 mb-2">Featured Collection</span>
-          <h2 class="text-white text-3xl md:text-4xl font-serif mb-3 leading-tight">The Wedding Collective</h2>
-          <p class="text-white/75 mb-6 font-body text-sm max-w-sm leading-relaxed">Timeless treasures for the couple starting their forever journey.</p>
-          <a href="{% url 'products' %}"
-             class="inline-flex items-center gap-2 text-white font-bold uppercase text-[10px] tracking-widest group-hover:gap-4 transition-all border-b border-white/40 pb-1 w-fit">
+      <!-- Large card — Wedding -->
+      <div class="collection-card md:col-span-7 h-[480px] md:h-[560px]">
+        <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=1170&auto=format&fit=crop"
+             alt="Wedding collection" loading="lazy" class="home-fit-image">
+        <div class="collection-card-overlay">
+          <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-white/55 mb-2">Featured Collection</span>
+          <h3 class="text-white text-3xl md:text-4xl font-serif mb-3 leading-tight">The Wedding Collective</h3>
+          <p class="text-white/70 mb-6 text-sm max-w-xs leading-relaxed">Timeless treasures for the couple beginning their forever.</p>
+          <a href="{% url 'products' %}" class="collection-card-arrow">
             Explore Collection
             <span class="material-symbols-outlined text-sm">arrow_forward</span>
           </a>
         </div>
       </div>
 
-      <!-- Small card -->
-      <div class="md:col-span-4 group relative overflow-hidden rounded-xl bg-surface-container-low h-[500px]">
-        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-             src="https://images.pexels.com/photos/5486837/pexels-photo-5486837.jpeg"
-             alt="Office gifting" loading="lazy">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-8">
-          <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-white/60 mb-2">For Teams</span>
-          <h2 class="text-white text-2xl md:text-3xl font-serif mb-3 leading-tight">Office Gifting</h2>
-          <a href="{% url 'products' %}"
-             class="inline-flex items-center gap-2 text-white font-bold uppercase text-[10px] tracking-widest group-hover:gap-4 transition-all border-b border-white/40 pb-1 w-fit">
-            Employees
-            <span class="material-symbols-outlined text-sm">arrow_forward</span>
-          </a>
-        </div>
-      </div>
+      <!-- Right stack -->
+      <div class="md:col-span-5 flex flex-col gap-4">
 
+        <!-- Corporate -->
+        <div class="collection-card flex-1 min-h-[260px]">
+          <img src="https://images.pexels.com/photos/5486837/pexels-photo-5486837.jpeg"
+               alt="Corporate gifting" loading="lazy" class="home-fit-image">
+          <div class="collection-card-overlay">
+            <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-white/55 mb-1">For Teams</span>
+            <h3 class="text-white text-2xl font-serif mb-3 leading-tight">Corporate Gifting</h3>
+            <a href="{% url 'products' %}" class="collection-card-arrow">
+              Explore
+              <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -190,149 +697,312 @@
   <!-- ═══════════════════════════════════════════
        BEST SELLERS CAROUSEL
   ════════════════════════════════════════════ -->
-  <section class="py-24 bg-surface-container-low">
-    <div class="max-w-7xl mx-auto px-8 mb-10 flex justify-between items-end">
+  <section class="py-16 bg-[#fff8f7] border-y border-[#f0dcdc]">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 mb-8 flex justify-between items-end reveal">
       <div>
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-6 h-px bg-primary opacity-40"></div>
-          <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Most Loved</span>
+        <div class="section-kicker">
+          <div class="section-kicker-line"></div>
+          <span class="section-kicker-text">Most Loved</span>
         </div>
         <h2 class="text-3xl md:text-4xl font-serif text-on-surface">Best Sellers</h2>
-        <p class="text-secondary mt-1 text-sm">The most loved hampers by our community.</p>
+        <p class="text-secondary mt-1 text-sm">Hampers that people keep coming back for.</p>
       </div>
       <div class="flex gap-2">
-        <button id="carouselPrev" class="w-10 h-10 rounded-full border border-outline-variant hover:bg-white hover:border-primary hover:text-primary transition-all flex items-center justify-center">
+        <button id="carouselPrev" aria-label="Previous"
+                class="w-10 h-10 rounded-full border border-outline-variant bg-white hover:border-primary hover:text-primary transition-all flex items-center justify-center shadow-sm">
           <span class="material-symbols-outlined text-base">chevron_left</span>
         </button>
-        <button id="carouselNext" class="w-10 h-10 rounded-full border border-outline-variant hover:bg-white hover:border-primary hover:text-primary transition-all flex items-center justify-center">
+        <button id="carouselNext" aria-label="Next"
+                class="w-10 h-10 rounded-full border border-outline-variant bg-white hover:border-primary hover:text-primary transition-all flex items-center justify-center shadow-sm">
           <span class="material-symbols-outlined text-base">chevron_right</span>
         </button>
       </div>
     </div>
 
-    <div id="carouselTrack" class="flex gap-6 overflow-x-auto no-scrollbar px-8 md:px-[calc((100vw-80rem)/2+2rem)] pb-4">
-      {% for hamper in featured_hampers|slice:":6" %}
-      <div class="min-w-[300px] bg-white rounded-xl overflow-hidden group hover:shadow-xl border border-outline-variant/40 hover:border-primary/30 transition-all duration-500 flex flex-col">
-        <div class="relative overflow-hidden aspect-square">
+    <div id="carouselTrack" class="flex gap-5 overflow-x-auto no-scrollbar px-6 md:px-12 pb-4">
+      {% for hamper in best_sellers|slice:":8" %}
+      <div class="product-card w-[280px]">
+        <a href="{% url 'product_detail' hamper.id %}" class="product-card-img block aspect-square relative">
           {% if hamper.cover_image %}
-          <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-               src="{{ hamper.cover_image.url }}" alt="{{ hamper.name }}" loading="lazy">
+            <img src="{{ hamper.cover_image.url }}" alt="{{ hamper.name }}" loading="lazy">
           {% else %}
-          <div class="w-full h-full bg-surface-container flex items-center justify-center">
-            <span class="material-symbols-outlined text-4xl text-outline">image_not_supported</span>
-          </div>
+            <div class="w-full h-full bg-surface-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-4xl text-outline">image_not_supported</span>
+            </div>
           {% endif %}
-          <span class="absolute top-4 left-4 bg-secondary-container text-on-secondary-container text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-            {% if hamper.is_featured %}Featured{% else %}Popular{% endif %}
-          </span>
-        </div>
-        <div class="p-5 flex flex-col flex-1">
-          <h3 class="text-lg font-serif text-on-surface mb-1 flex-1">{{ hamper.name }}</h3>
-          <p class="text-primary font-bold text-base mb-4">₹{{ hamper.base_price|default:"On Request" }}</p>
-          <a href="{% url 'custom_hamper' %}"
-             class="w-full block text-center py-2.5 border border-outline-variant text-on-surface font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-primary hover:text-white hover:border-primary transition-all duration-300">
-            Add to Box
+          <!-- Badge -->
+          {% if hamper.is_featured %}
+            <span class="absolute top-3 left-3 wd-badge wd-badge-primary">Featured</span>
+          {% endif %}
+          <span class="product-card-quick" href="{% url 'product_detail' hamper.id %}">View Product →</span>
+        </a>
+        <div class="p-4 flex flex-col gap-2 flex-1">
+          <a href="{% url 'product_detail' hamper.id %}"
+             class="font-serif text-[15px] text-on-surface leading-snug line-clamp-2 hover:text-primary transition-colors min-h-[2.8rem]">
+            {{ hamper.name }}
           </a>
+          <div class="flex items-center justify-between mt-auto pt-2">
+            <span class="text-primary font-bold text-base">₹{{ hamper.base_price|default:"On Request" }}</span>
+            <a href="{% url 'custom_hamper' %}"
+               class="text-[9px] font-bold uppercase tracking-widest text-secondary border border-outline-variant rounded-lg px-3 py-1.5 hover:border-primary hover:text-primary transition-all">
+              Add
+            </a>
+          </div>
         </div>
       </div>
       {% empty %}
-      <p class="text-secondary text-sm">No featured hampers yet.</p>
+      <p class="text-secondary text-sm py-8 px-4">No best sellers yet.</p>
       {% endfor %}
     </div>
   </section>
 
 
   <!-- ═══════════════════════════════════════════
-       BUILD YOUR OWN CTA
+       HOW IT WORKS
   ════════════════════════════════════════════ -->
-  <section class="py-24 px-8">
-    <div class="max-w-7xl mx-auto bg-neutral-900 rounded-2xl overflow-hidden flex flex-col md:flex-row items-stretch">
+  <section class="py-16 bg-surface">
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
 
-      <!-- Copy -->
-      <div class="flex-1 p-10 md:p-16 lg:p-20 flex flex-col justify-center">
-        <div class="flex items-center gap-3 mb-5">
-          <div class="w-6 h-px bg-primary-fixed-dim opacity-60"></div>
-          <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-primary-fixed-dim">Personalization Studio</span>
+      <div class="text-center mb-14 reveal">
+        <div class="section-kicker justify-center">
+          <div class="section-kicker-line"></div>
+          <span class="section-kicker-text">Our Process</span>
+          <div class="section-kicker-line"></div>
         </div>
-        <h2 class="text-3xl md:text-5xl lg:text-6xl text-white font-serif mb-6 leading-tight">
-          Create a Gift as Unique as
-          <span class="italic text-primary-fixed-dim"> Your Story</span>
-        </h2>
-        <p class="text-neutral-400 text-base mb-10 max-w-lg leading-relaxed">
-          Choose the box, hand-pick the contents, and write a heartfelt note. We'll wrap it with precision and care.
-        </p>
-        <div>
-          <a href="{% url 'custom_hamper' %}"
-             class="inline-flex items-center gap-3 px-8 py-4 bg-primary text-white rounded-xl font-bold text-sm tracking-widest uppercase hover:bg-on-primary-fixed-variant transition-all active:scale-95">
-            Start Building
-            <span class="material-symbols-outlined">auto_fix_high</span>
-          </a>
-        </div>
+        <h2 class="text-3xl md:text-4xl font-serif text-on-surface mt-2">How It Works</h2>
       </div>
 
-      <!-- Image -->
-      <div class="flex-1 relative min-h-[320px] md:min-h-[480px]">
-        <img class="absolute inset-0 w-full h-full object-cover"
-             src="https://images.pexels.com/photos/6833311/pexels-photo-6833311.jpeg"
-             alt="Gifting process" loading="lazy">
-        <div class="absolute inset-0 bg-black/25"></div>
-        <!-- Floating stat -->
-        <div class="absolute bottom-6 right-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 text-white text-right">
-          <p class="text-2xl font-serif font-bold">500+</p>
-          <p class="text-[10px] uppercase tracking-[0.16em] text-white/70 mt-0.5">Products to choose from</p>
-        </div>
-      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 reveal">
 
+        <div class="how-step">
+          <div class="how-step-number">01</div>
+          <div class="how-step-icon">
+            <span class="material-symbols-outlined text-primary" style="font-size:22px;">search</span>
+          </div>
+          <div>
+            <h3 class="font-serif text-lg text-on-surface mb-1">Browse & Pick</h3>
+            <p class="text-sm text-secondary leading-relaxed">Explore 500+ curated gifts across every occasion and budget.</p>
+          </div>
+        </div>
+
+        <div class="how-step">
+          <div class="how-step-number">02</div>
+          <div class="how-step-icon">
+            <span class="material-symbols-outlined text-primary" style="font-size:22px;">edit_note</span>
+          </div>
+          <div>
+            <h3 class="font-serif text-lg text-on-surface mb-1">Personalize</h3>
+            <p class="text-sm text-secondary leading-relaxed">Add a heartfelt note, custom branding, or mix-and-match products.</p>
+          </div>
+        </div>
+
+        <div class="how-step">
+          <div class="how-step-number">03</div>
+          <div class="how-step-icon">
+            <span class="material-symbols-outlined text-primary" style="font-size:22px;">inventory_2</span>
+          </div>
+          <div>
+            <h3 class="font-serif text-lg text-on-surface mb-1">We Wrap It</h3>
+            <p class="text-sm text-secondary leading-relaxed">Every hamper is hand-packed with premium wrapping and care.</p>
+          </div>
+        </div>
+
+        <div class="how-step">
+          <div class="how-step-number">04</div>
+          <div class="how-step-icon">
+            <span class="material-symbols-outlined text-primary" style="font-size:22px;">local_shipping</span>
+          </div>
+          <div>
+            <h3 class="font-serif text-lg text-on-surface mb-1">Swift Delivery</h3>
+            <p class="text-sm text-secondary leading-relaxed">Delivered to your door across 80+ cities in India.</p>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
 
   <!-- ═══════════════════════════════════════════
-      WEDDING
+       BUILD YOUR OWN — CTA DARK
   ════════════════════════════════════════════ -->
-  <section class="py-24 px-8 max-w-7xl mx-auto">
-    <div class="flex justify-between items-end mb-12">
-      <div>
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-6 h-px bg-primary opacity-40"></div>
-          <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Just In</span>
+  <section class="py-8 px-6 md:px-12">
+    <div class="max-w-7xl mx-auto reveal">
+      <div class="cta-dark">
+        <div class="flex flex-col md:flex-row items-stretch">
+
+          <!-- Copy -->
+          <div class="relative z-10 flex-1 p-10 md:p-16 lg:p-20 flex flex-col justify-center">
+            <div class="section-kicker mb-4">
+              <div class="section-kicker-line" style="background:#ffb3ac;"></div>
+              <span class="section-kicker-text" style="color:#ffb3ac;">Personalization Studio</span>
+            </div>
+            <h2 class="text-3xl md:text-5xl text-white font-serif mb-5 leading-tight">
+              A Gift as Unique as<br>
+              <em class="text-primary-fixed-dim not-italic">Your Story</em>
+            </h2>
+            <p class="text-neutral-400 text-[15px] mb-8 max-w-md leading-relaxed">
+              Choose the box, hand-pick the contents, and write a heartfelt note. We'll wrap it beautifully and deliver it on time — every time.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <a href="{% url 'custom_hamper' %}"
+                 class="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-xl font-bold text-sm tracking-widest uppercase hover:bg-on-primary-fixed-variant transition-all active:scale-95 w-fit">
+                Start Building
+                <span class="material-symbols-outlined">auto_fix_high</span>
+              </a>
+              <a href="{% url 'products' %}"
+                 class="inline-flex items-center gap-2 px-8 py-4 bg-white/10 text-white rounded-xl font-bold text-sm tracking-widest uppercase hover:bg-white/20 border border-white/15 transition-all active:scale-95 w-fit">
+                Browse Catalog
+              </a>
+            </div>
+          </div>
+
+          <!-- Image -->
+          <div class="cta-dark-img flex-1 min-h-[320px] relative">
+            <img src="https://images.pexels.com/photos/6833311/pexels-photo-6833311.jpeg"
+                 alt="Gifting process" loading="lazy">
+            <div class="cta-dark-stat">
+              <p class="text-2xl font-serif font-bold">500+</p>
+              <p class="text-[10px] uppercase tracking-[0.14em] text-white/65 mt-0.5">Products to choose from</p>
+            </div>
+          </div>
         </div>
-        <h2 class="text-3xl md:text-4xl font-serif text-on-surface">Wedding</h2>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       FEATURED / WEDDING PRODUCTS
+  ════════════════════════════════════════════ -->
+  <section class="py-16 px-6 md:px-12 max-w-7xl mx-auto">
+    <div class="flex justify-between items-end mb-12 reveal">
+      <div>
+        <div class="section-kicker">
+          <div class="section-kicker-line"></div>
+          <span class="section-kicker-text">Just In</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-serif text-on-surface">Wedding Collection</h2>
       </div>
       <a href="{% url 'products' %}"
-         class="inline-flex items-center gap-1 text-primary font-bold uppercase tracking-widest text-[10px] border-b border-primary pb-0.5 hover:opacity-75 transition-opacity">
+         class="inline-flex items-center gap-1 text-primary font-bold uppercase tracking-widest text-[10px] border-b border-primary pb-0.5 hover:opacity-70 transition-opacity">
         View All
-        <span class="material-symbols-outlined text-xs">arrow_forward</span>
+        <span class="material-symbols-outlined text-sm">arrow_forward</span>
       </a>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 reveal">
       {% for hamper in featured_hampers %}
-      <div class="group cursor-pointer">
-        <div class="bg-surface-container rounded-xl overflow-hidden mb-4 relative aspect-[3/4] border border-outline-variant/30 hover:border-primary/30 transition-colors">
+      <div class="occasion-card group">
+        <div class="occasion-card-img aspect-[3/4] relative overflow-hidden">
           {% if hamper.cover_image %}
-          <img class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
-               src="{{ hamper.cover_image.url }}" alt="{{ hamper.name }}" loading="lazy">
+            <img src="{{ hamper.cover_image.url }}" alt="{{ hamper.name }}" loading="lazy"
+                 class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
           {% else %}
-          <div class="w-full h-full bg-surface-container flex items-center justify-center">
-            <span class="material-symbols-outlined text-4xl text-outline">image_not_supported</span>
-          </div>
+            <div class="w-full h-full bg-surface-container flex items-center justify-center min-h-[280px]">
+              <span class="material-symbols-outlined text-4xl text-outline">image_not_supported</span>
+            </div>
           {% endif %}
+          <!-- Quick add overlay -->
           <a href="{% url 'custom_hamper' %}"
-             class="absolute bottom-4 left-4 right-4 translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 bg-white text-on-surface py-2.5 rounded-lg font-bold text-[10px] uppercase tracking-widest shadow-lg text-center border border-outline-variant">
+             class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm text-on-surface py-2.5 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg text-center border border-outline-variant translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
             Quick Add
           </a>
         </div>
-        <h4 class="font-serif text-base text-on-surface mb-1">{{ hamper.name }}</h4>
-        <p class="text-primary font-bold text-sm">₹{{ hamper.base_price|default:"On Request" }}</p>
+        <div class="p-4 flex flex-col gap-1">
+          <a href="{% url 'product_detail' hamper.id %}"
+             class="font-serif text-[15px] text-on-surface leading-snug line-clamp-2 hover:text-primary transition-colors">{{ hamper.name }}</a>
+          <p class="text-primary font-bold text-sm">₹{{ hamper.base_price|default:"On Request" }}</p>
+        </div>
       </div>
       {% empty %}
-      <p class="col-span-4 text-secondary text-sm text-center py-8">No wedding products yet.</p>
+      <p class="col-span-4 text-secondary text-sm text-center py-10">No wedding products yet.</p>
       {% endfor %}
     </div>
   </section>
 
-</main>
+
+  <!-- ═══════════════════════════════════════════
+       TESTIMONIALS
+  ════════════════════════════════════════════ -->
+  <section class="py-16 bg-[#fff8f7] border-y border-[#f0dcdc]">
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+
+      <div class="text-center mb-12 reveal">
+        <div class="section-kicker justify-center">
+          <div class="section-kicker-line"></div>
+          <span class="section-kicker-text">Testimonials</span>
+          <div class="section-kicker-line"></div>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-serif text-on-surface mt-2">Words from Our Clients</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 reveal">
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-quote">"Every single detail was perfect — from the packaging to the personal note. Our corporate team absolutely loved it."</p>
+          <div>
+            <p class="testimonial-author">Priya Nair</p>
+            <p class="text-[11px] text-secondary">HR Manager, Mumbai</p>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-quote">"We ordered 200+ wedding favours and WrappDelights delivered flawlessly. The presentation was stunning."</p>
+          <div>
+            <p class="testimonial-author">Rahul & Sneha Mehta</p>
+            <p class="text-[11px] text-secondary">Pune</p>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-quote">"The custom hamper builder made it so easy to personalise gifts for each team member. Will definitely reorder."</p>
+          <div>
+            <p class="testimonial-author">Aditya Sharma</p>
+            <p class="text-[11px] text-secondary">Founder, Bangalore</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════
+       CORPORATE CTA BANNER
+  ════════════════════════════════════════════ -->
+  <section class="py-16 px-6 md:px-12">
+    <div class="max-w-7xl mx-auto reveal">
+      <div class="corp-banner p-10 md:p-14 flex flex-col md:flex-row items-center gap-8 justify-between">
+        <div class="relative z-10">
+          <div class="section-kicker">
+            <div class="section-kicker-line"></div>
+            <span class="section-kicker-text">For Enterprises</span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-serif text-on-surface mt-1 mb-3">Bulk Corporate Gifting?</h2>
+          <p class="text-secondary text-[15px] max-w-md leading-relaxed">From Diwali gifts to employee kits — we handle large orders with custom branding and pan-India delivery. Get a quote in 24 hours.</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0 relative z-10">
+          <a href="tel:+919309810348"
+             class="inline-flex items-center gap-2 px-7 py-4 bg-primary text-white rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-on-primary-fixed-variant transition-all active:scale-95">
+            <span class="material-symbols-outlined text-base">call</span>
+            Call Us
+          </a>
+          <a href="https://wa.me/919309810348?text=Hi%2C%20I%27d%20like%20to%20explore%20bulk%20gifting."
+             target="_blank" rel="noopener"
+             class="inline-flex items-center gap-2 px-7 py-4 bg-white border-2 border-outline-variant text-on-surface rounded-xl font-bold text-sm uppercase tracking-widest hover:border-[#25D366] hover:text-[#25D366] transition-all active:scale-95">
+            <span class="material-symbols-outlined text-base">chat</span>
+            WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -345,33 +1015,40 @@
       let current = 0, timer;
       const activate = (i) => {
         current = i;
-        slides.forEach((s, idx) => {
-          s.classList.toggle('hidden', idx !== current);
-        });
+        slides.forEach((s, idx) => s.classList.toggle('hidden', idx !== current));
         dots.forEach((d, idx) => {
           d.classList.toggle('bg-primary',         idx === current);
           d.classList.toggle('bg-outline-variant', idx !== current);
           d.classList.toggle('w-10', idx === current);
-          d.classList.toggle('w-6',  idx !== current);
+          d.classList.toggle('w-5',  idx !== current);
         });
       };
       const next  = () => activate((current + 1) % slides.length);
       const start = () => { timer = setInterval(next, 4500); };
       const stop  = () => { clearInterval(timer); };
       dots.forEach((d, i) => d.addEventListener('click', () => { stop(); activate(i); start(); }));
-      activate(0);
-      start();
+      activate(0); start();
     }
 
-    /* ── Best Sellers carousel arrows ── */
+    /* ── Best sellers carousel ── */
     const track = document.getElementById('carouselTrack');
     const prev  = document.getElementById('carouselPrev');
     const next2 = document.getElementById('carouselNext');
     if (track && prev && next2) {
-      const STEP = 324; // card width + gap
+      const STEP = 300;
       prev.addEventListener('click', () => track.scrollBy({ left: -STEP, behavior: 'smooth' }));
       next2.addEventListener('click', () => track.scrollBy({ left:  STEP, behavior: 'smooth' }));
     }
+
+    /* ── Scroll reveal ── */
+    const reveals = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => io.observe(el));
+
   })();
 </script>
 {% endblock %}
