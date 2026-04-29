@@ -20,7 +20,7 @@
   </a>
 </div>
 
-<form method="post" style="max-width:520px">
+<form method="post" enctype="multipart/form-data" style="max-width:520px">
   {% csrf_token %}
   <div class="card">
     <div class="form-section">
@@ -33,6 +33,17 @@
         <label class="form-label">Display Position</label>
         <input class="form-input" type="number" name="position" value="{{ category.position }}" min="0">
         <span class="form-hint">Lower number = shown first in navigation</span>
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Category Image</label>
+        {% if category.image %}
+          <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px">
+            <img src="{{ category.image.url }}" alt="{{ category.name }}" style="width:56px;height:56px;object-fit:cover;border-radius:999px;border:1px solid var(--border)">
+            <span class="form-hint">Upload a new file to replace the current image</span>
+          </div>
+        {% endif %}
+        <input class="form-input" type="file" name="image" accept="image/*">
+        <span class="form-hint">Use a square image for the rounded category chips</span>
       </div>
       <label class="form-check">
         <input type="checkbox" name="is_active" {% if category.is_active %}checked{% endif %}>

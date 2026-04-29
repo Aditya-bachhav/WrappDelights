@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.http import HttpResponse
+from django.utils.html import format_html
 import csv
 from delights_backend.core.store import models
 
@@ -13,11 +14,21 @@ class HamperImageInline(admin.TabularInline):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug", "position", "is_active")
+    list_display = ("image_preview", "name", "slug", "position", "is_active")
     list_filter = ("is_active",)
     list_editable = ("position", "is_active")
     search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="width:36px;height:36px;border-radius:999px;object-fit:cover;border:1px solid #ddd" />',
+                obj.image.url,
+            )
+        return "—"
+
+    image_preview.short_description = "Image"
 
 
 @admin.register(HomepageSection)
@@ -69,7 +80,7 @@ class HamperAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'slug', 'category', 'cover_image')
+            'fields': ('name', 'slug', 'category', 'hamper_step', 'cover_image')
         }),
         ('Product Details', {
             'fields': ('short_description', 'description', 'included_items', 'min_bulk_quantity')

@@ -93,6 +93,65 @@
 
   /* ─── Shared reusable component classes ─── */
 
+  /* Nav dropdowns */
+  .wd-nav-dropdown {
+    position: relative;
+  }
+  .wd-nav-dropdown::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 14px;
+  }
+  .wd-nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 14px);
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 280px;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #E7DED6;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+    z-index: 60;
+  }
+  .wd-nav-dropdown:hover .wd-nav-dropdown-menu,
+  .wd-nav-dropdown:focus-within .wd-nav-dropdown-menu,
+  .wd-nav-dropdown.is-open .wd-nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  .wd-nav-dropdown-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    color: #1a1c1c;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: background 0.16s ease, color 0.16s ease;
+  }
+  .wd-nav-dropdown-link:hover {
+    background: #F7ECEE;
+    color: #80011F;
+  }
+  .wd-nav-dropdown-link .material-symbols-outlined {
+    font-size: 18px;
+    color: #8f6f6c;
+  }
+
   /* Product Card */
   .wd-card {
     background: #FFFFFF;
@@ -251,22 +310,79 @@
     <!-- Center: Primary CTAs as buttons -->
     <div class="flex-1 flex justify-center">
       <nav class="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-widest" aria-label="Primary navigation">
-        <a href="{% url 'products' %}?category=wedding-events"
-           class="{% block nav_wedding %}text-neutral-700{% endblock %} hover:text-primary transition-colors">
-          Wedding Return Gifts
-        </a>
-        <a href="{% url 'products' %}?category=individual-products"
-           class="{% block nav_shop %}text-neutral-700{% endblock %} hover:text-primary transition-colors">
-          Shop Gifts
-        </a>
+        <div class="wd-nav-dropdown">
+          <a href="{% url 'products' %}?category=wedding-events"
+             class="wd-nav-dropdown-trigger {% block nav_wedding %}text-neutral-700{% endblock %} hover:text-primary transition-colors inline-flex items-center gap-1"
+             aria-haspopup="true"
+             aria-expanded="false">
+            Wedding
+            <span class="material-symbols-outlined text-[16px]">expand_more</span>
+          </a>
+          <div class="wd-nav-dropdown-menu" role="menu" aria-label="Wedding menu">
+            <a href="{% url 'products' %}?category=wedding-events" class="wd-nav-dropdown-link" role="menuitem">
+              <span class="material-symbols-outlined">favorite</span>
+              Wedding Return Gifts
+            </a>
+            <a href="{% url 'products' %}?category=wedding-events" class="wd-nav-dropdown-link" role="menuitem">
+              <span class="material-symbols-outlined">diamond</span>
+              Wedding Accessories
+            </a>
+            <a href="{% url 'products' %}?category=wedding-events" class="wd-nav-dropdown-link" role="menuitem">
+              <span class="material-symbols-outlined">redeem</span>
+              Wedding Hampers
+            </a>
+          </div>
+        </div>
+        <div class="wd-nav-dropdown">
+          <a href="{% url 'products' %}?category=individual-products"
+             class="wd-nav-dropdown-trigger {% block nav_shop %}text-neutral-700{% endblock %} hover:text-primary transition-colors inline-flex items-center gap-1"
+             aria-haspopup="true"
+             aria-expanded="false">
+            Employees
+            <span class="material-symbols-outlined text-[16px]">expand_more</span>
+          </a>
+          <div class="wd-nav-dropdown-menu" role="menu" aria-label="Employees menu">
+            <a href="{% url 'products' %}?category=individual-products" class="wd-nav-dropdown-link" role="menuitem">
+              <span class="material-symbols-outlined">badge</span>
+              Employee Welcome Kit
+            </a>
+            <a href="{% url 'search' %}?q=welcome+kit" class="wd-nav-dropdown-link" role="menuitem">
+              <span class="material-symbols-outlined">work</span>
+              Welcome Kit
+            </a>
+          </div>
+        </div>
         <a href="{% url 'custom_hamper' %}"
            class="{% block nav_hamper %}text-neutral-700{% endblock %} hover:text-primary transition-colors">
-          Make Your Own Hamper
+          Add Your Own Hamper
         </a>
-        <a href="{% url 'products' %}?sort=newest"
-           class="{% block nav_new %}text-neutral-700{% endblock %} hover:text-primary transition-colors">
-          New Arrivals
-        </a>
+        <div class="wd-nav-dropdown">
+          <a href="{% url 'products' %}?category=corporate-gifting"
+             class="wd-nav-dropdown-trigger {% block nav_corporate %}text-neutral-700{% endblock %} hover:text-primary transition-colors inline-flex items-center gap-1"
+             aria-haspopup="true"
+             aria-expanded="false">
+            Corporate
+            <span class="material-symbols-outlined text-[16px]">expand_more</span>
+          </a>
+          <div class="wd-nav-dropdown-menu" role="menu" aria-label="Corporate menu">
+            <a href="{% url 'search' %}?q=corporate+christmas+gift" class="wd-nav-dropdown-link" role="menuitem">
+              <span class="material-symbols-outlined">celebration</span>
+              Corporate Christmas Gift
+            </a>
+            <a href="{% url 'search' %}?q=corporate+gifts+for+women%27s+day" class="wd-nav-dropdown-link" role="menuitem">
+              <span class="material-symbols-outlined">female</span>
+              Corporate Gifts for Women's Day
+            </a>
+            <a href="{% url 'search' %}?q=corporate+new+year+gift" class="wd-nav-dropdown-link" role="menuitem">
+              <span class="material-symbols-outlined">new_releases</span>
+              Corporate New Year Gift
+            </a>
+            <a href="{% url 'search' %}?q=corporate+diwali+gift" class="wd-nav-dropdown-link" role="menuitem">
+              <span class="material-symbols-outlined">light_mode</span>
+              Corporate Diwali Gift
+            </a>
+          </div>
+        </div>
         <a href="{% url 'products' %}"
            class="{% block nav_all %}text-neutral-700{% endblock %} hover:text-primary transition-colors">
           All Gifts
@@ -302,22 +418,22 @@
       <a href="{% url 'products' %}?category=wedding-events"
          class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
         <span class="material-symbols-outlined text-lg text-outline">favorite</span>
-        Wedding Return Gifts
+        Wedding
       </a>
       <a href="{% url 'products' %}?category=individual-products"
          class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
         <span class="material-symbols-outlined text-lg text-outline">shopping_bag</span>
-        Shop Gifts
+        Employees
       </a>
       <a href="{% url 'custom_hamper' %}"
          class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
         <span class="material-symbols-outlined text-lg text-outline">redeem</span>
-        Make Your Own Hamper
+        Add Your Own Hamper
       </a>
-      <a href="{% url 'products' %}?sort=newest"
+      <a href="{% url 'products' %}?category=corporate-gifting"
          class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
-        <span class="material-symbols-outlined text-lg text-outline">new_releases</span>
-        New Arrivals
+        <span class="material-symbols-outlined text-lg text-outline">business_center</span>
+        Corporate
       </a>
       <a href="{% url 'products' %}"
          class="flex items-center gap-3 py-3 text-sm font-semibold text-on-surface hover:text-[#570012] border-b border-outline-variant/10 transition-colors">
@@ -462,6 +578,49 @@
       }
     });
   }
+
+  /* ── Desktop Dropdowns (click + hover support) ── */
+  var dropdowns = document.querySelectorAll('.wd-nav-dropdown');
+
+  function closeAllDropdowns() {
+    dropdowns.forEach(function (dropdown) {
+      dropdown.classList.remove('is-open');
+      var trigger = dropdown.querySelector('.wd-nav-dropdown-trigger');
+      if (trigger) trigger.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  dropdowns.forEach(function (dropdown) {
+    var trigger = dropdown.querySelector('.wd-nav-dropdown-trigger');
+    if (!trigger) return;
+
+    trigger.addEventListener('click', function (event) {
+      if (window.innerWidth < 768) return;
+
+      var wasOpen = dropdown.classList.contains('is-open');
+      closeAllDropdowns();
+
+      if (!wasOpen) {
+        event.preventDefault();
+        dropdown.classList.add('is-open');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  document.addEventListener('click', function (event) {
+    var target = event.target;
+    var clickedDropdown = target && target.closest ? target.closest('.wd-nav-dropdown') : null;
+    if (!clickedDropdown) closeAllDropdowns();
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') closeAllDropdowns();
+  });
+
+  window.addEventListener('resize', function () {
+    if (window.innerWidth < 768) closeAllDropdowns();
+  });
 
   /* ── Mobile Search Toggle ── */
   var searchToggle = document.getElementById('mobileSearchToggle');

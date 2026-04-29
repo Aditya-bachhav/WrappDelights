@@ -39,6 +39,17 @@
               </select>
             </div>
             <div class="form-group">
+              <label class="form-label">Hamper Step</label>
+              <select class="form-select" name="hamper_step">
+                <option value="">No step</option>
+                <option value="base">Box</option>
+                <option value="office">Office Essentials</option>
+                <option value="gourmet">Gourmet Treats</option>
+                <option value="personalize">Personalize</option>
+              </select>
+              <span class="form-hint">Assign this product to a builder step (optional)</span>
+            </div>
+            <div class="form-group">
               <label class="form-label">Base Price (₹)</label>
               <input class="form-input" type="number" step="0.01" min="0" name="base_price" placeholder="1380">
               <span class="form-hint">Used on cards and for combo totals</span>

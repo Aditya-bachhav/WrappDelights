@@ -23,6 +23,7 @@
     <table>
       <thead>
         <tr>
+          <th>Image</th>
           <th>Name</th>
           <th>Slug</th>
           <th>Position</th>
@@ -34,6 +35,13 @@
       <tbody>
         {% for cat in categories %}
         <tr>
+          <td>
+            {% if cat.image %}
+              <img src="{{ cat.image.url }}" alt="{{ cat.name }}" style="width:44px;height:44px;object-fit:cover;border-radius:999px;border:1px solid var(--border)">
+            {% else %}
+              <div style="width:44px;height:44px;border-radius:999px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--mist);font-size:.62rem;text-align:center;line-height:1.1">No image</div>
+            {% endif %}
+          </td>
           <td style="font-weight:800">{{ cat.name }}</td>
           <td style="font-size:.72rem;color:var(--mist);font-family:monospace">{{ cat.slug }}</td>
           <td>{{ cat.position }}</td>
@@ -55,7 +63,7 @@
         </tr>
         {% empty %}
         <tr>
-          <td colspan="6" class="tbl-empty">
+          <td colspan="7" class="tbl-empty">
             No categories yet.
             <a href="{% url 'dashboard_create_category' %}" style="color:var(--primary);font-weight:800">Add one →</a>
           </td>

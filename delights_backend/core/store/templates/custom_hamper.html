@@ -225,15 +225,15 @@
           <span class="ch-cat-count">1</span>
         </button>
         <button class="ch-cat-btn" data-category="corporate-gifting" onclick="filterByCategory(this)">
-          <span>Corporate Gifting</span>
+          <span>Corporate</span>
           <span class="ch-cat-count">1</span>
         </button>
         <button class="ch-cat-btn" data-category="wedding-events" onclick="filterByCategory(this)">
-          <span>Wedding &amp; Events</span>
+          <span>Wedding</span>
           <span class="ch-cat-count">1</span>
         </button>
         <button class="ch-cat-btn" data-category="individual-products" onclick="filterByCategory(this)">
-          <span>Individual Products</span>
+          <span>Employees / Welcome Kit</span>
           <span class="ch-cat-count">1</span>
         </button>
         <button class="ch-cat-btn" data-category="packaging-solutions" onclick="filterByCategory(this)">
@@ -394,9 +394,9 @@
   var activeCategory = 'all';
   var allowedCategories = [
     'Hamper Product',
-    'Corporate Gifting',
-    'Wedding & Events',
-    'Individual Products',
+    'Corporate',
+    'Wedding',
+    'Employees / Welcome Kit',
     'Packaging Solutions'
   ];
   var allowedSlugList = allowedCategories.map(function (c) { return slugify(c); });

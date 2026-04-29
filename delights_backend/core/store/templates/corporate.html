@@ -59,24 +59,18 @@
           <!-- Inquiry type -->
           <div class="space-y-2">
             <p class="text-xs font-bold text-on-surface">Inquiry Type <span class="text-error">*</span></p>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <label class="border border-outline-variant/40 p-3 flex flex-col gap-1 cursor-pointer transition-colors {% if selected_type == 'quote' or not selected_type %}ring-1 ring-primary border-primary{% endif %}">
-                <input type="radio" name="inquiry_type" value="quote" class="sr-only" {% if selected_type == 'quote' or not selected_type %}checked{% endif %}>
-                <span class="material-symbols-outlined text-primary">description</span>
-                <span class="text-sm font-bold text-on-surface">Request Quote</span>
-                <span class="text-[11px] text-on-surface-variant">Pricing for catalog items</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label class="border border-outline-variant/40 p-3 flex flex-col gap-1 cursor-pointer transition-colors {% if selected_type == 'customize' or not selected_type %}ring-1 ring-primary border-primary{% endif %}">
+                <input type="radio" name="inquiry_type" value="customize" class="sr-only" {% if selected_type == 'customize' or not selected_type %}checked{% endif %}>
+                <span class="material-symbols-outlined text-primary">auto_awesome</span>
+                <span class="text-sm font-bold text-on-surface">Personalized</span>
+                <span class="text-[11px] text-on-surface-variant">Branding, curation, and custom kits</span>
               </label>
               <label class="border border-outline-variant/40 p-3 flex flex-col gap-1 cursor-pointer transition-colors {% if selected_type == 'bulk' %}ring-1 ring-primary border-primary{% endif %}">
                 <input type="radio" name="inquiry_type" value="bulk" class="sr-only" {% if selected_type == 'bulk' %}checked{% endif %}>
-                <span class="material-symbols-outlined text-primary">inventory_2</span>
-                <span class="text-sm font-bold text-on-surface">Bulk Order</span>
-                <span class="text-[11px] text-on-surface-variant">High-volume purchase</span>
-              </label>
-              <label class="border border-outline-variant/40 p-3 flex flex-col gap-1 cursor-pointer transition-colors {% if selected_type == 'customize' %}ring-1 ring-primary border-primary{% endif %}">
-                <input type="radio" name="inquiry_type" value="customize" class="sr-only" {% if selected_type == 'customize' %}checked{% endif %}>
-                <span class="material-symbols-outlined text-primary">brush</span>
-                <span class="text-sm font-bold text-on-surface">Customize</span>
-                <span class="text-[11px] text-on-surface-variant">Branding / kit curation</span>
+                <span class="material-symbols-outlined text-primary">storefront</span>
+                <span class="text-sm font-bold text-on-surface">Corporate</span>
+                <span class="text-[11px] text-on-surface-variant">Bulk gifting and team orders</span>
               </label>
             </div>
           </div>
@@ -128,11 +122,17 @@
               <label class="text-xs font-bold text-on-surface mb-1 block">Event / Occasion</label>
               <select name="requirement" class="wd-input">
                 <option value="">Select occasion...</option>
-                <option value="Employee Welcome Kit">Employee Welcome Kit</option>
-                <option value="Diwali / Festival Gifting">Diwali / Festival Gifting</option>
-                <option value="Client Gifting">Client Gifting</option>
-                <option value="Employee Appreciation">Employee Appreciation</option>
-                <option value="Wedding / Event">Wedding / Event</option>
+                <optgroup label="Corporate">
+                  <option value="Corporate Christmas Gift">Corporate Christmas Gift</option>
+                  <option value="Corporate Gifts for Women's Day">Corporate Gifts for Women's Day</option>
+                  <option value="Corporate New Year Gift">Corporate New Year Gift</option>
+                  <option value="Corporate Diwali Gift">Corporate Diwali Gift</option>
+                </optgroup>
+                <optgroup label="Wedding">
+                  <option value="Wedding Accessories">Wedding Accessories</option>
+                  <option value="Wedding Return Gift">Wedding Return Gift</option>
+                  <option value="Wedding Hampers">Wedding Hampers</option>
+                </optgroup>
                 <option value="Custom / Other">Custom / Other</option>
               </select>
             </div>

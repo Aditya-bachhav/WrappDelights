@@ -86,6 +86,15 @@ CATALOG_NAV_CATEGORIES = [
     "Packaging Solutions",
 ]
 
+CATEGORY_DISPLAY_NAMES = {
+    "corporate-gifting": "Corporate",
+    "wedding-events": "Wedding",
+    "individual-products": "Employees / Welcome Kit",
+    "packaging-solutions": "Packaging Solutions",
+    "hamper-product": "Hamper Product",
+    "festive-hampers": "Festive Hampers",
+}
+
 _success_whatsapp_digits = ''.join(ch for ch in getattr(settings, "WHATSAPP_NUMBER", "9309810348") if ch.isdigit())
 if len(_success_whatsapp_digits) == 10:
     SUCCESS_WHATSAPP_RAW = f"91{_success_whatsapp_digits}"
@@ -96,33 +105,27 @@ SESSION_KIT_KEY = "kit"
 STEP_CONFIG = {
     1: {
         "slug": "base",
-        "title": "Select Base",
+        "title": "Choose Box",
         "subtitle": "Pick the box or hamper base you want to build on.",
         "category_hints": ["box", "hamper", "packaging"],
     },
     2: {
-        "slug": "core",
-        "title": "Select Core Products",
-        "subtitle": "Add the primary products that define your hamper.",
-        "category_hints": ["individual", "core", "snack", "gifting"],
+        "slug": "office",
+        "title": "Office Essentials",
+        "subtitle": "Add the practical everyday items that define the hamper.",
+        "category_hints": ["office", "essentials", "stationery", "work"],
     },
     3: {
-        "slug": "addons",
-        "title": "Select Add-ons",
-        "subtitle": "Add extras and accessories to elevate the kit.",
-        "category_hints": ["add", "extra", "accessory"],
+        "slug": "gourmet",
+        "title": "Gourmet Treats",
+        "subtitle": "Add premium food and treat selections to elevate the kit.",
+        "category_hints": ["gourmet", "treat", "snack", "food"],
     },
     4: {
-        "slug": "branding",
-        "title": "Branding & Customization",
-        "subtitle": "Choose branding, custom cards, and finishing touches.",
-        "category_hints": ["branding", "custom", "stationery"],
-    },
-    5: {
-        "slug": "greeting",
-        "title": "Greeting Card",
-        "subtitle": "Personalize with a custom greeting message.",
-        "category_hints": [],
+        "slug": "housewarming",
+        "title": "House Warming",
+        "subtitle": "Finish with gifts that suit a warm home celebration.",
+        "category_hints": ["house", "warming", "home", "decor"],
     },
 }
 
@@ -386,6 +389,10 @@ def home(request):
     )
     homepage_sections = HomepageSection.objects.filter(is_active=True).prefetch_related(section_prefetch)
 
+    categories = list(Category.objects.filter(is_active=True))
+    for category in categories:
+        category.display_name = CATEGORY_DISPLAY_NAMES.get(category.slug, category.name)
+
     return render(
         request,
         "home.html",
@@ -395,7 +402,7 @@ def home(request):
             "event_hampers": event_hampers if event_hampers.exists() else event_section,
             "festival_hampers": festival_hampers,
             "homepage_sections": homepage_sections,
-            "categories": Category.objects.filter(is_active=True),
+            "categories": categories,
             "catalog_nav_categories": CATALOG_NAV_CATEGORIES,
         },
     )
@@ -404,7 +411,10 @@ def home(request):
 def product_list(request):
     hampers = Hamper.objects.filter(is_active=True).select_related("category")
     category_slug = request.GET.get("category", "").strip()
-    active_category_label = category_slug.replace("-", " ").title() if category_slug else ""
+    active_category_label = CATEGORY_DISPLAY_NAMES.get(
+        category_slug,
+        category_slug.replace("-", " ").title() if category_slug else "",
+    )
 
     sort = request.GET.get("sort", "").strip()
 
@@ -420,7 +430,9 @@ def product_list(request):
     else:
         hampers = hampers.order_by("id")
 
-    categories = Category.objects.filter(is_active=True)
+    categories = list(Category.objects.filter(is_active=True))
+    for category in categories:
+        category.display_name = CATEGORY_DISPLAY_NAMES.get(category.slug, category.name)
     return render(
         request,
         "products.html",
@@ -542,7 +554,7 @@ def custom_hamper_step(request, step_number):
             "catalog": catalog,
             "kit": kit,
             "totals": _kit_totals(kit),
-            "step_count": 5,
+            "step_count": len(STEP_CONFIG),
             "step_numbers": sorted(STEP_CONFIG.keys()),
         },
     )
@@ -607,8 +619,8 @@ def custom_hamper_review(request):
         {
             "kit": kit,
             "totals": totals,
-            "step": {"number": 5, "title": "Review & Submit Inquiry"},
-            "step_count": 5,
+            "step": {"number": len(STEP_CONFIG) + 1, "title": "Review & Submit Inquiry"},
+            "step_count": len(STEP_CONFIG),
         },
     )
 
@@ -784,6 +796,7 @@ def dashboard_create_product(request):
             hamper = Hamper.objects.create(
                 name=request.POST.get("name", "").strip(),
                 category=category,
+                hamper_step=(request.POST.get("hamper_step") or "").strip(),
                 short_description=request.POST.get("short_description", "").strip(),
                 description=request.POST.get("description", "").strip(),
                 included_items=request.POST.get("included_items", "").strip(),
@@ -866,6 +879,7 @@ def dashboard_edit_product(request, product_id):
             hamper.is_featured = request.POST.get("is_featured") == "on"
             hamper.is_event_special = request.POST.get("is_event_special") == "on"
             hamper.is_active = request.POST.get("is_active") == "on"
+            hamper.hamper_step = (request.POST.get("hamper_step") or "").strip()
 
             hamper.save()
 
@@ -970,6 +984,10 @@ def dashboard_create_category(request):
                 position=int(request.POST.get("position") or 0),
                 is_active=request.POST.get("is_active") == "on",
             )
+            image = request.FILES.get("image")
+            if image:
+                cat.image = image
+                cat.save(update_fields=["image"])
             messages.success(request, f'Category "{cat.name}" created.')
         return redirect("dashboard_categories")
     return render(request, "dashboard/create_category.html")
@@ -983,6 +1001,9 @@ def dashboard_edit_category(request, category_id):
         category.name = request.POST.get("name", "").strip()
         category.position = int(request.POST.get("position") or 0)
         category.is_active = request.POST.get("is_active") == "on"
+        image = request.FILES.get("image")
+        if image:
+            category.image = image
         category.save()
         messages.success(request, f'Category "{category.name}" updated.')
         return redirect("dashboard_categories")

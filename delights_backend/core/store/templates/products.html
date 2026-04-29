@@ -15,158 +15,6 @@
     margin-top: 96px;
   }
 
-  /* ─── Sidebar ─── */
-  .catalog-sidebar {
-    width: 240px;
-    flex-shrink: 0;
-    position: sticky;
-    top: 96px;
-    height: calc(100vh - 96px);
-    overflow-y: auto;
-    background: #f6f3f2;
-    border-right: 1px solid rgba(224, 191, 191, 0.2);
-    display: flex;
-    flex-direction: column;
-    padding: 24px 16px;
-    scrollbar-width: none;
-  }
-  .catalog-sidebar::-webkit-scrollbar { display: none; }
-
-  .sidebar-label {
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: #570012;
-    margin-bottom: 4px;
-    padding: 0 8px;
-  }
-  .sidebar-sub {
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #8c7070;
-    padding: 0 8px;
-    margin-bottom: 20px;
-  }
-
-  .filter-group {
-    margin-bottom: 4px;
-  }
-  .filter-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    width: 100%;
-    border: none;
-    border-radius: 4px;
-    background: transparent;
-    color: #584141;
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.2s;
-  }
-  .filter-btn:hover {
-    background: #eae7e7;
-  }
-  .filter-btn.active {
-    background: #ffffff;
-    color: #570012;
-    box-shadow: 0 1px 4px rgba(87,0,18,0.08);
-  }
-  .filter-btn .material-symbols-outlined {
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-
-  /* Category filter pills in sidebar */
-  .sidebar-cats {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    margin-bottom: 16px;
-  }
-  .sidebar-cat-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #584141;
-    border-radius: 4px;
-    transition: all 0.2s;
-  }
-  .sidebar-cat-link:hover,
-  .sidebar-cat-link.active {
-    background: #ffffff;
-    color: #570012;
-  }
-  .sidebar-cat-link.active {
-    font-weight: 700;
-  }
-  .cat-count {
-    font-size: 9px;
-    font-weight: 700;
-    color: #8c7070;
-    background: #eae7e7;
-    padding: 2px 6px;
-    border-radius: 10px;
-  }
-  .sidebar-cat-link.active .cat-count {
-    background: #ffdada;
-    color: #570012;
-  }
-
-  .sidebar-divider {
-    height: 1px;
-    background: rgba(224, 191, 191, 0.25);
-    margin: 16px 0;
-  }
-
-  .clear-btn {
-    width: 100%;
-    padding: 10px;
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: #570012;
-    background: transparent;
-    border: 1px solid rgba(224, 191, 191, 0.4);
-    cursor: pointer;
-    transition: all 0.2s;
-    border-radius: 2px;
-    margin-top: auto;
-  }
-  .clear-btn:hover {
-    background: #ffdada;
-    border-color: #570012;
-  }
-
-  /* Mobile filter toggle */
-  .mobile-filter-btn {
-    display: none;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    border: 1px solid rgba(224, 191, 191, 0.5);
-    background: #ffffff;
-    color: #570012;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    cursor: pointer;
-    border-radius: 2px;
-  }
-
   /* ─── Main Content ─── */
   .catalog-main {
     flex: 1;
@@ -202,6 +50,49 @@
     padding-bottom: 20px;
     border-bottom: 1px solid rgba(224, 191, 191, 0.2);
   }
+  /* Category nav */
+  .category-nav {
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    gap: 10px;
+    flex-wrap:wrap;
+    margin: 0 auto 16px;
+    padding: 0;
+  }
+  .category-chip {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    color:#1c1b1b;
+    text-align:center;
+    width:100%;
+    max-width:108px;
+  }
+  .category-chip-circle {
+    width:68px;
+    height:68px;
+    border-radius:999px;
+    overflow:hidden;
+    border:2px solid rgba(224,191,191,0.45);
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow: 0 6px 16px rgba(87,0,18,0.05);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .category-chip:hover .category-chip-circle,
+  .category-chip.active .category-chip-circle {
+    transform: translateY(-2px);
+    border-color:#570012;
+    box-shadow: 0 10px 20px rgba(87,0,18,0.12);
+  }
+  .category-chip img { width:100%; height:100%; object-fit:cover; display:block; }
+  .category-chip .category-fallback { font-size:26px; color:#570012; }
+  .category-chip-label { font-size:10px; font-weight:800; line-height:1.2; color:#1c1b1b; }
   .catalog-title {
     font-size: clamp(1.8rem, 3vw, 2.6rem);
     font-weight: 900;
@@ -305,6 +196,17 @@
   .prod-card:hover {
     border-color: rgba(224, 191, 191, 0.35);
     box-shadow: 0 8px 28px rgba(87, 0, 18, 0.08);
+  }
+  .prod-card.is-corporate {
+    border-radius: 28px;
+    overflow: hidden;
+  }
+  .prod-card.is-corporate .prod-card-img {
+    border-radius: 28px 28px 0 0;
+  }
+  .prod-card.is-corporate:hover {
+    box-shadow: 0 14px 34px rgba(87, 0, 18, 0.12);
+    transform: translateY(-2px);
   }
   .prod-card-img {
     aspect-ratio: 1;
@@ -426,19 +328,6 @@
   /* ─── Responsive ─── */
   @media (max-width: 1024px) {
     .product-grid { grid-template-columns: repeat(4, 1fr); }
-    .catalog-sidebar { display: none; }
-    .catalog-sidebar.is-open {
-      display: flex;
-      position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      z-index: 200;
-      width: 280px;
-      overflow-y: auto;
-      padding-top: 80px;
-    }
-    .mobile-filter-btn { display: inline-flex; }
     .catalog-main { padding: 20px 20px; }
   }
   @media (max-width: 768px) {
@@ -457,44 +346,6 @@
 <div class="catalog-layout">
 
   <!-- ══════════════════════════════
-       SIDEBAR
-  ══════════════════════════════ -->
-  <aside class="catalog-sidebar" id="catalogSidebar">
-
-    <p class="sidebar-label">Filters</p>
-    <p class="sidebar-sub">Refine Procurement</p>
-
-    <!-- Categories -->
-    <div class="sidebar-divider" style="margin-top:0;"></div>
-    <p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:#8c7070;padding:0 8px;margin-bottom:8px;">Categories</p>
-    <div class="sidebar-cats">
-      <a href="{% url 'products' %}"
-         class="sidebar-cat-link {% if not request.GET.category %}active{% endif %}">
-        All Products
-        <span class="cat-count">All</span>
-      </a>
-      {% for cat in categories %}
-        <a href="{% url 'products' %}?category={{ cat.slug }}"
-           class="sidebar-cat-link {% if request.GET.category == cat.slug %}active{% endif %}">
-          {{ cat.name }}
-          {% if cat.product_count %}
-            <span class="cat-count">{{ cat.product_count }}</span>
-          {% endif %}
-        </a>
-      {% endfor %}
-    </div>
-
-    <div class="sidebar-divider"></div>
-    <button type="button" class="clear-btn">Clear All Filters</button>
-  </aside>
-
-  <!-- Mobile sidebar overlay -->
-  <div id="sidebarOverlay"
-       class="hidden fixed inset-0 bg-black/40 z-[199]"
-       style="backdrop-filter:blur(2px);"
-       aria-hidden="true"></div>
-
-  <!-- ══════════════════════════════
        MAIN
   ══════════════════════════════ -->
   <main class="catalog-main">
@@ -506,30 +357,41 @@
       {% if request.GET.category %}
         <a href="{% url 'products' %}">Catalog</a>
         <span class="material-symbols-outlined">chevron_right</span>
-        <span class="current">{{ request.GET.category|capfirst }}</span>
+        <span class="current">{{ active_category_label|default:request.GET.category|capfirst }}</span>
       {% else %}
         <span class="current">Catalog</span>
       {% endif %}
     </nav>
 
+    <!-- Category chips -->
+    {% if categories and not active_category %}
+      <div class="category-nav">
+        {% for cat in categories %}
+          <a href="{% url 'products' %}?category={{ cat.slug }}" class="category-chip {% if active_category == cat.slug %}active{% endif %}">
+            <div class="category-chip-circle">
+              {% if cat.image %}
+                <img src="{{ cat.image.url }}" alt="{{ cat.display_name|default:cat.name }}">
+              {% else %}
+                <span class="category-fallback material-symbols-outlined">category</span>
+              {% endif %}
+            </div>
+            <span class="category-chip-label">{{ cat.display_name|default:cat.name }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <!-- Page Header -->
     <div class="catalog-header">
       <div>
         <p class="wd-kicker" style="margin-bottom:6px;">Corporate Gifting Catalog</p>
-        <h1 class="catalog-title">
-          {% if request.GET.category %}{{ request.GET.category|capfirst }}{% else %}All Products{% endif %}
-        </h1>
+        <h1 class="catalog-title">{% if active_category_label %}{{ active_category_label }}{% else %}All Gifts{% endif %}</h1>
         <p class="catalog-desc">
           Curated collections for corporate distribution — sustainable packaging,
           rapid fulfillment, and custom branding on every order.
         </p>
       </div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-        <!-- Mobile filter toggle -->
-        <button type="button" class="mobile-filter-btn" id="mobileFilterBtn" aria-label="Open filters">
-          <span class="material-symbols-outlined text-sm">tune</span>
-          Filters
-        </button>
         <!-- Sort -->
         <form method="get" action="{% url 'products' %}" id="sortForm">
           {% if request.GET.category %}
@@ -553,7 +415,7 @@
       <div class="active-filters">
         {% if request.GET.category %}
           <span class="active-filter-tag">
-            {{ request.GET.category|capfirst }}
+            {{ active_category_label|default:request.GET.category|capfirst }}
             <a href="{% url 'products' %}{% if request.GET.sort %}?sort={{ request.GET.sort }}{% endif %}" aria-label="Remove category filter">
               <span class="material-symbols-outlined">close</span>
             </a>
@@ -574,7 +436,7 @@
     <!-- Product Grid -->
     <div class="product-grid">
       {% for product in products %}
-        <article class="prod-card">
+        <article class="prod-card {% if product.category and 'corporate' in product.category.slug %}is-corporate{% endif %}">
           <a href="{% url 'product_detail' product.id %}" class="prod-card-img">
             {% if product.cover_image %}
               <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
@@ -623,49 +485,4 @@
   </main>
 </div>
 
-{% endblock %}
-
-{% block extra_js %}
-<script>
-(function () {
-  'use strict';
-
-  /* ── Mobile Sidebar Toggle ── */
-  var sidebar  = document.getElementById('catalogSidebar');
-  var overlay  = document.getElementById('sidebarOverlay');
-  var openBtn  = document.getElementById('mobileFilterBtn');
-
-  function openSidebar() {
-    sidebar.classList.add('is-open');
-    overlay.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeSidebar() {
-    sidebar.classList.remove('is-open');
-    overlay.classList.add('hidden');
-    document.body.style.overflow = '';
-  }
-
-  if (openBtn) openBtn.addEventListener('click', openSidebar);
-  if (overlay) overlay.addEventListener('click', closeSidebar);
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && sidebar && sidebar.classList.contains('is-open')) closeSidebar();
-  });
-
-  /* ── Sidebar Filter Btn Active State ── */
-  document.querySelectorAll('.filter-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      document.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-    });
-  });
-
-  /* ── Preserve query params on resize ── */
-  window.addEventListener('resize', function () {
-    if (window.innerWidth >= 1024 && sidebar && sidebar.classList.contains('is-open')) {
-      closeSidebar();
-    }
-  });
-})();
-</script>
 {% endblock %}

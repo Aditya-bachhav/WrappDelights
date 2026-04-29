@@ -7,6 +7,7 @@ class Category(models.Model):
     slug = models.SlugField(max_length=140, unique=True, blank=True)
     position = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
+    image = models.ImageField(upload_to="categories/", null=True, blank=True)
 
     class Meta:
         db_table = "categories"
@@ -51,6 +52,12 @@ class HomepageSection(models.Model):
 
 
 class Hamper(models.Model):
+    HAMPER_STEP_CHOICES = [
+        ("base", "Box"),
+        ("office", "Office Essentials"),
+        ("gourmet", "Gourmet Treats"),
+        ("personalize", "Personalize"),
+    ]
     name = models.CharField(max_length=180)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
     category = models.ForeignKey(
@@ -62,6 +69,13 @@ class Hamper(models.Model):
     )
     short_description = models.CharField(max_length=220, blank=True, default="")
     description = models.TextField(blank=True, default="")
+    hamper_step = models.CharField(
+        max_length=32,
+        choices=HAMPER_STEP_CHOICES,
+        blank=True,
+        default="",
+        help_text="Assign product to a custom hamper-builder step (for admin/frontend).",
+    )
     included_items = models.TextField(
         blank=True,
         default="",
