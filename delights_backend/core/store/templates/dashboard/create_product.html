@@ -114,12 +114,10 @@
           <div class="cat-tree" style="max-height:400px;overflow-y:auto;padding:8px;border:1px solid var(--border);border-radius:10px;background:var(--surface)">
             {% for cat in categories %}
               {% if not cat.parent %}
-                {# ── Parent row ── #}
                 <label class="cat-row cat-row--parent{% if cat.id in selected_category_ids %} is-checked{% endif %}" data-cat-id="{{ cat.id }}">
                   <input type="checkbox" name="categories" value="{{ cat.id }}" class="cat-cb" {% if cat.id in selected_category_ids %}checked{% endif %}>
                   <span class="cat-label">{{ cat.name }}</span>
                 </label>
-                {# ── Children ── #}
                 {% for child in categories %}
                   {% if child.parent_id == cat.id %}
                     <label class="cat-row cat-row--child{% if child.id in selected_category_ids %} is-checked{% endif %}" data-cat-id="{{ child.id }}" data-parent-id="{{ cat.id }}">
