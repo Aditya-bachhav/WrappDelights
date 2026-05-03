@@ -122,15 +122,9 @@ if DATABASE_URL:
         )
     }
 else:
-    # ⚠️ WARNING: DATABASE_URL not set
-    # On Render, database may still be provisioning. Once it's created, DATABASE_URL will be available automatically.
     if RUNNING_ON_RENDER:
-        import warnings
-        warnings.warn(
-            "DATABASE_URL is not set on Render. Using temporary SQLite. "
-            "Once wrapp-delights-db PostgreSQL service is provisioned, DATABASE_URL will be available. "
-            "Redeploy to switch to PostgreSQL for persistent storage.",
-            RuntimeWarning
+        raise RuntimeError(
+            "DATABASE_URL is not set on Render. The app must use the PostgreSQL database service."
         )
     
     DATABASES = {

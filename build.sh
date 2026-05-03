@@ -10,4 +10,7 @@ cd delights_backend/core
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
-echo "Build complete. Data migrations will run in startCommand."
+echo "Applying database migrations..."
+python manage.py migrate --noinput
+
+echo "Build complete."
