@@ -32,7 +32,7 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME", "")
 RUNNING_ON_RENDER = bool(RENDER_EXTERNAL_HOSTNAME)
-DEBUG = os.getenv("DEBUG", "False" if RUNNING_ON_RENDER else "True").lower() in {
+DEBUG = os.getenv("DEBUG", "False").lower() in {
     "1", "true", "yes", "on"
 }
 
@@ -250,7 +250,7 @@ WHATSAPP_MESSAGE = os.getenv("WHATSAPP_MESSAGE", "Hi, I'm interested in a produc
 PHONE_NUMBER = os.getenv("PHONE_NUMBER", "+91 93098 10348")  # display-friendly format
 PHONE_NUMBER_RAW = os.getenv("PHONE_NUMBER_RAW", "+919309810348")  # tel: link format
 
-if not DEBUG:
+if not DEBUG and RUNNING_ON_RENDER:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True

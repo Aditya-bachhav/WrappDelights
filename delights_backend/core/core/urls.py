@@ -40,6 +40,7 @@ from delights_backend.core.store.views import (
     product_list,
     corporate_success,
     search_view,
+    page_not_found,
 )
 
 admin.site.has_permission = lambda request: bool(
@@ -119,3 +120,6 @@ else:
     urlpatterns += [
         re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
     ]
+
+# Custom error handlers
+handler404 = page_not_found

@@ -6,6 +6,16 @@
 <style>
 .img-thumb input[type=checkbox]:checked ~ .del-overlay,
 .img-thumb:has(input:checked) .del-overlay{opacity:1;background:rgba(87,0,18,.65)}
+
+.cat-tree { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: .875rem; }
+.cat-row { display: flex; align-items: center; gap: 8px; padding: 5px 6px; border-radius: 6px; cursor: pointer; user-select: none; transition: background .12s; }
+.cat-row:hover { background: var(--hover, rgba(0,0,0,.04)); }
+.cat-row--parent { font-weight: 600; margin-top: 6px; }
+.cat-row--child { padding-left: 28px; font-weight: 400; color: #444; }
+.cat-row input[type=checkbox] { width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; accent-color: var(--primary, #1a73e8); }
+.cat-prefix { font-family: monospace; color: #999; font-size: .8rem; }
+.cat-row--parent.is-checked { color: var(--primary, #1a73e8); }
+.cat-row--child.is-checked .cat-label { color: var(--primary, #1a73e8); font-weight: 500; }
 </style>
 {% endblock %}
 
@@ -39,37 +49,28 @@
           <div class="form-section-title">Basic Info</div>
           <div class="form-group" style="margin-bottom:12px">
             <label class="form-label">Hamper Name *</label>
-            <input class="form-input" name="name" required value="{{ hamper.name }}">
+            <input class="form-input" name="name" required value="{{ form_data.name|default:hamper.name }}">
           </div>
           <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Category</label>
-              <select class="form-select" name="category">
-                <option value="">No category</option>
-                {% for cat in categories %}
-                  <option value="{{ cat.id }}" {% if hamper.category and hamper.category.id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
-                {% endfor %}
-              </select>
-            </div>
             <div class="form-group">
               <label class="form-label">Hamper Step</label>
               <select class="form-select" name="hamper_step">
                 <option value="">No step</option>
-                <option value="base" {% if hamper.hamper_step == 'base' %}selected{% endif %}>Box</option>
-                <option value="office" {% if hamper.hamper_step == 'office' %}selected{% endif %}>Office Essentials</option>
-                <option value="gourmet" {% if hamper.hamper_step == 'gourmet' %}selected{% endif %}>Gourmet Treats</option>
-                <option value="personalize" {% if hamper.hamper_step == 'personalize' %}selected{% endif %}>Personalize</option>
+                <option value="base" {% if form_data %}{% if form_data.hamper_step == 'base' %}selected{% endif %}{% else %}{% if hamper.hamper_step == 'base' %}selected{% endif %}{% endif %}>Box</option>
+                <option value="office" {% if form_data %}{% if form_data.hamper_step == 'office' %}selected{% endif %}{% else %}{% if hamper.hamper_step == 'office' %}selected{% endif %}{% endif %}>Office Essentials</option>
+                <option value="gourmet" {% if form_data %}{% if form_data.hamper_step == 'gourmet' %}selected{% endif %}{% else %}{% if hamper.hamper_step == 'gourmet' %}selected{% endif %}{% endif %}>Gourmet Treats</option>
+                <option value="personalize" {% if form_data %}{% if form_data.hamper_step == 'personalize' %}selected{% endif %}{% else %}{% if hamper.hamper_step == 'personalize' %}selected{% endif %}{% endif %}>Personalize</option>
               </select>
               <span class="form-hint">Assign this product to a builder step (optional)</span>
             </div>
             <div class="form-group">
               <label class="form-label">Base Price (₹)</label>
-              <input class="form-input" type="number" step="0.01" min="0" name="base_price" value="{{ hamper.base_price }}" placeholder="1380">
+              <input class="form-input" type="number" step="0.01" min="0" name="base_price" value="{{ form_data.base_price|default:hamper.base_price }}" placeholder="1380">
               <span class="form-hint">Used on cards and for combo totals</span>
             </div>
             <div class="form-group">
               <label class="form-label">Price Label (optional)</label>
-              <input class="form-input" name="price_label" value="{{ hamper.price_label }}" placeholder="Price on request">
+              <input class="form-input" name="price_label" value="{{ form_data.price_label|default:hamper.price_label }}" placeholder="Price on request">
               <span class="form-hint">Override label when no numeric price</span>
             </div>
           </div>
@@ -79,11 +80,11 @@
           <div class="form-section-title">Description</div>
           <div class="form-group" style="margin-bottom:12px">
             <label class="form-label">Short Description</label>
-            <input class="form-input" name="short_description" maxlength="220" value="{{ hamper.short_description }}">
+            <input class="form-input" name="short_description" maxlength="220" value="{{ form_data.short_description|default:hamper.short_description }}">
           </div>
           <div class="form-group">
             <label class="form-label">Full Description</label>
-            <textarea class="form-textarea" name="description" rows="5">{{ hamper.description }}</textarea>
+            <textarea class="form-textarea" name="description" rows="5">{{ form_data.description|default:hamper.description }}</textarea>
           </div>
         </div>
 
@@ -91,7 +92,7 @@
           <div class="form-section-title">Included Items</div>
           <div class="form-group">
             <label class="form-label">Items List <span style="font-weight:500;color:var(--mist)">(one per line)</span></label>
-            <textarea class="form-textarea" name="included_items" rows="5">{{ hamper.included_items }}</textarea>
+            <textarea class="form-textarea" name="included_items" rows="5">{{ form_data.included_items|default:hamper.included_items }}</textarea>
           </div>
         </div>
       </div>
@@ -143,16 +144,55 @@
         <div class="form-section">
           <div class="form-section-title">Visibility & Flags</div>
           <div style="display:flex;flex-direction:column;gap:10px">
-            <label class="form-check"><input type="checkbox" name="is_active" {% if hamper.is_active %}checked{% endif %}> <span>Active (visible on site)</span></label>
-            <label class="form-check"><input type="checkbox" name="is_featured" {% if hamper.is_featured %}checked{% endif %}> <span>Featured hamper</span></label>
-            <label class="form-check"><input type="checkbox" name="is_event_special" {% if hamper.is_event_special %}checked{% endif %}> <span>Event special</span></label>
+            <label class="form-check"><input type="checkbox" name="is_active" {% if form_data %}{% if form_data.is_active == 'on' %}checked{% endif %}{% else %}{% if hamper.is_active %}checked{% endif %}{% endif %}> <span>Active (visible on site)</span></label>
+            <label class="form-check"><input type="checkbox" name="is_featured" {% if form_data %}{% if form_data.is_featured == 'on' %}checked{% endif %}{% else %}{% if hamper.is_featured %}checked{% endif %}{% endif %}> <span>Featured hamper</span></label>
+            <label class="form-check"><input type="checkbox" name="is_event_special" {% if form_data %}{% if form_data.is_event_special == 'on' %}checked{% endif %}{% else %}{% if hamper.is_event_special %}checked{% endif %}{% endif %}> <span>Event special</span></label>
           </div>
         </div>
+
+        <div class="form-section">
+          <div class="form-section-title">📂 Categories</div>
+          {#
+            assigned_category_ids comes from the view as a plain Python list of ints.
+            We compare cat.id (int) directly — no type mismatch.
+          #}
+          <div class="cat-tree" style="max-height:400px;overflow-y:auto;padding:8px;border:1px solid var(--border);border-radius:10px;background:var(--surface)">
+            {% for cat in categories %}
+              {% if not cat.parent %}
+                {# ── Parent row ── #}
+                <label class="cat-row cat-row--parent{% if cat.id in assigned_category_ids %} is-checked{% endif %}" data-cat-id="{{ cat.id }}">
+                  <input type="checkbox" name="categories" value="{{ cat.id }}" class="cat-cb"
+                    {% if cat.id in assigned_category_ids %}checked{% endif %}>
+                  <span class="cat-label">{{ cat.name }}</span>
+                </label>
+                {# ── Children of this parent ── #}
+                {% for child in categories %}
+                  {% if child.parent_id == cat.id %}
+                    <label class="cat-row cat-row--child{% if child.id in assigned_category_ids %} is-checked{% endif %}"
+                           data-cat-id="{{ child.id }}" data-parent-id="{{ cat.id }}">
+                      <input type="checkbox" name="categories" value="{{ child.id }}" class="cat-cb"
+                        {% if child.id in assigned_category_ids %}checked{% endif %}>
+                      <span class="cat-prefix">├─</span>
+                      <span class="cat-label">{{ child.name }}</span>
+                    </label>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% empty %}
+              <span style="font-size:.76rem;color:var(--mist);padding:10px;display:block">No active categories available.</span>
+            {% endfor %}
+          </div>
+          <span class="form-hint" style="margin-top:6px;display:block">
+            Check categories where this product should appear.
+            Selecting a child category will also save the parent automatically.
+          </span>
+        </div>
+
         <div class="form-section">
           <div class="form-section-title">Bulk Settings</div>
           <div class="form-group">
             <label class="form-label">Min Bulk Quantity</label>
-            <input class="form-input" type="number" min="1" name="min_bulk_quantity" value="{{ hamper.min_bulk_quantity }}">
+            <input class="form-input" type="number" min="1" name="min_bulk_quantity" value="{{ form_data.min_bulk_quantity|default:hamper.min_bulk_quantity }}">
           </div>
         </div>
       </div>
@@ -163,7 +203,8 @@
           <div style="display:flex;flex-direction:column;gap:10px">
             {% for section in homepage_sections %}
             <label class="form-check">
-              <input type="checkbox" name="homepage_sections" value="{{ section.id }}" {% if section.id in assigned_section_ids %}checked{% endif %}>
+              <input type="checkbox" name="homepage_sections" value="{{ section.id }}"
+                {% if section.id in assigned_section_ids %}checked{% endif %}>
               <span style="font-size:.76rem">
                 {{ section.title }}<br>
                 <span style="color:var(--mist);font-weight:500">{{ section.get_section_type_display }}</span>
@@ -191,4 +232,26 @@
     </a>
   </div>
 </form>
+
+<script>
+/* Sync is-checked state on checkbox change */
+document.querySelectorAll('.cat-cb').forEach(cb => {
+  cb.addEventListener('change', function() {
+    const row = this.closest('.cat-row');
+    row.classList.toggle('is-checked', this.checked);
+
+    const parentId = row.dataset.parentId;
+    if (parentId) {
+      const parentRow = document.querySelector(`.cat-row[data-cat-id="${parentId}"]`);
+      if (parentRow) {
+        const anyChildChecked = document.querySelectorAll(
+          `.cat-row[data-parent-id="${parentId}"] .cat-cb:checked`
+        ).length > 0;
+        const parentCb = parentRow.querySelector('.cat-cb');
+        parentRow.classList.toggle('is-checked', parentCb.checked || anyChildChecked);
+      }
+    }
+  });
+});
+</script>
 {% endblock %}

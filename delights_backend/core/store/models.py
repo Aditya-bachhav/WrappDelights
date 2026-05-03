@@ -1,10 +1,20 @@
 from django.db import models
 from django.utils.text import slugify
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
 
 
 class Category(models.Model):
     name = models.CharField(max_length=120, unique=True)
     slug = models.SlugField(max_length=140, unique=True, blank=True)
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='children',
+        help_text='Set to create subcategory hierarchy'
+    )
     position = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     image = models.ImageField(upload_to="categories/", null=True, blank=True)
@@ -14,12 +24,51 @@ class Category(models.Model):
         ordering = ["position", "name"]
 
     def __str__(self):
+        if self.parent:
+            return f"{self.parent.name} → {self.name}"
         return self.name
+
+    def get_indent_display(self):
+        """Returns indented name for tree display"""
+        depth = 0
+        node = self
+        while node.parent:
+            depth += 1
+            node = node.parent
+        return "─" * (depth * 2) + " " + self.name
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+    
+def ensure_parent_categories(sender, instance, action, pk_set, **kwargs):
+    """When categories are added to a Hamper, also add their parent categories.
+
+    This ensures that items assigned to a subcategory also appear under the
+    parent category listings (e.g., product in "Wedding Hampers" also shows
+    up under "Wedding & Events")."""
+    if action != 'post_add' or not pk_set:
+        return
+
+    # Find parents of added categories
+    parent_ids = set()
+    for cat_id in pk_set:
+        try:
+            cat = Category.objects.only('id', 'parent_id').get(id=cat_id)
+        except Category.DoesNotExist:
+            continue
+        if cat.parent_id:
+            parent_ids.add(cat.parent_id)
+
+    # Exclude those already present
+    if parent_ids:
+        existing_ids = set(instance.categories.values_list('id', flat=True))
+        missing = parent_ids - existing_ids
+        if missing:
+            instance.categories.add(*missing)
+
 
 
 class HomepageSection(models.Model):
@@ -71,6 +120,12 @@ class Hamper(models.Model):
         null=True,
         blank=True,
         related_name="hampers",
+    )
+    categories = models.ManyToManyField(
+        Category,
+        related_name="multi_category_hampers",
+        blank=True,
+        help_text="Assign this product to one or more catalog categories.",
     )
     short_description = models.CharField(max_length=220, blank=True, default="")
     description = models.TextField(blank=True, default="")
@@ -129,6 +184,9 @@ class Hamper(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+# Connect the m2m_changed handler now that `Hamper` is defined.
+m2m_changed.connect(ensure_parent_categories, sender=Hamper.categories.through)
 
 
 class HamperImage(models.Model):

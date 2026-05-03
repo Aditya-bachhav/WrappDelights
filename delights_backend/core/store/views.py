@@ -79,28 +79,31 @@ def _save_gallery_images(hamper, gallery_images, start_position=0):
 
 
 CATALOG_NAV_CATEGORIES = [
-    "Corporate Gifting",
-    "Wedding & Events",
-    "Festive Hampers",
-    "Individual Products",
-    "Packaging Solutions",
+    "corporate",
+    "wedding",
+    "employee",
 ]
 
 CATALOG_QUICK_LINKS = [
     "Diwali",
-    "Corporate Kit",
     "Wedding",
-    "Hampers",
-    "Chocolates",
+    "Corporate",
+    "Employee",
 ]
 
 CATEGORY_DISPLAY_NAMES = {
-    "corporate-gifting": "Corporate",
-    "wedding-events": "Wedding",
-    "individual-products": "Employees / Welcome Kit",
-    "packaging-solutions": "Packaging Solutions",
-    "hamper-product": "Hamper Product",
-    "festive-hampers": "Festive Hampers",
+    "corporate": "Corporate Gifting",
+    "wedding": "Wedding & Events",
+    "employee": "Employees / Welcome Kit",
+    "corporate-christmas-gifts": "Corporate Gifts",
+    "diwali-gifts": "Diwali Gifts",
+    "new-year-gifts": "New Year Gifts",
+    "womens-day-gifts": "Women's Day Gifts",
+    "office-welcome-kit": "Office Welcome Kit",
+    "employee-welcome-kit": "Employee Welcome Kit",
+    "wedding-hampers": "Wedding Hampers",
+    "wedding-accessories": "Wedding Accessories",
+    "wedding-return-gifts": "Wedding Return Gifts",
 }
 
 _success_whatsapp_digits = ''.join(ch for ch in getattr(settings, "WHATSAPP_NUMBER", "9309810348") if ch.isdigit())
@@ -159,12 +162,13 @@ def _clear_session_kit(request):
 def _serialize_hamper_for_kit(hamper, quantity=1, step_slug=""):
     raw_price = getattr(hamper, "base_price", None)
     price = float(raw_price or 0)
+    primary_category = hamper.categories.order_by("position", "name").first() or hamper.category
     return {
         "product_id": hamper.id,
         "name": hamper.name,
         "price": price,
         "quantity": max(1, int(quantity or 1)),
-        "category": hamper.category.name if hamper.category else "",
+        "category": primary_category.name if primary_category else "",
         "image": hamper.cover_image.url if hamper.cover_image else "",
         "step": step_slug,
     }
@@ -210,9 +214,12 @@ def _get_step_config(step_number):
 
 def _get_catalog_for_step(step_number):
     base_qs = (
-        Hamper.objects.filter(is_active=True, category__is_active=True)
+        Hamper.objects.filter(is_active=True)
+        .filter(Q(category__is_active=True) | Q(categories__is_active=True) | Q(category__isnull=True))
         .select_related("category")
+        .prefetch_related("categories")
         .order_by("name")
+        .distinct()
     )
     step = STEP_CONFIG.get(step_number)
     if not step:
@@ -223,6 +230,8 @@ def _get_catalog_for_step(step_number):
     for hint in hints:
         query |= Q(category__slug__icontains=hint)
         query |= Q(category__name__icontains=hint)
+        query |= Q(categories__slug__icontains=hint)
+        query |= Q(categories__name__icontains=hint)
         query |= Q(name__icontains=hint)
 
     filtered = base_qs.filter(query).distinct() if hints else base_qs
@@ -249,6 +258,27 @@ def _parse_price(raw):
     except (InvalidOperation, ValueError):
         return None
 
+
+def _dashboard_category_queryset():
+    """Return active categories ordered for parent-first hierarchical rendering."""
+    return Category.objects.filter(is_active=True).select_related("parent").order_by(
+        "parent__position",
+        "parent__name",
+        "position",
+        "name",
+    )
+
+
+def _normalize_posted_int_ids(values):
+    """Convert posted ID values to ints, dropping invalid entries."""
+    normalized = []
+    for value in values:
+        try:
+            normalized.append(int(value))
+        except (TypeError, ValueError):
+            continue
+    return normalized
+
 def health(request):
     """Health check endpoint."""
     try:
@@ -264,6 +294,10 @@ def health(request):
             "service": "wrapp-delights",
             "error": str(e)
         }, status=503)
+
+def page_not_found(request, exception=None):
+    """Handle 404 errors with a custom page."""
+    return render(request, "404.html", status=404)
 
 def _selected_products_from_inquiry(inquiry):
     combined = "\n".join(
@@ -402,6 +436,9 @@ def home(request):
     for category in categories:
         category.display_name = CATEGORY_DISPLAY_NAMES.get(category.slug, category.name)
 
+    # Get top-level categories (for quick navigation)
+    top_level_categories = Category.objects.filter(is_active=True, parent__isnull=True).prefetch_related('children').order_by('position')
+
     return render(
         request,
         "home.html",
@@ -413,13 +450,14 @@ def home(request):
             "festival_hampers": festival_hampers,
             "homepage_sections": homepage_sections,
             "categories": categories,
+            "top_level_categories": top_level_categories,
             "catalog_nav_categories": CATALOG_NAV_CATEGORIES,
         },
     )
 
 
 def product_list(request):
-    hampers = Hamper.objects.filter(is_active=True).select_related("category")
+    hampers = Hamper.objects.filter(is_active=True).select_related("category").prefetch_related("categories")
     category_slug = request.GET.get("category", "").strip()
     search_query = request.GET.get("q", "").strip()
     active_category_label = CATEGORY_DISPLAY_NAMES.get(
@@ -430,7 +468,12 @@ def product_list(request):
     sort = request.GET.get("sort", "").strip()
 
     if category_slug:
-        hampers = hampers.filter(Q(category__slug=category_slug) | Q(category__name__iexact=category_slug))
+        hampers = hampers.filter(
+            Q(category__slug=category_slug)
+            | Q(category__name__iexact=category_slug)
+            | Q(categories__slug=category_slug)
+            | Q(categories__name__iexact=category_slug)
+        ).distinct()
     if search_query:
         hampers = hampers.filter(
             Q(name__icontains=search_query)
@@ -438,7 +481,8 @@ def product_list(request):
             | Q(description__icontains=search_query)
             | Q(included_items__icontains=search_query)
             | Q(category__name__icontains=search_query)
-        )
+            | Q(categories__name__icontains=search_query)
+        ).distinct()
 
     if sort == "price":
         hampers = hampers.order_by("base_price", "id")
@@ -469,14 +513,21 @@ def product_list(request):
 
 def product_detail(request, product_id):
     hamper = get_object_or_404(
-        Hamper.objects.select_related("category").prefetch_related("images"),
+        Hamper.objects.select_related("category").prefetch_related("images", "categories"),
         id=product_id,
         is_active=True,
     )
+    hamper_categories = hamper.categories.all()
     related = (
-        Hamper.objects.filter(is_active=True, category=hamper.category)
+        Hamper.objects.filter(is_active=True)
+        .filter(
+            Q(category=hamper.category)
+            | Q(categories__in=hamper_categories)
+        )
         .exclude(id=hamper.id)
-        .select_related("category")[:8]
+        .select_related("category")
+        .prefetch_related("categories")
+        .distinct()[:8]
     )
     included_items = [
         line.strip()
@@ -659,7 +710,7 @@ def custom_hamper_add_item(request):
     except (TypeError, ValueError):
         return JsonResponse({"error": "Invalid payload."}, status=400)
 
-    hamper = Hamper.objects.filter(id=product_id, is_active=True).select_related("category").first()
+    hamper = Hamper.objects.filter(id=product_id, is_active=True).select_related("category").prefetch_related("categories").first()
     if not hamper:
         return JsonResponse({"error": "Product not found."}, status=404)
 
@@ -741,7 +792,8 @@ def search_view(request):
             | Q(description__icontains=query)
             | Q(included_items__icontains=query)
             | Q(category__name__icontains=query)
-        ).select_related("category").distinct()
+            | Q(categories__name__icontains=query)
+        ).select_related("category").prefetch_related("categories").distinct()
 
     return render(
         request,
@@ -780,13 +832,13 @@ def dashboard(request):
 @login_required
 @user_passes_test(admin_check)
 def dashboard_products(request):
-    products = Hamper.objects.select_related("category").all().order_by("-created_at")
+    products = Hamper.objects.select_related("category").prefetch_related("categories").all().order_by("-created_at")
     # Filter
     cat_filter = request.GET.get("category", "")
     status_filter = request.GET.get("status", "")
     search_q = request.GET.get("q", "").strip()
     if cat_filter:
-        products = products.filter(category__slug=cat_filter)
+        products = products.filter(Q(category__slug=cat_filter) | Q(categories__slug=cat_filter)).distinct()
     if status_filter == "active":
         products = products.filter(is_active=True)
     elif status_filter == "hidden":
@@ -809,19 +861,31 @@ def dashboard_products(request):
 def dashboard_create_product(request):
     if request.method == "POST":
         try:
-            category = None
-            category_id = request.POST.get("category")
-            if category_id:
-                category = Category.objects.filter(id=category_id).first()
+            selected_category_ids = request.POST.getlist("categories")
+            selected_categories = list(
+                Category.objects.filter(id__in=selected_category_ids, is_active=True)
+            )
+            # Primary category = first by position/name
+            primary_category = (
+                min(selected_categories, key=lambda c: (c.position, c.name))
+                if selected_categories else None
+            )
+
+            # Parse base_price: the form sends a plain number, so use Decimal directly
+            raw_price = request.POST.get("base_price", "").strip()
+            try:
+                base_price = Decimal(raw_price) if raw_price else None
+            except (InvalidOperation, ValueError):
+                base_price = None
 
             hamper = Hamper.objects.create(
                 name=request.POST.get("name", "").strip(),
-                category=category,
+                category=primary_category,
                 hamper_step=(request.POST.get("hamper_step") or "").strip(),
                 short_description=request.POST.get("short_description", "").strip(),
                 description=request.POST.get("description", "").strip(),
                 included_items=request.POST.get("included_items", "").strip(),
-                base_price=_parse_price(request.POST.get("base_price")),
+                base_price=base_price,
                 price_label=request.POST.get("price_label", "").strip(),
                 min_bulk_quantity=int(request.POST.get("min_bulk_quantity") or 25),
                 is_featured=request.POST.get("is_featured") == "on",
@@ -843,7 +907,13 @@ def dashboard_create_product(request):
 
             section_ids = request.POST.getlist("homepage_sections")
             if section_ids:
-                hamper.homepage_sections.set(HomepageSection.objects.filter(id__in=section_ids))
+                hamper.homepage_sections.set(
+                    HomepageSection.objects.filter(id__in=section_ids)
+                )
+
+            # set() triggers the m2m_changed signal which auto-adds parent categories
+            if selected_categories:
+                hamper.categories.set(selected_categories)
 
             gallery_images = request.FILES.getlist("gallery")
             _, failed_images = _save_gallery_images(hamper, gallery_images)
@@ -853,11 +923,13 @@ def dashboard_create_product(request):
                 first_error = failed_images[0].get("error") or "Unknown upload error"
                 messages.warning(
                     request,
-                    f'Hamper "{hamper.name}" created, but {len(failed_images)} gallery image(s) failed: {failed_names}. Error: {first_error}',
+                    f'Hamper "{hamper.name}" created, but {len(failed_images)} gallery image(s) failed: '
+                    f'{failed_names}. Error: {first_error}',
                 )
             else:
                 messages.success(request, f'Hamper "{hamper.name}" created successfully.')
             return redirect("dashboard_products")
+
         except Exception as e:
             logger.exception(
                 "Product create failed. POST keys=%s FILE keys=%s FILE details=%s MEDIA state=%s",
@@ -866,14 +938,14 @@ def dashboard_create_product(request):
                 _files_debug_info(request.FILES),
                 _media_storage_state(),
             )
-            messages.error(request, f"Image upload failed: {type(e).__name__}: {e}")
+            messages.error(request, f"Create failed: {type(e).__name__}: {e}")
             return redirect("dashboard_create_product")
 
     return render(
         request,
         "dashboard/create_product.html",
         {
-            "categories": Category.objects.filter(is_active=True),
+            "categories": Category.objects.filter(is_active=True).select_related("parent").order_by("parent__position", "parent__name", "position", "name"),
             "homepage_sections": HomepageSection.objects.filter(is_active=True),
         },
     )
@@ -886,22 +958,34 @@ def dashboard_edit_product(request, product_id):
 
     if request.method == "POST":
         try:
-            category_id = request.POST.get("category")
-            category = Category.objects.filter(id=category_id).first() if category_id else None
+            selected_category_ids = request.POST.getlist("categories")
+            selected_categories = list(
+                Category.objects.filter(id__in=selected_category_ids, is_active=True)
+            )
+            primary_category = (
+                min(selected_categories, key=lambda c: (c.position, c.name))
+                if selected_categories else None
+            )
+
+            # Parse base_price from plain number input
+            raw_price = request.POST.get("base_price", "").strip()
+            try:
+                base_price = Decimal(raw_price) if raw_price else None
+            except (InvalidOperation, ValueError):
+                base_price = None
 
             hamper.name = request.POST.get("name", "").strip()
-            hamper.category = category
+            hamper.category = primary_category
             hamper.short_description = request.POST.get("short_description", "").strip()
             hamper.description = request.POST.get("description", "").strip()
             hamper.included_items = request.POST.get("included_items", "").strip()
-            hamper.base_price = _parse_price(request.POST.get("base_price"))
+            hamper.base_price = base_price
             hamper.price_label = request.POST.get("price_label", "").strip()
             hamper.min_bulk_quantity = int(request.POST.get("min_bulk_quantity") or 25)
             hamper.is_featured = request.POST.get("is_featured") == "on"
             hamper.is_event_special = request.POST.get("is_event_special") == "on"
             hamper.is_active = request.POST.get("is_active") == "on"
             hamper.hamper_step = (request.POST.get("hamper_step") or "").strip()
-
             hamper.save()
 
             cover_image = request.FILES.get("cover_image")
@@ -919,6 +1003,9 @@ def dashboard_edit_product(request, product_id):
             section_ids = request.POST.getlist("homepage_sections")
             hamper.homepage_sections.set(HomepageSection.objects.filter(id__in=section_ids))
 
+            # set() triggers m2m_changed → ensure_parent_categories auto-adds parents
+            hamper.categories.set(selected_categories)
+
             # Handle gallery deletions
             delete_ids = request.POST.getlist("delete_gallery")
             if delete_ids:
@@ -934,11 +1021,13 @@ def dashboard_edit_product(request, product_id):
                 first_error = failed_images[0].get("error") or "Unknown upload error"
                 messages.warning(
                     request,
-                    f'Hamper "{hamper.name}" updated, but {len(failed_images)} gallery image(s) failed: {failed_names}. Error: {first_error}',
+                    f'Hamper "{hamper.name}" updated, but {len(failed_images)} gallery image(s) failed: '
+                    f'{failed_names}. Error: {first_error}',
                 )
             else:
                 messages.success(request, f'Hamper "{hamper.name}" updated successfully.')
             return redirect("dashboard_products")
+
         except Exception as e:
             logger.exception(
                 "Product edit failed. product_id=%s POST keys=%s FILE keys=%s FILE details=%s MEDIA state=%s",
@@ -948,15 +1037,21 @@ def dashboard_edit_product(request, product_id):
                 _files_debug_info(request.FILES),
                 _media_storage_state(),
             )
-            messages.error(request, f"Image upload failed: {type(e).__name__}: {e}")
+            messages.error(request, f"Update failed: {type(e).__name__}: {e}")
             return redirect("dashboard_edit_product", product_id=product_id)
+
+    # GET — render the form with pre-selected state
+    assigned_category_ids = list(hamper.categories.values_list("id", flat=True))
 
     return render(
         request,
         "dashboard/edit_product.html",
         {
             "hamper": hamper,
-            "categories": Category.objects.filter(is_active=True),
+            # Pass categories ordered so parents come before their children
+            "categories": Category.objects.filter(is_active=True).select_related("parent").order_by("parent__position", "parent__name", "position", "name"),
+            # Plain list of ints — Django template `in` operator works correctly against this
+            "assigned_category_ids": assigned_category_ids,
             "homepage_sections": HomepageSection.objects.filter(is_active=True),
             "assigned_section_ids": list(hamper.homepage_sections.values_list("id", flat=True)),
             "gallery_images": hamper.images.all(),

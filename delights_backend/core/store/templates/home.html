@@ -601,6 +601,45 @@
 
 
   <!-- ═══════════════════════════════════════════
+       QUICK NAVIGATION BY CATEGORY (HIERARCHICAL)
+  ════════════════════════════════════════════ -->
+  {% if top_level_categories %}
+  <section class="py-16 bg-gradient-to-b from-surface to-[#fdf7f6]">
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 reveal">
+        {% for category in top_level_categories %}
+        <div class="group">
+          <!-- Parent Category Chip -->
+          <a href="{% url 'products' %}?category={{ category.slug }}" 
+             class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white font-bold uppercase tracking-widest text-[11px] rounded-full hover:shadow-lg transition-all mb-4">
+            <span class="material-symbols-outlined text-sm">redeem</span>
+            {{ category.name }}
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+          </a>
+          
+          <!-- Subcategories List -->
+          <div class="bg-white rounded-16 border border-[#efdddd] p-6 space-y-3">
+            {% for child in category.children.all %}
+            <a href="{% url 'products' %}?category={{ child.slug }}" 
+               class="flex items-start gap-3 group/item">
+              <span class="material-symbols-outlined text-lg text-primary flex-shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">favorite</span>
+              <div class="flex-1">
+                <span class="block text-secondary text-sm font-medium group-hover/item:text-primary transition-colors">
+                  {{ child.name }}
+                </span>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+
+  <!-- ═══════════════════════════════════════════
        CATEGORY HIGHLIGHTS
   ════════════════════════════════════════════ -->
   <section class="py-16 bg-surface">
