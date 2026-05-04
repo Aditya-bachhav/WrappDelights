@@ -43,15 +43,11 @@ class Category(models.Model):
         super().save(*args, **kwargs)
 
     @property
-    def cover_image_url(self):
-        """Return a safe URL for the cover image, empty string on any error.
-
-        Accessing `ImageField.url` can raise if storage is misconfigured. Use
-        this helper in templates/views to avoid rendering 500 pages.
-        """
+    def image_url(self):
+        """Safe URL accessor for category image."""
         try:
-            if self.cover_image:
-                return self.cover_image.url
+            if self.image:
+                return self.image.url
         except Exception:
             return ""
         return ""
@@ -198,6 +194,16 @@ class Hamper(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+    @property
+    def cover_image_url(self):
+        """Return a safe URL for the hamper cover image, empty string on error."""
+        try:
+            if self.cover_image:
+                return self.cover_image.url
+        except Exception:
+            return ""
+        return ""
 
 # Connect the m2m_changed handler now that `Hamper` is defined.
 m2m_changed.connect(ensure_parent_categories, sender=Hamper.categories.through)
