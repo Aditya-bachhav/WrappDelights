@@ -173,6 +173,9 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = "/media/"
+# Maximum upload size (MB) for admin product image uploads. Can be overridden via env `MAX_UPLOAD_MB`.
+MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "6"))
+MAX_UPLOAD_SIZE = MAX_UPLOAD_MB * 1024 * 1024
 _cloudinary_cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME", "").strip()
 _cloudinary_api_key = os.getenv("CLOUDINARY_API_KEY", "").strip()
 _cloudinary_api_secret = os.getenv("CLOUDINARY_API_SECRET", "").strip()
