@@ -861,6 +861,16 @@ def dashboard_products(request):
 def dashboard_create_product(request):
     if request.method == "POST":
         try:
+            # Early validation: reject overly large uploads to avoid worker OOMs/timeouts
+            max_size = getattr(settings, "MAX_UPLOAD_SIZE", 6 * 1024 * 1024)
+            cover_image_preview = request.FILES.get("cover_image")
+            if cover_image_preview and getattr(cover_image_preview, 'size', 0) > max_size:
+                messages.error(request, f"Cover image too large (max {int(getattr(settings, 'MAX_UPLOAD_MB', 6))} MB)")
+                return redirect("dashboard_create_product")
+            for gi in request.FILES.getlist("gallery"):
+                if getattr(gi, 'size', 0) > max_size:
+                    messages.error(request, f"One of the gallery images is too large (max {int(getattr(settings, 'MAX_UPLOAD_MB', 6))} MB)")
+                    return redirect("dashboard_create_product")
             selected_category_ids = request.POST.getlist("categories")
             selected_categories = list(
                 Category.objects.filter(id__in=selected_category_ids, is_active=True)

@@ -40,7 +40,14 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base = slugify(self.name) or "hamper"
+            slug = base
+            i = 1
+            # Ensure uniqueness of slug (avoid DB IntegrityError on create)
+            while type(self).objects.filter(slug=slug).exclude(pk=getattr(self, 'pk', None)).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     @property
@@ -193,7 +200,14 @@ class Hamper(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base = slugify(self.name) or "hamper"
+            slug = base
+            i = 1
+            # Ensure uniqueness of slug (avoid DB IntegrityError on create)
+            while type(self).objects.filter(slug=slug).exclude(pk=getattr(self, 'pk', None)).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     @property
