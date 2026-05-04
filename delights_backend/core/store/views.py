@@ -957,6 +957,8 @@ def dashboard_create_product(request):
         {
             "categories": Category.objects.filter(is_active=True).select_related("parent").order_by("parent__position", "parent__name", "position", "name"),
             "homepage_sections": HomepageSection.objects.filter(is_active=True),
+            "selected_category_ids": [],
+            "selected_section_ids": [],
         },
     )
 
