@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from django.conf import settings
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
@@ -202,7 +203,14 @@ class Hamper(models.Model):
             if self.cover_image:
                 return self.cover_image.url
         except Exception:
-            return ""
+            # Fallback to MEDIA_URL + name so local media still displays when
+            # storage backend .url access fails in deployment.
+            try:
+                name = getattr(self.cover_image, 'name', '')
+                if name:
+                    return str(settings.MEDIA_URL).rstrip('/') + '/' + name.lstrip('/')
+            except Exception:
+                return ""
         return ""
 
 # Connect the m2m_changed handler now that `Hamper` is defined.
@@ -228,7 +236,13 @@ class HamperImage(models.Model):
             if self.image:
                 return self.image.url
         except Exception:
-            return ""
+            # Fallback to MEDIA_URL + name if available
+            try:
+                name = getattr(self.image, 'name', '')
+                if name:
+                    return str(settings.MEDIA_URL).rstrip('/') + '/' + name.lstrip('/')
+            except Exception:
+                return ""
         return ""
 
 
