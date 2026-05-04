@@ -423,8 +423,8 @@
             {% for item in kit %}
               <div class="item-card" data-product="{{ item.product_id|default_if_none:0 }}">
                 <div class="item-thumb">
-                  {% if item.cover_image %}
-                    <img src="{{ item.cover_image.url }}" alt="{{ item.name }}">
+                  {% if item.image %}
+                    <img src="{{ item.image }}" alt="{{ item.name }}">
                   {% else %}
                     <div class="item-thumb-placeholder">
                       <span class="material-symbols-outlined">inventory_2</span>

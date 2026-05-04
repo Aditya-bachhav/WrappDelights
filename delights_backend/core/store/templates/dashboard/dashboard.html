@@ -99,7 +99,7 @@
             <td>
               <div style="display:flex;align-items:center;gap:9px">
                 {% if p.cover_image %}
-                  <img src="{{ p.cover_image.url }}" style="width:34px;height:34px;border-radius:var(--radius);object-fit:cover;flex-shrink:0;border:1px solid var(--border)">
+                  <img src="{{ p.cover_image_url }}" style="width:34px;height:34px;border-radius:var(--radius);object-fit:cover;flex-shrink:0;border:1px solid var(--border)">
                 {% else %}
                   <div style="width:34px;height:34px;background:var(--surface-container);flex-shrink:0;border-radius:var(--radius);border:1px solid var(--border);display:flex;align-items:center;justify-content:center">
                     <span class="material-symbols-outlined" style="font-size:15px;color:var(--mist)">redeem</span>

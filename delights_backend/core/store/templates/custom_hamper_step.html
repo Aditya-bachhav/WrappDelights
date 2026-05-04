@@ -606,7 +606,7 @@
         <article class="product-card" id="card-{{ product.id }}">
           <div class="card-img">
             {% if product.cover_image %}
-              <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
+              <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" loading="lazy">
             {% else %}
               <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
                 <span class="material-symbols-outlined" style="font-size:36px;color:#e4beba;">image_not_supported</span>

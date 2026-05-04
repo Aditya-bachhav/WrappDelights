@@ -273,7 +273,7 @@
              data-category-name="{% if product.category %}{{ product.category.name }}{% else %}{% endif %}">
           <div class="catalog-img">
             {% if product.cover_image %}
-              <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
+              <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" loading="lazy">
             {% else %}
               <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;">No Image</div>
             {% endif %}

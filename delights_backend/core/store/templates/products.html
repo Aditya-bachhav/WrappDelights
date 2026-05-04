@@ -406,7 +406,7 @@
              class="cat-pill {% if active_category == cat.slug %}active{% endif %}">
             <div class="cat-pill-img">
               {% if cat.image %}
-                <img src="{{ cat.image.url }}" alt="{{ cat.display_name|default:cat.name }}">
+                <img src="{{ cat.image_url }}" alt="{{ cat.display_name|default:cat.name }}">
               {% else %}
                 <span class="cat-pill-fallback material-symbols-outlined">category</span>
               {% endif %}
@@ -503,7 +503,7 @@
           <!-- Image -->
           <a href="{% url 'product_detail' product.id %}" class="prod-card-img">
             {% if product.cover_image %}
-              <img src="{{ product.cover_image.url }}" alt="{{ product.name }}" loading="lazy">
+              <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" loading="lazy">
             {% else %}
               <div class="prod-card-img-empty">
                 <span class="material-symbols-outlined" style="font-size:36px;color:#c9a8a8;">image_not_supported</span>

@@ -64,7 +64,7 @@
           <td>
             <div style="display:flex;align-items:center;gap:10px">
               {% if p.cover_image %}
-                <img src="{{ p.cover_image.url }}" style="width:40px;height:40px;border-radius:var(--radius);object-fit:cover;flex-shrink:0;border:1px solid var(--border)">
+                <img src="{{ p.cover_image_url }}" style="width:40px;height:40px;border-radius:var(--radius);object-fit:cover;flex-shrink:0;border:1px solid var(--border)">
               {% else %}
                 <div style="width:40px;height:40px;border-radius:var(--radius);background:var(--surface-container);flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center">
                   <span class="material-symbols-outlined" style="font-size:16px;color:var(--mist)">image</span>

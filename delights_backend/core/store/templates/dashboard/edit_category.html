@@ -38,7 +38,7 @@
         <label class="form-label">Category Image</label>
         {% if category.image %}
           <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px">
-            <img src="{{ category.image.url }}" alt="{{ category.name }}" style="width:56px;height:56px;object-fit:cover;border-radius:999px;border:1px solid var(--border)">
+            <img src="{{ category.image_url }}" alt="{{ category.name }}" style="width:56px;height:56px;object-fit:cover;border-radius:999px;border:1px solid var(--border)">
             <span class="form-hint">Upload a new file to replace the current image</span>
           </div>
         {% endif %}

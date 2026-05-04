@@ -42,6 +42,20 @@ class Category(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+    @property
+    def cover_image_url(self):
+        """Return a safe URL for the cover image, empty string on any error.
+
+        Accessing `ImageField.url` can raise if storage is misconfigured. Use
+        this helper in templates/views to avoid rendering 500 pages.
+        """
+        try:
+            if self.cover_image:
+                return self.cover_image.url
+        except Exception:
+            return ""
+        return ""
+
     
 def ensure_parent_categories(sender, instance, action, pk_set, **kwargs):
     """When categories are added to a Hamper, also add their parent categories.
@@ -200,6 +214,16 @@ class HamperImage(models.Model):
 
     def __str__(self):
         return f"{self.hamper.name} image {self.position}"
+
+    @property
+    def image_url(self):
+        """Safe URL accessor for gallery images."""
+        try:
+            if self.image:
+                return self.image.url
+        except Exception:
+            return ""
+        return ""
 
 
 class CorporateInquiry(models.Model):

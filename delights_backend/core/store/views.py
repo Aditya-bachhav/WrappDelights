@@ -169,7 +169,7 @@ def _serialize_hamper_for_kit(hamper, quantity=1, step_slug=""):
         "price": price,
         "quantity": max(1, int(quantity or 1)),
         "category": primary_category.name if primary_category else "",
-        "image": hamper.cover_image.url if hamper.cover_image else "",
+        "image": getattr(hamper, "cover_image_url", "") or "",
         "step": step_slug,
     }
 

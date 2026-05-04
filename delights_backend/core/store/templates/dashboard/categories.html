@@ -37,7 +37,7 @@
         <tr>
           <td>
             {% if cat.image %}
-              <img src="{{ cat.image.url }}" alt="{{ cat.name }}" style="width:44px;height:44px;object-fit:cover;border-radius:999px;border:1px solid var(--border)">
+              <img src="{{ cat.image_url }}" alt="{{ cat.name }}" style="width:44px;height:44px;object-fit:cover;border-radius:999px;border:1px solid var(--border)">
             {% else %}
               <div style="width:44px;height:44px;border-radius:999px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--mist);font-size:.62rem;text-align:center;line-height:1.1">No image</div>
             {% endif %}

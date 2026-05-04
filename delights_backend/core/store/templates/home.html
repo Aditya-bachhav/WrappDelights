@@ -665,7 +665,7 @@
           <a href="{% url 'products' %}?category={{ cat.slug }}" class="cat-pill">
             <div class="cat-pill-img">
               {% if cat.image %}
-                <img src="{{ cat.image.url }}" alt="{{ cat.display_name|default:cat.name }}" class="home-fit-image">
+                <img src="{{ cat.image_url }}" alt="{{ cat.display_name|default:cat.name }}" class="home-fit-image">
               {% else %}
                 <span class="material-symbols-outlined text-3xl text-primary">redeem</span>
               {% endif %}
@@ -763,7 +763,7 @@
       <div class="product-card w-[280px]">
         <a href="{% url 'product_detail' hamper.id %}" class="product-card-img block aspect-square relative">
           {% if hamper.cover_image %}
-            <img src="{{ hamper.cover_image.url }}" alt="{{ hamper.name }}" loading="lazy">
+            <img src="{{ hamper.cover_image_url }}" alt="{{ hamper.name }}" loading="lazy">
           {% else %}
             <div class="w-full h-full bg-surface-container flex items-center justify-center">
               <span class="material-symbols-outlined text-4xl text-outline">image_not_supported</span>
@@ -935,7 +935,7 @@
       <div class="occasion-card group">
         <div class="occasion-card-img aspect-[3/4] relative overflow-hidden">
           {% if hamper.cover_image %}
-            <img src="{{ hamper.cover_image.url }}" alt="{{ hamper.name }}" loading="lazy"
+            <img src="{{ hamper.cover_image_url }}" alt="{{ hamper.name }}" loading="lazy"
                  class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
           {% else %}
             <div class="w-full h-full bg-surface-container flex items-center justify-center min-h-[280px]">

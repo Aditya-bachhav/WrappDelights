@@ -1,0 +1,35 @@
+<fieldset{% if widget.attrs.id %} id="{{ widget.attrs.id }}"{% endif %} class="align-vertical">
+  <style>
+    .hierarchical-categories {
+      font-family: monospace;
+      line-height: 1.8;
+    }
+    .category-parent {
+      margin-bottom: 12px;
+      display: block;
+    }
+    .category-child {
+      margin-left: 20px;
+      display: block;
+    }
+    .category-parent input,
+    .category-child input {
+      margin-right: 8px;
+    }
+  </style>
+  
+  <div class="hierarchical-categories">
+    {% for parent in widget.category_tree %}
+    <label class="category-parent">
+      <input type="checkbox" name="{{ widget.name }}" value="{{ parent.id }}"{% if parent.checked %} checked="checked"{% endif %}>
+      ☐ {{ parent.name }}
+    </label>
+    {% for child in parent.children %}
+    <label class="category-child">
+      <input type="checkbox" name="{{ widget.name }}" value="{{ child.id }}"{% if child.checked %} checked="checked"{% endif %}>
+      {% if child.is_last %}↳{% else %}├─{% endif %} {{ child.name }}
+    </label>
+    {% endfor %}
+    {% endfor %}
+  </div>
+</fieldset>

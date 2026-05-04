@@ -102,7 +102,7 @@
           <div class="form-section-title">Cover Image</div>
           {% if hamper.cover_image and hamper.cover_image.name %}
             <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px">
-              <img src="{{ hamper.cover_image.url }}" style="width:80px;height:80px;object-fit:cover;border-radius:var(--radius);border:1px solid var(--border)">
+              <img src="{{ hamper.cover_image_url }}" style="width:80px;height:80px;object-fit:cover;border-radius:var(--radius);border:1px solid var(--border)">
               <span class="form-hint">Upload a new file to replace the current cover</span>
             </div>
           {% endif %}
@@ -116,7 +116,7 @@
             {% for img in gallery_images %}
             {% if img.image and img.image.name %}
             <div class="img-thumb">
-              <img src="{{ img.image.url }}" alt="">
+              <img src="{{ img.image_url }}" alt="">
               <div class="del-overlay">
                 <label style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px">
                   <input type="checkbox" name="delete_gallery" value="{{ img.id }}" style="display:none">

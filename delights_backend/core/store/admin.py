@@ -177,7 +177,7 @@ class CategoryAdmin(admin.ModelAdmin):
         if obj.image:
             return format_html(
                 '<img src="{}" style="width:36px;height:36px;border-radius:999px;object-fit:cover;border:1px solid #ddd" />',
-                obj.image.url,
+                getattr(obj, 'image_url', ''),
             )
         return "—"
 
