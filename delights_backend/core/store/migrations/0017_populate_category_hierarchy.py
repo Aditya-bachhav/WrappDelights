@@ -7,9 +7,20 @@ def create_category_hierarchy(apps, schema_editor):
     """Create top-level and subcategories for the category hierarchy."""
     Category = apps.get_model('store', 'Category')
     
-    # Avoid duplicates: check if categories already exist
+    # Clean up old categories with incorrect slugs (from previous migration attempts)
+    old_slugs = ['return-gifts', 'accessories', 'hampers', 'welcome-kit', 'office-welcome-kit',
+                 'christmas-gifts', 'womens-day-gifts', 'new-year-gifts', 'diwali-gifts']
+    Category.objects.filter(slug__in=old_slugs).delete()
+    
+    # Check if categories already exist (with correct new slugs)
     if Category.objects.filter(slug='wedding').exists():
-        return
+        # Categories exist, but verify subcategory slugs are correct
+        existing_subcats = set(Category.objects.filter(
+            slug__in=['wedding-return-gifts', 'wedding-accessories', 'wedding-hampers']
+        ).values_list('slug', flat=True))
+        if len(existing_subcats) == 3:
+            # All correct categories already exist
+            return
     
     # Create top-level categories
     wedding = Category.objects.create(
@@ -33,70 +44,70 @@ def create_category_hierarchy(apps, schema_editor):
         is_active=True
     )
     
-    # Create Wedding subcategories
+    # Create Wedding subcategories (with parent prefix for URL consistency)
     Category.objects.create(
         name='Return Gifts',
-        slug='return-gifts',
+        slug='wedding-return-gifts',
         parent=wedding,
         is_active=True,
         position=0
     )
     Category.objects.create(
         name='Accessories',
-        slug='accessories',
+        slug='wedding-accessories',
         parent=wedding,
         is_active=True,
         position=1
     )
     Category.objects.create(
         name='Hampers',
-        slug='hampers',
+        slug='wedding-hampers',
         parent=wedding,
         is_active=True,
         position=2
     )
     
-    # Create Employee subcategories
+    # Create Employee subcategories (with parent prefix for URL consistency)
     Category.objects.create(
         name='Welcome Kit',
-        slug='welcome-kit',
+        slug='employee-welcome-kit',
         parent=employee,
         is_active=True,
         position=0
     )
     Category.objects.create(
         name='Office Welcome Kit',
-        slug='office-welcome-kit',
+        slug='employee-office-welcome-kit',
         parent=employee,
         is_active=True,
         position=1
     )
     
-    # Create Corporate subcategories
+    # Create Corporate subcategories (with parent prefix for URL consistency)
     Category.objects.create(
         name='Christmas Gifts',
-        slug='christmas-gifts',
+        slug='corporate-christmas-gifts',
         parent=corporate,
         is_active=True,
         position=0
     )
     Category.objects.create(
         name='Women\'s Day Gifts',
-        slug='womens-day-gifts',
+        slug='corporate-womens-day-gifts',
         parent=corporate,
         is_active=True,
         position=1
     )
     Category.objects.create(
         name='New Year Gifts',
-        slug='new-year-gifts',
+        slug='corporate-new-year-gifts',
         parent=corporate,
         is_active=True,
         position=2
     )
     Category.objects.create(
         name='Diwali Gifts',
-        slug='diwali-gifts',
+        slug='corporate-diwali-gifts',
         parent=corporate,
         is_active=True,
         position=3
@@ -106,8 +117,14 @@ def create_category_hierarchy(apps, schema_editor):
 def reverse_category_hierarchy(apps, schema_editor):
     """Delete created categories if migration is reversed."""
     Category = apps.get_model('store', 'Category')
+    # Delete both old incorrect slugs and new correct slugs
     Category.objects.filter(slug__in=[
         'wedding', 'employee', 'corporate',
+        # New correct slug format
+        'wedding-return-gifts', 'wedding-accessories', 'wedding-hampers',
+        'employee-welcome-kit', 'employee-office-welcome-kit',
+        'corporate-christmas-gifts', 'corporate-womens-day-gifts', 'corporate-new-year-gifts', 'corporate-diwali-gifts',
+        # Old incorrect slug format (for cleanup)
         'return-gifts', 'accessories', 'hampers',
         'welcome-kit', 'office-welcome-kit',
         'christmas-gifts', 'womens-day-gifts', 'new-year-gifts', 'diwali-gifts'
