@@ -25,7 +25,7 @@ class Command(BaseCommand):
                 'position': 2,
                 'children': [
                     {'name': 'Employee Welcome Kit', 'slug': 'employee-welcome-kit'},
-                    {'name': 'Office Welcome Kit', 'slug': 'office-welcome-kit'},
+                    {'name': 'Office Welcome Kit', 'slug': 'employee-office-welcome-kit'},
                 ]
             },
             {
@@ -34,9 +34,9 @@ class Command(BaseCommand):
                 'position': 3,
                 'children': [
                     {'name': 'Corporate Christmas Gifts', 'slug': 'corporate-christmas-gifts'},
-                    {'name': "Women's Day Gifts", 'slug': 'womens-day-gifts'},
-                    {'name': 'New Year Gifts', 'slug': 'new-year-gifts'},
-                    {'name': 'Diwali Gifts', 'slug': 'diwali-gifts'},
+                    {'name': "Women's Day Gifts", 'slug': 'corporate-womens-day-gifts'},
+                    {'name': 'New Year Gifts', 'slug': 'corporate-new-year-gifts'},
+                    {'name': 'Diwali Gifts', 'slug': 'corporate-diwali-gifts'},
                 ]
             }
         ]
