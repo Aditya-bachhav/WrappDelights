@@ -82,7 +82,7 @@
     border-radius: 20px; overflow: hidden;
     background: #fff8f7; border: 1px solid #e4beba;
     box-shadow: 0 24px 60px rgba(175,16,26,.10);
-    z-index: 40; opacity: 0; visibility: hidden;
+    z-index: 9999; opacity: 0; visibility: hidden;
     transition: opacity .15s ease; pointer-events: none;
   }
   .zoom-panel.active { opacity: 1; visibility: visible; }
@@ -406,7 +406,7 @@
     <div class="detail-cols" style="display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:flex-start;">
 
       <!-- ══════════ GALLERY ══════════ -->
-      <section aria-label="Product images" class="anim-fade-in" style="position:relative;overflow:visible;">
+      <section aria-label="Product images" class="anim-fade-in" style="position:relative;overflow:visible;z-index:10;">
 
         <div class="gallery-main-box" id="mainBox">
           {% if images.first %}
