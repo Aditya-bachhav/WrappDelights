@@ -174,18 +174,6 @@
     font-size: 9px; font-weight: 800; text-transform: uppercase;
     letter-spacing: .14em; color: #8f6f6c; background: #f3eded;
   }
-  /* Hover quick-view overlay */
-  .prod-card-quick {
-    position: absolute; bottom: 12px; left: 12px; right: 12px;
-    background: rgba(255,255,255,.95); backdrop-filter: blur(6px);
-    border: 1px solid #e4beba; border-radius: 10px;
-    padding: 10px; text-align: center;
-    font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
-    color: #1a1c1c; text-decoration: none;
-    opacity: 0; transform: translateY(8px);
-    transition: opacity .3s ease, transform .3s ease;
-  }
-  .prod-card:hover .prod-card-quick { opacity: 1; transform: translateY(0); }
 
   /* Badges */
   .prod-img-badges {
@@ -514,11 +502,8 @@
               {% endif %}
             </div>
 
-            <!-- Hover overlay -->
-            <a href="{% url 'product_detail' product.id %}" class="prod-card-quick">
-              View &amp; Inquire
-              <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;margin-left:4px;">arrow_forward</span>
-            </a>
+            <!-- Image -->
+            <img src="{{ product.cover_image_url }}" alt="{{ product.name }}" loading="lazy">
           </a>
 
           <!-- Body -->
