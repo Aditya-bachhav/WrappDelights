@@ -488,15 +488,15 @@
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3 anim-fade-up delay-400">
-          <a href="{% url 'products' %}"
+          <a href="{% url 'custom_hamper' %}"
              class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-on-primary rounded-xl font-bold text-sm tracking-wide hover:bg-on-primary-fixed-variant transition-all active:scale-95 shadow-lg shadow-primary/25">
+            <span class="material-symbols-outlined text-[18px]">favorite</span>
+            Build Custom Hamper
+          </a>
+          <a href="{% url 'products' %}"
+             class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white border-2 border-outline-variant text-on-surface rounded-xl font-bold text-sm tracking-wide hover:border-primary hover:text-primary transition-all active:scale-95">
             <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
             Browse Catalog
-          </a>
-          <a href="{% url 'custom_hamper' %}"
-             class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white border-2 border-outline-variant text-on-surface rounded-xl font-bold text-sm tracking-wide hover:border-primary hover:text-primary transition-all active:scale-95">
-            <span class="material-symbols-outlined text-[18px]">inventory_2</span>
-            Build Custom Hamper
           </a>
         </div>
 

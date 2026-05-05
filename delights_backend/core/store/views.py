@@ -225,6 +225,11 @@ def _get_catalog_for_step(step_number):
     if not step:
         return base_qs
 
+    step_slug = step.get("slug")
+    has_explicit_steps = base_qs.exclude(hamper_step="").exists()
+    if has_explicit_steps and step_slug:
+        return base_qs.filter(hamper_step=step_slug)
+
     hints = step.get("category_hints") or []
     query = Q()
     for hint in hints:
@@ -499,7 +504,12 @@ def product_list(request):
     else:
         hampers = hampers.order_by("id")
 
-    categories = list(Category.objects.filter(is_active=True))
+    # Only show manual top-level categories (e.g., event specials) as chips, not nav categories.
+    categories = list(
+        Category.objects.filter(is_active=True, parent__isnull=True).exclude(
+            slug__in=CATALOG_NAV_CATEGORIES
+        )
+    )
     for category in categories:
         category.display_name = CATEGORY_DISPLAY_NAMES.get(category.slug, category.name)
     return render(
