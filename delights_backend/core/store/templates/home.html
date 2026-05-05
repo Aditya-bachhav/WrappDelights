@@ -3,7 +3,12 @@
 
 {% block extra_css %}
 <style>
-  /* ─── Global ─── */
+  /* ─── Section spacing system ───
+     All page sections use this rhythm: py-16 md:py-24
+     Exception: tight accent strips (value strip, stats) use py-12
+     This eliminates the old inconsistency (py-8 / py-10 / py-16 mix)
+  ─── */
+
   .home-fit-image {
     width: 100%; height: 100%;
     display: block;
@@ -14,7 +19,7 @@
   /* ─── Hero ─── */
   .hero-section {
     position: relative;
-    min-height: 92vh;
+    min-height: 90vh;
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -31,11 +36,7 @@
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   }
 
-  /* Hero image wrapper */
-  .hero-img-wrapper {
-    position: relative;
-    z-index: 2;
-  }
+  .hero-img-wrapper { position: relative; z-index: 2; }
   .hero-img-frame {
     position: relative;
     border-radius: 20px;
@@ -54,7 +55,6 @@
   }
   .hero-img-frame:hover img { transform: scale(1.03); }
 
-  /* Hero decorative accent lines */
   .hero-line-accent {
     position: absolute;
     border-radius: 2px;
@@ -62,7 +62,7 @@
     opacity: 0.15;
   }
 
-  /* Hero badge float */
+  /* FIX: float badge uses "Pune" and no delivery language */
   .hero-float-badge {
     position: absolute;
     bottom: -20px;
@@ -73,8 +73,9 @@
     padding: 14px 20px;
     box-shadow: 0 16px 40px rgba(128,1,31,0.10);
     z-index: 5;
-    min-width: 200px;
+    min-width: 190px;
   }
+  /* FIX: removed "Since 2025" — now shows Pune badge with year founded */
   .hero-float-tag {
     position: absolute;
     top: -18px;
@@ -94,7 +95,6 @@
     z-index: 6;
   }
 
-  /* Slideshow */
   .hero-slide { width: 100%; }
   .hero-slide.hidden { display: none; }
 
@@ -102,7 +102,7 @@
   .value-strip-marquee {
     display: flex;
     gap: 0;
-    animation: marquee 24s linear infinite;
+    animation: marquee 28s linear infinite;
     white-space: nowrap;
   }
   @keyframes marquee {
@@ -113,7 +113,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 0 40px;
+    padding: 0 36px;
     border-right: 1px solid rgba(255,255,255,0.15);
     flex-shrink: 0;
   }
@@ -123,7 +123,7 @@
     background: #fff;
     border: 1px solid #efdddd;
     border-radius: 16px;
-    padding: 28px 24px;
+    padding: 24px 20px;
     position: relative;
     overflow: hidden;
     transition: box-shadow 0.3s ease, transform 0.3s ease;
@@ -142,16 +142,17 @@
   .stat-card:hover::before { transform: scaleX(1); }
   .stat-number {
     font-family: 'Noto Serif', serif;
-    font-size: 2.4rem;
+    font-size: 2.2rem;
     color: #af101a;
     line-height: 1;
     margin-top: 6px;
   }
+  /* FIX: was 10px — bumped to 11px so it reads on mobile */
   .stat-label {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     color: #5b403d;
   }
 
@@ -160,10 +161,10 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
   .section-kicker-line {
-    width: 28px; height: 1px;
+    width: 24px; height: 1px;
     background: #af101a;
     opacity: 0.5;
   }
@@ -187,7 +188,7 @@
   }
   .cat-pill:hover { transform: translateY(-4px); }
   .cat-pill-img {
-    width: 90px; height: 90px;
+    width: 84px; height: 84px;
     border-radius: 50%;
     overflow: hidden;
     border: 2px solid #e4beba;
@@ -206,6 +207,7 @@
     color: #1a1c1c;
     letter-spacing: 0.02em;
     line-height: 1.3;
+    max-width: 80px;
   }
 
   /* ─── Collection Cards ─── */
@@ -251,7 +253,7 @@
   }
   .collection-card:hover .collection-card-arrow { gap: 12px; }
 
-  /* ─── Best Sellers / Product Cards ─── */
+  /* ─── Product Cards ─── */
   .product-card {
     background: #fff;
     border-radius: 16px;
@@ -312,8 +314,9 @@
     position: absolute;
     inset: 0;
     background: radial-gradient(ellipse at 30% 50%, rgba(175,16,26,0.22) 0%, transparent 65%);
+    pointer-events: none; /* FIX: was covering button clicks on some mobile viewports */
   }
-  .cta-dark-img { position: relative; min-height: 400px; overflow: hidden; }
+  .cta-dark-img { position: relative; min-height: 360px; overflow: hidden; }
   .cta-dark-img img {
     width: 100%; height: 100%;
     object-fit: cover;
@@ -353,15 +356,10 @@
   .occasion-card:hover .occasion-card-img img { transform: scale(1.05); }
 
   /* ─── How It Works ─── */
-  .how-step {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
+  .how-step { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
   .how-step-number {
     font-family: 'Noto Serif', serif;
-    font-size: 3rem;
+    font-size: 2.8rem;
     color: #af101a;
     opacity: 0.12;
     line-height: 1;
@@ -374,11 +372,6 @@
     border: 1px solid #e4beba;
     border-radius: 14px;
     display: flex; align-items: center; justify-content: center;
-  }
-  .how-step-connector {
-    flex: 1; height: 1px;
-    background: linear-gradient(90deg, #e4beba, transparent);
-    margin-top: 24px;
   }
 
   /* ─── Testimonials ─── */
@@ -418,6 +411,7 @@
     overflow: hidden;
     position: relative;
   }
+  /* FIX: z-index layering so radial never sits above buttons */
   .corp-banner::after {
     content: "";
     position: absolute;
@@ -425,7 +419,10 @@
     width: 220px; height: 220px;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(175,16,26,0.08), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
   }
+  .corp-banner > * { position: relative; z-index: 1; }
 
   /* ─── Entrance animations ─── */
   @keyframes fadeUp {
@@ -444,19 +441,18 @@
   .delay-400 { animation-delay: 0.4s; }
   .delay-500 { animation-delay: 0.5s; }
 
-  /* ─── Reveal on scroll ─── */
   .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
   .reveal.visible { opacity: 1; transform: none; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="pt-[72px]">
+<div class="pt-[64px]">
 
   <!-- ═══════════════════════════════════════════
        HERO
   ════════════════════════════════════════════ -->
-  <section class="hero-section px-6 md:px-12 lg:px-20 py-16 md:py-20">
+  <section class="hero-section px-6 md:px-12 lg:px-20 py-16 md:py-24">
     <div class="hero-bg-pattern"></div>
     <div class="hero-texture"></div>
 
@@ -469,13 +465,13 @@
           <span class="section-kicker-text">The Art of Gifting</span>
         </div>
 
-        <h1 class="text-[2.8rem] sm:text-5xl md:text-6xl lg:text-[4.2rem] font-serif leading-[1.08] mb-6 text-on-surface anim-fade-up delay-100">
+        <h1 class="text-[2.6rem] sm:text-5xl md:text-[3.6rem] lg:text-[4rem] font-serif leading-[1.08] mb-6 text-on-surface anim-fade-up delay-100">
           Gifts That<br>
           <em class="text-primary not-italic">Tell a Story</em>
         </h1>
 
         <p class="text-base md:text-lg text-secondary max-w-md mb-8 leading-relaxed font-body anim-fade-up delay-200">
-          Premium curated hampers for every occasion — weddings, corporate milestones, and beyond. Beautifully wrapped and delivered across India.
+          Premium curated hampers for weddings, corporate milestones, and every occasion in between. Beautifully wrapped, personally presented — Pune's boutique gifting studio.
         </p>
 
         <!-- Trust row -->
@@ -514,7 +510,6 @@
 
       <!-- Image -->
       <div class="hero-img-wrapper order-1 md:order-2 anim-fade-in delay-200">
-        <!-- decorative lines -->
         <div class="hero-line-accent" style="width:2px;height:80px;right:24px;top:-20px;"></div>
         <div class="hero-line-accent" style="width:60px;height:2px;right:24px;top:-20px;"></div>
 
@@ -530,17 +525,17 @@
           </div>
         </div>
 
-        <!-- Float badge -->
+        <!-- FIX: removed "Pan-India Delivery" — honest copy about studio/pickup -->
         <div class="hero-float-badge">
-          <p class="stat-label mb-1">Pan-India Delivery</p>
-          <p class="text-base font-serif font-bold text-on-surface">5,000+ Hampers Delivered</p>
+          <p class="stat-label mb-1">Pune's Gifting Studio</p>
+          <p class="text-base font-serif font-bold text-on-surface">5,000+ Hampers Curated</p>
         </div>
 
-        <!-- Rotated label -->
+        <!-- FIX: "Since 2025" matches the marketing copy in value strip -->
         <div class="hero-float-tag">
-          <span style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;opacity:.75;">Since</span>
-          <span style="font-size:16px;font-weight:900;line-height:1;">2019</span>
-          <span style="font-size:8px;letter-spacing:.06em;text-transform:uppercase;opacity:.75;">Mumbai</span>
+          <span style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;opacity:.75;">Est.</span>
+          <span style="font-size:16px;font-weight:900;line-height:1;">2025</span>
+          <span style="font-size:8px;letter-spacing:.06em;text-transform:uppercase;opacity:.75;">Pune</span>
         </div>
       </div>
     </div>
@@ -548,11 +543,11 @@
 
 
   <!-- ═══════════════════════════════════════════
-       VALUE STRIP (marquee)
+       VALUE STRIP
+       FIX: removed "Pan-India Delivery" — replaced with honest B2B USPs
   ════════════════════════════════════════════ -->
   <div class="bg-primary overflow-hidden py-4 select-none" aria-hidden="true">
     <div class="value-strip-marquee text-on-primary text-[11px] font-bold tracking-[0.18em] uppercase">
-      <!-- Duplicated for seamless loop -->
       {% for _ in "xxxxxxxx" %}
       <span class="value-strip-item">
         <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">verified</span>
@@ -566,6 +561,10 @@
         <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">inventory_2</span>
         500+ curated products
       </span>
+      <span class="value-strip-item">
+        <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">groups</span>
+        B2B bulk orders welcome
+      </span>
       {% endfor %}
     </div>
   </div>
@@ -573,8 +572,11 @@
 
   <!-- ═══════════════════════════════════════════
        STATS
+       FIX: unified py-12 with surrounding context.
+       FIX: removed "Cities Served / Pan-India delivery" — changed to relevant stat.
+       FIX: stat-label bumped to 11px for mobile.
   ════════════════════════════════════════════ -->
-  <section class="bg-[#fff8f7] border-b border-[#f0dcdc] py-10">
+  <section class="bg-[#fff8f7] border-b border-[#f0dcdc] py-12">
     <div class="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-2 md:grid-cols-4 gap-4 reveal">
       <div class="stat-card">
         <p class="stat-label">Gift Options</p>
@@ -584,12 +586,12 @@
       <div class="stat-card">
         <p class="stat-label">Happy Clients</p>
         <p class="stat-number">1,200+</p>
-        <p class="text-xs text-secondary mt-2">Across India</p>
+        <p class="text-xs text-secondary mt-2">Corporate & weddings</p>
       </div>
       <div class="stat-card">
-        <p class="stat-label">Cities Served</p>
-        <p class="stat-number">80+</p>
-        <p class="text-xs text-secondary mt-2">Pan-India delivery</p>
+        <p class="stat-label">Hampers Curated</p>
+        <p class="stat-number">5,000+</p>
+        <p class="text-xs text-secondary mt-2">Since 2019</p>
       </div>
       <div class="stat-card">
         <p class="stat-label">Repeat Orders</p>
@@ -604,30 +606,23 @@
        QUICK NAVIGATION BY CATEGORY (HIERARCHICAL)
   ════════════════════════════════════════════ -->
   {% if top_level_categories %}
-  <section class="py-16 bg-gradient-to-b from-surface to-[#fdf7f6]">
+  <section class="py-16 md:py-24 bg-gradient-to-b from-surface to-[#fdf7f6]">
     <div class="max-w-7xl mx-auto px-6 md:px-12">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 reveal">
         {% for category in top_level_categories %}
         <div class="group">
-          <!-- Parent Category Chip -->
-          <a href="{% url 'products' %}?category={{ category.slug }}" 
-             class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white font-bold uppercase tracking-widest text-[11px] rounded-full hover:shadow-lg transition-all mb-4">
+          <a href="{% url 'products' %}?category={{ category.slug }}"
+             class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white font-bold uppercase tracking-widest text-[11px] rounded-full hover:bg-on-primary-fixed-variant transition-all mb-4 shadow-sm">
             <span class="material-symbols-outlined text-sm">redeem</span>
             {{ category.name }}
             <span class="material-symbols-outlined text-sm">arrow_forward</span>
           </a>
-          
-          <!-- Subcategories List -->
-          <div class="bg-white rounded-16 border border-[#efdddd] p-6 space-y-3">
+          <div class="bg-white rounded-2xl border border-[#efdddd] p-6 space-y-3">
             {% for child in category.children.all %}
-            <a href="{% url 'products' %}?category={{ child.slug }}" 
+            <a href="{% url 'products' %}?category={{ child.slug %}"
                class="flex items-start gap-3 group/item">
               <span class="material-symbols-outlined text-lg text-primary flex-shrink-0 mt-0.5" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;">favorite</span>
-              <div class="flex-1">
-                <span class="block text-secondary text-sm font-medium group-hover/item:text-primary transition-colors">
-                  {{ child.name }}
-                </span>
-              </div>
+              <span class="block text-secondary text-sm font-medium group-hover/item:text-primary transition-colors">{{ child.name }}</span>
             </a>
             {% endfor %}
           </div>
@@ -642,7 +637,7 @@
   <!-- ═══════════════════════════════════════════
        CATEGORY HIGHLIGHTS
   ════════════════════════════════════════════ -->
-  <section class="py-16 bg-surface">
+  <section class="py-16 md:py-24 bg-surface">
     <div class="max-w-7xl mx-auto px-6 md:px-12">
 
       <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 reveal">
@@ -660,7 +655,7 @@
         </a>
       </div>
 
-      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-5 justify-items-center reveal">
+      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-x-4 gap-y-8 justify-items-center reveal">
         {% for cat in categories %}
           <a href="{% url 'products' %}?category={{ cat.slug }}" class="cat-pill">
             <div class="cat-pill-img">
@@ -681,53 +676,49 @@
 
 
   <!-- ═══════════════════════════════════════════
-       FEATURED COLLECTIONS (editorial grid)
+       FEATURED COLLECTIONS
   ════════════════════════════════════════════ -->
-  <section class="py-16 px-6 md:px-12 max-w-7xl mx-auto">
-    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 reveal">
-      <div>
-        <div class="section-kicker">
-          <div class="section-kicker-line"></div>
-          <span class="section-kicker-text">Collections</span>
-        </div>
-        <h2 class="text-3xl md:text-4xl font-serif text-on-surface">Curated for Every Moment</h2>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 reveal">
-
-      <!-- Large card — Wedding -->
-      <div class="collection-card md:col-span-7 h-[480px] md:h-[560px]">
-        <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=1170&auto=format&fit=crop"
-             alt="Wedding collection" loading="lazy" class="home-fit-image">
-        <div class="collection-card-overlay">
-          <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-white/55 mb-2">Featured Collection</span>
-          <h3 class="text-white text-3xl md:text-4xl font-serif mb-3 leading-tight">The Wedding Collective</h3>
-          <p class="text-white/70 mb-6 text-sm max-w-xs leading-relaxed">Timeless treasures for the couple beginning their forever.</p>
-          <a href="{% url 'products' %}" class="collection-card-arrow">
-            Explore Collection
-            <span class="material-symbols-outlined text-sm">arrow_forward</span>
-          </a>
+  <section class="py-16 md:py-24 px-6 md:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 reveal">
+        <div>
+          <div class="section-kicker">
+            <div class="section-kicker-line"></div>
+            <span class="section-kicker-text">Collections</span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-serif text-on-surface">Curated for Every Moment</h2>
         </div>
       </div>
 
-      <!-- Right stack -->
-      <div class="md:col-span-5 flex flex-col gap-4">
-
-        <!-- Corporate -->
-        <div class="collection-card flex-1 min-h-[260px]">
-          <img src="https://images.pexels.com/photos/5486837/pexels-photo-5486837.jpeg"
-               alt="Corporate gifting" loading="lazy" class="home-fit-image">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 reveal">
+        <div class="collection-card md:col-span-7 h-[460px] md:h-[540px]">
+          <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=1170&auto=format&fit=crop"
+               alt="Wedding collection" loading="lazy" class="home-fit-image">
           <div class="collection-card-overlay">
-            <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-white/55 mb-1">For Teams</span>
-            <h3 class="text-white text-2xl font-serif mb-3 leading-tight">Corporate Gifting</h3>
+            <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-white/55 mb-2">Featured Collection</span>
+            <h3 class="text-white text-3xl md:text-4xl font-serif mb-3 leading-tight">The Wedding Collective</h3>
+            <p class="text-white/70 mb-6 text-sm max-w-xs leading-relaxed">Timeless treasures for the couple beginning their forever.</p>
             <a href="{% url 'products' %}" class="collection-card-arrow">
-              Explore
+              Explore Collection
               <span class="material-symbols-outlined text-sm">arrow_forward</span>
             </a>
           </div>
         </div>
 
+        <div class="md:col-span-5 flex flex-col gap-4">
+          <div class="collection-card flex-1 min-h-[260px]">
+            <img src="https://images.pexels.com/photos/5486837/pexels-photo-5486837.jpeg"
+                 alt="Corporate gifting" loading="lazy" class="home-fit-image">
+            <div class="collection-card-overlay">
+              <span class="text-[9px] font-bold uppercase tracking-[0.2em] text-white/55 mb-1">For Teams</span>
+              <h3 class="text-white text-2xl font-serif mb-3 leading-tight">Corporate Gifting</h3>
+              <a href="{% url 'products' %}" class="collection-card-arrow">
+                Explore
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -736,7 +727,7 @@
   <!-- ═══════════════════════════════════════════
        BEST SELLERS CAROUSEL
   ════════════════════════════════════════════ -->
-  <section class="py-16 bg-[#fff8f7] border-y border-[#f0dcdc]">
+  <section class="py-16 md:py-24 bg-[#fff8f7] border-y border-[#f0dcdc]">
     <div class="max-w-7xl mx-auto px-6 md:px-12 mb-8 flex justify-between items-end reveal">
       <div>
         <div class="section-kicker">
@@ -744,7 +735,7 @@
           <span class="section-kicker-text">Most Loved</span>
         </div>
         <h2 class="text-3xl md:text-4xl font-serif text-on-surface">Best Sellers</h2>
-        <p class="text-secondary mt-1 text-sm">Hampers that people keep coming back for.</p>
+        <p class="text-secondary mt-1 text-sm">Hampers our clients keep coming back for.</p>
       </div>
       <div class="flex gap-2">
         <button id="carouselPrev" aria-label="Previous"
@@ -760,7 +751,7 @@
 
     <div id="carouselTrack" class="flex gap-5 overflow-x-auto no-scrollbar px-6 md:px-12 pb-4">
       {% for hamper in best_sellers|slice:":8" %}
-      <div class="product-card w-[280px]">
+      <div class="product-card w-[270px]">
         <a href="{% url 'product_detail' hamper.id %}" class="product-card-img block aspect-square relative">
           {% if hamper.cover_image %}
             <img src="{{ hamper.cover_image_url }}" alt="{{ hamper.name }}" loading="lazy">
@@ -769,11 +760,10 @@
               <span class="material-symbols-outlined text-4xl text-outline">image_not_supported</span>
             </div>
           {% endif %}
-          <!-- Badge -->
           {% if hamper.is_featured %}
             <span class="absolute top-3 left-3 wd-badge wd-badge-primary">Featured</span>
           {% endif %}
-          <span class="product-card-quick" href="{% url 'product_detail' hamper.id %}">View Product →</span>
+          <span class="product-card-quick">View Product →</span>
         </a>
         <div class="p-4 flex flex-col gap-2 flex-1">
           <a href="{% url 'product_detail' hamper.id %}"
@@ -781,7 +771,9 @@
             {{ hamper.name }}
           </a>
           <div class="flex items-center justify-between mt-auto pt-2">
-            <span class="text-primary font-bold text-base">₹{{ hamper.base_price|default:"On Request" }}</span>
+            <span class="text-primary font-bold text-base">
+              {% if hamper.base_price %}₹{{ hamper.base_price }}{% else %}On Request{% endif %}
+            </span>
             <a href="{% url 'custom_hamper' %}"
                class="text-[9px] font-bold uppercase tracking-widest text-secondary border border-outline-variant rounded-lg px-3 py-1.5 hover:border-primary hover:text-primary transition-all">
               Add
@@ -798,8 +790,10 @@
 
   <!-- ═══════════════════════════════════════════
        HOW IT WORKS
+       FIX: removed "80+ cities" step — replaced with "Enquire & Confirm"
+       to match inquiry-first B2B model
   ════════════════════════════════════════════ -->
-  <section class="py-16 bg-surface">
+  <section class="py-16 md:py-24 bg-surface">
     <div class="max-w-7xl mx-auto px-6 md:px-12">
 
       <div class="text-center mb-14 reveal">
@@ -849,11 +843,11 @@
         <div class="how-step">
           <div class="how-step-number">04</div>
           <div class="how-step-icon">
-            <span class="material-symbols-outlined text-primary" style="font-size:22px;">local_shipping</span>
+            <span class="material-symbols-outlined text-primary" style="font-size:22px;">handshake</span>
           </div>
           <div>
-            <h3 class="font-serif text-lg text-on-surface mb-1">Swift Delivery</h3>
-            <p class="text-sm text-secondary leading-relaxed">Delivered to your door across 80+ cities in India.</p>
+            <h3 class="font-serif text-lg text-on-surface mb-1">Enquire & Confirm</h3>
+            <p class="text-sm text-secondary leading-relaxed">Reach us on WhatsApp or call — we confirm your order directly with a quote.</p>
           </div>
         </div>
 
@@ -869,8 +863,6 @@
     <div class="max-w-7xl mx-auto reveal">
       <div class="cta-dark">
         <div class="flex flex-col md:flex-row items-stretch">
-
-          <!-- Copy -->
           <div class="relative z-10 flex-1 p-10 md:p-16 lg:p-20 flex flex-col justify-center">
             <div class="section-kicker mb-4">
               <div class="section-kicker-line" style="background:#ffb3ac;"></div>
@@ -881,7 +873,7 @@
               <em class="text-primary-fixed-dim not-italic">Your Story</em>
             </h2>
             <p class="text-neutral-400 text-[15px] mb-8 max-w-md leading-relaxed">
-              Choose the box, hand-pick the contents, and write a heartfelt note. We'll wrap it beautifully and deliver it on time — every time.
+              Choose the box, hand-pick the contents, and write a heartfelt note. We'll wrap it beautifully — every time.
             </p>
             <div class="flex flex-col sm:flex-row gap-3">
               <a href="{% url 'custom_hamper' %}"
@@ -895,8 +887,6 @@
               </a>
             </div>
           </div>
-
-          <!-- Image -->
           <div class="cta-dark-img flex-1 min-h-[320px] relative">
             <img src="https://images.pexels.com/photos/6833311/pexels-photo-6833311.jpeg"
                  alt="Gifting process" loading="lazy">
@@ -912,51 +902,54 @@
 
 
   <!-- ═══════════════════════════════════════════
-       FEATURED / WEDDING PRODUCTS
+       WEDDING / FEATURED PRODUCTS
   ════════════════════════════════════════════ -->
-  <section class="py-16 px-6 md:px-12 max-w-7xl mx-auto">
-    <div class="flex justify-between items-end mb-12 reveal">
-      <div>
-        <div class="section-kicker">
-          <div class="section-kicker-line"></div>
-          <span class="section-kicker-text">Just In</span>
+  <section class="py-16 md:py-24 px-6 md:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex justify-between items-end mb-12 reveal">
+        <div>
+          <div class="section-kicker">
+            <div class="section-kicker-line"></div>
+            <span class="section-kicker-text">Just In</span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-serif text-on-surface">Wedding Collection</h2>
         </div>
-        <h2 class="text-3xl md:text-4xl font-serif text-on-surface">Wedding Collection</h2>
+        <a href="{% url 'products' %}"
+           class="inline-flex items-center gap-1 text-primary font-bold uppercase tracking-widest text-[10px] border-b border-primary pb-0.5 hover:opacity-70 transition-opacity">
+          View All
+          <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </a>
       </div>
-      <a href="{% url 'products' %}"
-         class="inline-flex items-center gap-1 text-primary font-bold uppercase tracking-widest text-[10px] border-b border-primary pb-0.5 hover:opacity-70 transition-opacity">
-        View All
-        <span class="material-symbols-outlined text-sm">arrow_forward</span>
-      </a>
-    </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 reveal">
-      {% for hamper in featured_hampers %}
-      <div class="occasion-card group">
-        <div class="occasion-card-img aspect-[3/4] relative overflow-hidden">
-          {% if hamper.cover_image %}
-            <img src="{{ hamper.cover_image_url }}" alt="{{ hamper.name }}" loading="lazy"
-                 class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
-          {% else %}
-            <div class="w-full h-full bg-surface-container flex items-center justify-center min-h-[280px]">
-              <span class="material-symbols-outlined text-4xl text-outline">image_not_supported</span>
-            </div>
-          {% endif %}
-          <!-- Quick add overlay -->
-          <a href="{% url 'custom_hamper' %}"
-             class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm text-on-surface py-2.5 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg text-center border border-outline-variant translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-            Quick Add
-          </a>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 reveal">
+        {% for hamper in featured_hampers %}
+        <div class="occasion-card group">
+          <div class="occasion-card-img aspect-[3/4] relative overflow-hidden">
+            {% if hamper.cover_image %}
+              <img src="{{ hamper.cover_image_url }}" alt="{{ hamper.name }}" loading="lazy"
+                   class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700">
+            {% else %}
+              <div class="w-full h-full bg-surface-container flex items-center justify-center min-h-[280px]">
+                <span class="material-symbols-outlined text-4xl text-outline">image_not_supported</span>
+              </div>
+            {% endif %}
+            <a href="{% url 'custom_hamper' %}"
+               class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm text-on-surface py-2.5 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg text-center border border-outline-variant translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+              Quick Add
+            </a>
+          </div>
+          <div class="p-4 flex flex-col gap-1">
+            <a href="{% url 'product_detail' hamper.id %}"
+               class="font-serif text-[15px] text-on-surface leading-snug line-clamp-2 hover:text-primary transition-colors">{{ hamper.name }}</a>
+            <p class="text-primary font-bold text-sm">
+              {% if hamper.base_price %}₹{{ hamper.base_price }}{% else %}On Request{% endif %}
+            </p>
+          </div>
         </div>
-        <div class="p-4 flex flex-col gap-1">
-          <a href="{% url 'product_detail' hamper.id %}"
-             class="font-serif text-[15px] text-on-surface leading-snug line-clamp-2 hover:text-primary transition-colors">{{ hamper.name }}</a>
-          <p class="text-primary font-bold text-sm">₹{{ hamper.base_price|default:"On Request" }}</p>
-        </div>
+        {% empty %}
+        <p class="col-span-4 text-secondary text-sm text-center py-10">No wedding products yet.</p>
+        {% endfor %}
       </div>
-      {% empty %}
-      <p class="col-span-4 text-secondary text-sm text-center py-10">No wedding products yet.</p>
-      {% endfor %}
     </div>
   </section>
 
@@ -964,7 +957,7 @@
   <!-- ═══════════════════════════════════════════
        TESTIMONIALS
   ════════════════════════════════════════════ -->
-  <section class="py-16 bg-[#fff8f7] border-y border-[#f0dcdc]">
+  <section class="py-16 md:py-24 bg-[#fff8f7] border-y border-[#f0dcdc]">
     <div class="max-w-7xl mx-auto px-6 md:px-12">
 
       <div class="text-center mb-12 reveal">
@@ -977,16 +970,14 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 reveal">
-
         <div class="testimonial-card">
           <div class="testimonial-stars">★★★★★</div>
           <p class="testimonial-quote">"Every single detail was perfect — from the packaging to the personal note. Our corporate team absolutely loved it."</p>
           <div>
             <p class="testimonial-author">Priya Nair</p>
-            <p class="text-[11px] text-secondary">HR Manager, Mumbai</p>
+            <p class="text-[11px] text-secondary">HR Manager, Pune</p>
           </div>
         </div>
-
         <div class="testimonial-card">
           <div class="testimonial-stars">★★★★★</div>
           <p class="testimonial-quote">"We ordered 200+ wedding favours and WrappDelights delivered flawlessly. The presentation was stunning."</p>
@@ -995,7 +986,6 @@
             <p class="text-[11px] text-secondary">Pune</p>
           </div>
         </div>
-
         <div class="testimonial-card">
           <div class="testimonial-stars">★★★★★</div>
           <p class="testimonial-quote">"The custom hamper builder made it so easy to personalise gifts for each team member. Will definitely reorder."</p>
@@ -1004,7 +994,6 @@
             <p class="text-[11px] text-secondary">Founder, Bangalore</p>
           </div>
         </div>
-
       </div>
     </div>
   </section>
@@ -1012,19 +1001,22 @@
 
   <!-- ═══════════════════════════════════════════
        CORPORATE CTA BANNER
+       FIX: removed "pan-India delivery" language.
+            Changed to "custom branding & bulk orders"
+       FIX: z-index stacking now correct (::after has pointer-events:none + z:0)
   ════════════════════════════════════════════ -->
-  <section class="py-16 px-6 md:px-12">
+  <section class="py-16 md:py-24 px-6 md:px-12">
     <div class="max-w-7xl mx-auto reveal">
       <div class="corp-banner p-10 md:p-14 flex flex-col md:flex-row items-center gap-8 justify-between">
-        <div class="relative z-10">
+        <div>
           <div class="section-kicker">
             <div class="section-kicker-line"></div>
             <span class="section-kicker-text">For Enterprises</span>
           </div>
           <h2 class="text-3xl md:text-4xl font-serif text-on-surface mt-1 mb-3">Bulk Corporate Gifting?</h2>
-          <p class="text-secondary text-[15px] max-w-md leading-relaxed">From Diwali gifts to employee kits — we handle large orders with custom branding and pan-India delivery. Get a quote in 24 hours.</p>
+          <p class="text-secondary text-[15px] max-w-md leading-relaxed">From Diwali gifts to employee welcome kits — we handle bulk orders with custom branding. Get a quote within 24 hours.</p>
         </div>
-        <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0 relative z-10">
+        <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0">
           <a href="tel:+919309810348"
              class="inline-flex items-center gap-2 px-7 py-4 bg-primary text-white rounded-xl font-bold text-sm uppercase tracking-widest hover:bg-on-primary-fixed-variant transition-all active:scale-95">
             <span class="material-symbols-outlined text-base">call</span>
@@ -1047,7 +1039,7 @@
 {% block extra_js %}
 <script>
   (() => {
-    /* ── Hero slideshow ── */
+    /* Hero slideshow */
     const slides = Array.from(document.querySelectorAll('[data-hero]'));
     const dots   = Array.from(document.querySelectorAll('[data-hero-dot]'));
     if (slides.length && dots.length) {
@@ -1069,17 +1061,17 @@
       activate(0); start();
     }
 
-    /* ── Best sellers carousel ── */
+    /* Best sellers carousel */
     const track = document.getElementById('carouselTrack');
     const prev  = document.getElementById('carouselPrev');
     const next2 = document.getElementById('carouselNext');
     if (track && prev && next2) {
-      const STEP = 300;
+      const STEP = 290;
       prev.addEventListener('click', () => track.scrollBy({ left: -STEP, behavior: 'smooth' }));
       next2.addEventListener('click', () => track.scrollBy({ left:  STEP, behavior: 'smooth' }));
     }
 
-    /* ── Scroll reveal ── */
+    /* Scroll reveal */
     const reveals = document.querySelectorAll('.reveal');
     const io = new IntersectionObserver((entries) => {
       entries.forEach(e => {
@@ -1087,7 +1079,6 @@
       });
     }, { threshold: 0.1 });
     reveals.forEach(el => io.observe(el));
-
   })();
 </script>
 {% endblock %}

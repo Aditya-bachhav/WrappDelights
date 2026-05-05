@@ -47,7 +47,7 @@ content = """<!DOCTYPE html>
             <div class="flex gap-6">
                 <span><span class="font-bold text-gray-800">Call Us:</span> 1-800-WRAPP-DL</span>
                 <span><span class="font-bold text-gray-800">Email:</span> sales@wrappdelights.com</span>
-                <span class="hidden sm:inline"><span class="font-bold text-gray-800">Location:</span> Mumbai, India</span>
+                <span class="hidden sm:inline"><span class="font-bold text-gray-800">Location:</span> Pune, India</span>
             </div>
             <div class="flex gap-4">
                 <a href="#" class="hover:text-brand-red">Help Center</a>
@@ -193,7 +193,7 @@ content = """<!DOCTYPE html>
                         <span class="text-brand-red font-bold">E:</span> sales@wrappdelights.com
                     </li>
                     <li class="flex items-start gap-2">
-                        <span class="text-brand-red font-bold">A:</span> Mumbai, Maharashtra, India
+                        <span class="text-brand-red font-bold">A:</span> Pune, Maharashtra, India
                     </li>
                 </ul>
             </div>

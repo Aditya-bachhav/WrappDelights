@@ -161,6 +161,13 @@
     border: none; border-left: 1px solid #e4beba; border-right: 1px solid #e4beba;
     background: #fff; font-family: 'Manrope', sans-serif;
     font-size: 12px; font-weight: 700; color: #1a1c1c; outline: none;
+    -moz-appearance: textfield;
+    padding: 0 4px;
+  }
+  .qty-input::-webkit-outer-spin-button,
+  .qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
   .qty-input:focus { background: #fff8f7; }
 
@@ -650,8 +657,8 @@
     return (
       '<div class="item-card" data-product="' + item.product_id + '">' +
         '<div class="item-thumb">' +
-          (item.cover_image
-            ? '<img src="' + item.cover_image + '" alt="' + item.name + '">'
+          (item.image
+            ? '<img src="' + item.image + '" alt="' + item.name + '">'
             : '<div class="item-thumb-placeholder"><span class="material-symbols-outlined">inventory_2</span></div>') +
         '</div>' +
         '<div class="item-body">' +
