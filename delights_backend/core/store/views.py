@@ -457,7 +457,6 @@ def home(request):
 
 
 def product_list(request):
-    hampers = Hamper.objects.filter(is_active=True).select_related("category").prefetch_related("categories")
     category_slug = request.GET.get("category", "").strip()
     search_query = request.GET.get("q", "").strip()
     active_category_label = CATEGORY_DISPLAY_NAMES.get(
@@ -467,13 +466,20 @@ def product_list(request):
 
     sort = request.GET.get("sort", "").strip()
 
+    # Build queryset with category filtering applied first (before select_related/prefetch_related)
+    # This ensures consistent query execution across local SQLite and production databases
+    hampers = Hamper.objects.filter(is_active=True)
+    
     if category_slug:
+        # Filter by category slug only (slug is the parameter passed from URL)
+        # This correctly handles both single category (FK) and multi-categories (M2M)
         hampers = hampers.filter(
             Q(category__slug=category_slug)
-            | Q(category__name__iexact=category_slug)
             | Q(categories__slug=category_slug)
-            | Q(categories__name__iexact=category_slug)
         ).distinct()
+    
+    # Apply select_related and prefetch_related after filtering to ensure clean queries
+    hampers = hampers.select_related("category").prefetch_related("categories")
     if search_query:
         hampers = hampers.filter(
             Q(name__icontains=search_query)
