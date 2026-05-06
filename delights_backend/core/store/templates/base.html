@@ -110,13 +110,20 @@
     transition: opacity 0.2s ease;
   }
   .wd-logo:hover { opacity: 0.75; }
-  .wd-logo-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: #af101a;
+  .wd-logo-gift {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
     flex-shrink: 0;
     margin-bottom: 2px;
   }
+  .wd-logo-gift .material-symbols-outlined {
+    font-size: 12px;
+    color: #af101a;
+    font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  }
+  .wd-logo-gift .gift-left { transform: rotate(-8deg); }
+  .wd-logo-gift .gift-right { transform: rotate(10deg) translateY(-1px); }
 
   .wd-nav-link {
     position: relative;
@@ -480,7 +487,10 @@
 
     <!-- Logo -->
     <a href="{% url 'home' %}" class="wd-logo flex-shrink-0" aria-label="WrappDelights home">
-      <div class="wd-logo-dot"></div>
+      <span class="wd-logo-gift" aria-hidden="true">
+        <span class="material-symbols-outlined gift-left">redeem</span>
+        <span class="material-symbols-outlined gift-right">redeem</span>
+      </span>
       WrappDelights
     </a>
 

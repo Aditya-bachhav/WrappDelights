@@ -19,7 +19,7 @@
   /* ─── Hero ─── */
   .hero-section {
     position: relative;
-    min-height: 90vh;
+    min-height: 72vh;
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -34,6 +34,50 @@
   .hero-texture {
     position: absolute; inset: 0; z-index: 0; opacity: 0.018;
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-ambient {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  }
+  .hero-ambient-icon {
+    position: absolute;
+    color: rgba(175,16,26,0.18);
+    animation: floaty 6s ease-in-out infinite;
+  }
+  .hero-ambient-icon.soft {
+    color: rgba(84,96,103,0.18);
+  }
+  .hero-ambient-icon.small { font-size: 16px; }
+  .hero-ambient-icon.medium { font-size: 22px; }
+  .hero-ambient-icon.large { font-size: 28px; }
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #efdddd;
+    color: #3d2020;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    box-shadow: 0 8px 18px rgba(175,16,26,0.06);
+  }
+  .hero-chip .material-symbols-outlined {
+    font-size: 16px;
+    color: #af101a;
   }
 
   .hero-img-wrapper { position: relative; z-index: 2; }
@@ -452,9 +496,14 @@
   <!-- ═══════════════════════════════════════════
        HERO
   ════════════════════════════════════════════ -->
-  <section class="hero-section px-6 md:px-12 lg:px-20 py-16 md:py-24">
+  <section class="hero-section px-6 md:px-12 lg:px-20 py-12 md:py-16">
     <div class="hero-bg-pattern"></div>
     <div class="hero-texture"></div>
+    <div class="hero-ambient" aria-hidden="true">
+      <span class="material-symbols-outlined hero-ambient-icon small" style="top:12%;left:6%;">redeem</span>
+      <span class="material-symbols-outlined hero-ambient-icon medium soft" style="top:18%;right:12%;animation-delay:1s;">auto_awesome</span>
+      <span class="material-symbols-outlined hero-ambient-icon large" style="bottom:16%;left:38%;animation-delay:2s;">favorite</span>
+    </div>
 
     <div class="relative z-10 grid md:grid-cols-2 gap-12 lg:gap-20 items-center w-full max-w-7xl mx-auto">
 
@@ -473,6 +522,12 @@
         <p class="text-base md:text-lg text-secondary max-w-md mb-8 leading-relaxed font-body anim-fade-up delay-200">
           Premium curated hampers for weddings, corporate milestones, and every occasion in between. Beautifully wrapped, personally presented — Pune's boutique gifting studio.
         </p>
+
+        <div class="hero-chips anim-fade-up delay-250">
+          <span class="hero-chip"><span class="material-symbols-outlined">celebration</span> Occasion-ready</span>
+          <span class="hero-chip"><span class="material-symbols-outlined">redeem</span> Handpicked</span>
+          <span class="hero-chip"><span class="material-symbols-outlined">local_shipping</span> Pune studio</span>
+        </div>
 
         <!-- Trust row -->
         <div class="flex items-center gap-5 mb-10 anim-fade-up delay-300">
