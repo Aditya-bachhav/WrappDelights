@@ -246,10 +246,10 @@ LOGOUT_REDIRECT_URL = '/'
 ADMIN_PANEL_PATH = os.getenv("ADMIN_PANEL_PATH", "control-room-admin/").strip("/") + "/"
 
 # Contact info for catalog CTA buttons
-WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "9309810348")
+WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "7397827703")
 WHATSAPP_MESSAGE = os.getenv("WHATSAPP_MESSAGE", "Hi, I'm interested in a product from Wrapp Delights!")
-PHONE_NUMBER = os.getenv("PHONE_NUMBER", "+91 93098 10348")  # display-friendly format
-PHONE_NUMBER_RAW = os.getenv("PHONE_NUMBER_RAW", "+919309810348")  # tel: link format
+PHONE_NUMBER = os.getenv("PHONE_NUMBER", "+91 7397 827 703")  # display-friendly format
+PHONE_NUMBER_RAW = os.getenv("PHONE_NUMBER_RAW", "+917397827703")  # tel: link format
 SITE_BASE_URL = os.getenv(
     "SITE_BASE_URL",
     f"https://{RENDER_EXTERNAL_HOSTNAME}" if RENDER_EXTERNAL_HOSTNAME else "http://127.0.0.1:8000",
